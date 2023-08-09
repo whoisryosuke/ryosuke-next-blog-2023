@@ -23,7 +23,7 @@ const components = {
   Head,
 };
 
-export default function PostPage({ source, frontMatter }) {
+export default function PostPage({ source, frontMatter, slug }) {
   return (
     <Layout>
       <header>
@@ -59,8 +59,31 @@ export default function PostPage({ source, frontMatter }) {
   );
 }
 
+// Grabs MDX content based on slug passed in URL params
 export const getStaticProps = async ({ params }) => {
-  const postFilePath = path.join(POSTS_PATH, `${params.path}.mdx`);
+  console.log("page slug", params.slug, params.slug.join("/"));
+
+  // We add back the `blog/` to the path
+  const slugs = ["blog", ...params.slug];
+  const slugPath = slugs.join("/");
+
+  let postFilePath;
+  // Check if it exists
+  const fullPath = path.join(POSTS_PATH, `${slugPath}.mdx`);
+  if (fs.existsSync(fullPath)) {
+    postFilePath = fullPath;
+  }
+  // Try the `/index` version instead
+  const indexPath = path.join(POSTS_PATH, `${slugPath}/index.mdx`);
+  if (fs.existsSync(indexPath)) {
+    postFilePath = indexPath;
+  }
+
+  if (!postFilePath) {
+    console.log("no post found!!");
+    throw Error("No post found");
+  }
+
   console.log("post file path", postFilePath);
   const source = fs.readFileSync(postFilePath);
 
@@ -79,12 +102,12 @@ export const getStaticProps = async ({ params }) => {
     props: {
       source: mdxSource,
       frontMatter: data,
+      slug: slugPath,
     },
   };
 };
 
 export const getStaticPaths = async () => {
-  console.log("posts", postFilePaths);
   const paths = postFilePaths
     // Remove root path
     .map((path) => path.replace(POSTS_PATH, ""))
@@ -94,12 +117,14 @@ export const getStaticPaths = async () => {
     .map((path) => {
       // We create a URL friendly slug here
       // Since some MDX files are `index.mdx` and the folder is the actual title
-      const slug = path.replace("/index", "");
+      const slug = path
+        .replace(/^\/|\/$/g, "") // Remove before/after trailing slashes
+        .replace("/index", "") // Trim off index
+        .split("/") // Create an array format - required for getStaticProps above
+        .filter((slug) => slug !== "blog"); // Filter out the blog folder
 
-      return { params: { slug, path } };
+      return { params: { slug } };
     });
-
-  console.log("all blog paths", paths);
 
   return {
     paths,
