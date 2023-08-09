@@ -1,0 +1,351 @@
+---
+title: Parsing JSON with Rust
+date: "2022-11-04"
+section: blog
+tags: ["rust", "json", "css", "design systems"]
+cover_image: "./parsing-json-with-rust.png"
+
+layout: "@/layouts/BlogLayout.astro"
+---
+
+As I’ve been learning Rust, I’ve been looking for easy and practical projects to get my head around basic concepts and increase my syntax muscle memory. One of the things I find myself doing everyday in most languages is loading data from different sources, like text files, or more structured sources like JSON or YAML.
+
+So it got me thinking, how would parsing JSON look like in Rust? Not from scratch though — we’re not interested in building a parser here. Ideally we’d use either internal Rust methods or a 3rd party crate.
+
+In this article I’ll go over how I used [serde](https://github.com/serde-rs/serde) and [serde-json](https://github.com/serde-rs/json) to read, parse, and serialize JSON into Rust structs to use inside Rust apps. [You can find the final source code on Github.](https://github.com/whoisryosuke/rust-json-parser/)
+
+# Setting up a new project
+
+Let’s create a new Rust app to code inside. _You could also [clone this branch](https://github.com/whoisryosuke/rust-json-parser/blob/hello-world) and skip this step._
+
+```rust
+cargo new json-parser
+```
+
+Once you navigate inside, install `serde` and `serde_json`. We’ll also add the `derive` feature for serde, which we’ll use later.
+
+```rust
+cargo add serde --features derive
+cargo add serde_json
+```
+
+Now let’s make our parser! Create a new file at `src/parser.rs` that’ll hold all our parsing logic.
+
+If you look at [the serde_json README file](https://github.com/serde-rs/json#readme), you can find some fantastic examples on how to use the library out of the box. Let’s try one of those to see if we installed everything correctly:
+
+```rust
+use serde_json::{Result, Value};
+
+pub fn untyped_example() -> Result<()> {
+    // Some JSON input data as a &str. Maybe this comes from the user.
+    let data = r#"
+        {
+            "name": "John Doe",
+            "age": 43,
+            "phones": [
+                "+44 1234567",
+                "+44 2345678"
+            ]
+        }"#;
+
+    // Parse the string of data into serde_json::Value.
+    let v: Value = serde_json::from_str(data)?;
+
+    // Access parts of the data by indexing with square brackets.
+    println!("Please call {} at the number {}", v["name"], v["phones"][0]);
+
+    Ok(())
+}
+```
+
+Now we can use this function inside of our `src/main.rs`
+
+```rust
+// "Import" anything public in the parser module
+pub mod parser;
+
+fn main() {
+    println!("Hello, world!");
+
+    // Parse the JSON
+    let result = parser::untyped_example();
+
+    // Handle errors from the parser if any
+    match result {
+        Ok(result) => (),
+        Err(error) => print!("{}", error),
+    }
+}
+```
+
+Try running this with `cargo run`. You should see the text “Please call John Doe at…” in your console. If not, we also added an error handling `match` that should return any errors from serde.
+
+You can see from this example the library API is fairly easy to use. They expose a `from_str()` method that parses JSON from a string, which you can provide inline (like we did above) - or load from a local or remote file (we’ll do this later). Once the JSON is parsed, you can access the data through the properties or keys in the JSON (e.g. `v["name"]` grabs from `{ "name": "John Doe" }`).
+
+Let’s see what else we can do with the library now that we have it integrated into our app.
+
+## Loading JSON from local file
+
+In order to load JSON, we need a JSON file. So let’s create one. At the root of the project create a folder called `data`. Inside it, create a `test.json` file.
+
+```json
+{
+  "name": "John Doe",
+  "age": 43,
+  "phones": ["+44 1234567", "+44 2345678"]
+}
+```
+
+To load data, we can use [the FileSystem API from Rust’s standard library.](https://doc.rust-lang.org/std/fs/) We’ll do this in our `main.rs` file and pass the data (aka a long string of JSON) to the parser.
+
+```rust
+// src/main.rs
+use std::fs;
+
+pub mod parser;
+
+fn main() {
+    println!("Hello, world!");
+
+    // Grab JSON file
+    let file_path = "data/test.json".to_owned();
+    let contents = fs::read_to_string(file_path).expect("Couldn't find or load that file.");
+
+    parser::untyped_example(&contents);
+}
+```
+
+And we’d need to modify the parser to accept data now. You can also delete the `data` variable with the inline JSON since we don’t need it anymore:
+
+```rust
+// src/parser.rs
+pub fn untyped_example(json_data: &str) -> Result<()> {
+	let v: Value = serde_json::from_str(json_data)?;
+```
+
+Try running this with `cargo run` and you should get the same result as before (the “Please call…” message).
+
+## Typed data
+
+But what if we know what the structure of our data is before we parse it? For example, we might want to parse a theme using the [System UI](https://system-ui.vercel.app/) / [Styled System specification](https://styled-system.com/theme-specification), like [Chakra UI](https://chakra-ui.com/docs/styled-system/theme).
+
+This would let us access our data using strictly typed `struct`s - so instead of using `v["name"]` to access the name, we could get autocompletion in our IDE when we type `v.` and it’d finish to `v.name`. This is a much better developer experience, and creates more safety nets against using properties that don’t exist.
+
+The serde_json README also provides a great example for handling typed data. We can copy paste this entirely into the `[parser.rs](http://parser.rs)` file.
+
+```rust
+use serde::{Deserialize, Serialize};
+use serde_json::Result;
+
+#[derive(Serialize, Deserialize)]
+struct Person {
+    name: String,
+    age: u8,
+    phones: Vec<String>,
+}
+
+pub fn typed_example() -> Result<()> {
+    // Some JSON input data as a &str. Maybe this comes from the user.
+    let data = r#"
+        {
+            "name": "John Doe",
+            "age": 43,
+            "phones": [
+                "+44 1234567",
+                "+44 2345678"
+            ]
+        }"#;
+
+    // Parse the string of data into a Person object. This is exactly the
+    // same function as the one that produced serde_json::Value above, but
+    // now we are asking it for a Person as output.
+    let p: Person = serde_json::from_str(data)?;
+
+    // Do things just like with any other Rust data structure.
+    println!("Please call {} at the number {}", p.name, p.phones[0]);
+
+    Ok(())
+}
+```
+
+Then replace the `untyped_example` function with the `typed_example` function in your `main.rs` file.
+
+```rust
+pub mod parser;
+
+fn main() {
+    println!("Hello, world!");
+
+		// You can keep the file system stuff, I removed it for simplicity
+		// we'll use it later in the tutorial
+
+    parser::typed_example();
+}
+```
+
+## How to handle object types?
+
+So the first question that came to mind after looking at the examples — how do you handle an object with keys and properties? It seems you can use a `HashMap<>` type and provide a type for the object key (usually a `String`) and the object value (anything — sometimes a `String` - maybe a `i32` for numbers).
+
+So say I had a JSON theme that looked like this:
+
+```rust
+{
+  "animation": {
+    "default": "400ms ease-in",
+    "fast": "300ms ease-in"
+  },
+  "breakpoints": {
+    "mobile": "320px",
+    "tablet": "768px",
+    "computer": "992px",
+    "desktop": "1200px",
+    "widescreen": "1920px"
+  },
+  "colors": {
+    "text": "#111212",
+    "background": "#fff",
+    "primary": "#005CDD",
+    "secondary": "#6D59F0",
+    "muted": "#f6f6f9",
+    "gray": "#D3D7DA",
+    "highlight": "hsla(205, 100%, 40%, 0.125)",
+    "white": "#FFF",
+    "black": "#111212"
+  },
+
+  "fonts": {
+    "body": "Roboto, Helvetiva Neue, Helvetica, Aria, sans-serif",
+    "heading": "Archivo, Helvetiva Neue, Helvetica, Aria, sans-serif",
+    "monospace": "Menlo, monospace"
+  },
+  "font_sizes": [12, 14, 16, 20, 24, 32, 48, 64, 96],
+  "font_weights": {
+    "body": 400,
+    "heading": 500,
+    "bold": 700
+  },
+  "line_heights": {
+    "body": 1.5,
+    "heading": 1.25
+  },
+  "space": [0, 4, 8, 16, 32, 64, 128, 256, 512],
+  "sizes": {
+    "avatar": 48
+  },
+  "radii": {
+    "default": 0,
+    "circle": 99999
+  },
+  "shadows": {
+    "card": {
+      "light": "15px 15px 35px rgba(0, 127, 255, 0.5)"
+    }
+  },
+  "gradients": {
+    "primary": "linear-gradient()"
+  }
+}
+```
+
+You could structure that type to look like this:
+
+```rust
+use std::collections::HashMap;
+
+use serde::{Deserialize, Serialize};
+use serde_json::Result;
+
+#[derive(Serialize, Deserialize)]
+struct Theme {
+    colors: HashMap<String, String>,
+    space: Vec<i32>,
+    font_sizes: Vec<i32>,
+    fonts: HashMap<String, String>,
+    font_weights: HashMap<String, i32>,
+    line_heights: HashMap<String, f32>,
+    breakpoints: HashMap<String, String>,
+    animation: HashMap<String, String>,
+    gradients: HashMap<String, String>,
+}
+```
+
+You can see I use `String` for any string based values, `i32` for numbers, and specifically `f32` for any “floats” aka numbers with decimals.
+
+When the JSON is parsed, a `HashMap` is returned, so you can access the data inside using the `get()` method - or loop over all the values using `for` loop:
+
+```rust
+// Get a single value
+println!("Black: {}", p.colors.get("black"));
+
+// Loop over all the colors
+for (key, color) in p.colors {
+    // Create the custom property
+    let custom_property = format!("--colors-{}", key);
+    let css_rule = format!("{}: {};", &custom_property, color);
+
+    // @TODO: Export a CSS stylesheet file (or return CSS)
+    println!("{}", css_rule);
+    stylesheet.push(css_rule);
+
+    // Add the custom property
+    theme_tokens.colors.insert(key, custom_property);
+}
+```
+
+This works pretty well! You can see here we’re able to loop over the colors and even generate CSS custom properties based on the key and value from the HashMap (aka the color name and value).
+
+## Handling optional / multiple types
+
+But what if we have optional types? Or multiple types for the same property (like a “size” unit that could be an number `10` or a string like `10px`)? In Typescript we’d be able to just create a type like this `type Size = string | number`. In Rust, the equivalent of this would be an `Enum`.
+
+After [researching a bit](https://users.rust-lang.org/t/how-to-use-multiple-types-for-a-field-in-serde-json/36714/2) I found that serde supports Enum types if you pass the `untagged` macro to them:
+
+```rust
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(untagged)]
+enum Colors {
+    Name(String),
+    Number(i32),
+}
+
+#[derive(Serialize, Deserialize)]
+struct Theme {
+    test: Colors,
+}
+
+// ... after parsing
+let p: Theme = serde_json::from_str(json_data)?;
+println!("{:#?}", p.test);
+```
+
+Add the following property to your JSON:
+
+```rust
+{
+	"test": 200
+}
+```
+
+And serde will grab from the `Number(i32)` Enum property and return that — you’ll need to do a `match` statement to figure out what it is + get value back:
+
+```rust
+match p.test {
+	// We don't want the name so we do nothing by passing empty tuple
+	Name(val) -> (),
+	Number(num) -> println!("Theme Color is number: {}", num),
+}
+```
+
+This works great too! You can easily create some “dynamic” types and still have fairly strict handling of them based on their type.
+
+# Putting the eyy back in JSON
+
+I hope this gives you a good idea of how to parse JSON in Rust using the serde crate, and how to handle different use cases and data types. There’s lot of cool apps you can create using JSON (or other file types - [serde supports lots like YAML, TOML, and more](https://serde.rs/#data-formats)).
+
+As always, you can find [the full code for this tutorial up on my Github](https://github.com/whoisryosuke/rust-json-parser/).
+
+If you have any questions or want to share what you’ve been working on, feel free to [hit me up on Twitter.](https://twitter.com/whoisryosuke)
+
+Cheers,
+Ryo

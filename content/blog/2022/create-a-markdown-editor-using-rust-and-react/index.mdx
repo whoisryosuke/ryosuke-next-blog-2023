@@ -1,0 +1,576 @@
+---
+title: Create a Markdown Editor with Rust and React
+date: "2022-10-13"
+section: blog
+tags: ["rust", "react", "markdown", "tooling"]
+cover_image: "./create-a-markdown-editor-with-rust-and-react.png"
+
+layout: "@/layouts/BlogLayout.astro"
+---
+
+I’ve been looking for easy projects to jump into Rust with as a beginner and I thought, why not a Markdown app? Previously I’d built [a Markdown-based text editor using Electron](https://github.com/whoisryosuke/mdx-electron), and I was wondering if I could replicate that using Rust. It’d be a simple app, where the user can write Markdown and see a “live preview”. And with any WSIWYG, there might be buttons to help the user write Markdown, like text formatting (bold, italics, etc).
+
+But how would you start to do this in Rust…? I’ll break it down in this post, piece by piece. First we’ll start with figuring out a way to just parse Markdown in Rust, probably using a 3rd party library (so we don’t have to manually parse it ourselves). Then we can build a UI for the user to see the Markdown, edit it, and send changes to Rust to update our “preview”.
+
+Here’s what our app will look like:
+
+![A screenshot of the final Markdown editing app we'll be making using Tauri and React](./Untitled.png)
+
+**You can find the complete code for this post in [my tauri-markdown-editor repo](https://github.com/whoisryosuke/tauri-markdown-editor).**
+
+<aside>
+⚠️ This article assumes you have a basic understanding of the Markdown syntax, and even intermediate aspects like frontmatter. You’ll also see the use of [“CommonMark”](https://commonmark.org/) in this article, this refers to the specification for the Markdown syntax.
+
+</aside>
+
+# Parsing Markdown…in JavaScript
+
+Before we dive into Rust, let’s see how we’d do this process in JavaScript - a language people might be more familiar with.
+
+Normally in JavaScript we’d use a library like [**marked**](https://github.com/markedjs/marked) to take our text that contains Markdown and parse it into an AST (or abstract syntax tree).
+
+```jsx
+import marked from "marked";
+
+marked.parse("# Marked in the browser\n\nRendered by **marked**.");
+```
+
+The AST acts as a representation of the Markdown broken up into related chunks (like paragraphs, or bold text). An AST in JavaScript is usually just a giant object made up of `Node` objects that contain Markdown data. It’ll probably be a flat array, not with nested children, since you’ll inevitably “join” it together in order. This is pseudo-code of what an AST might look like:
+
+```js
+const ast = {
+	children: [
+		Node {
+			id: 0,
+			type: "string",
+			content: "Who is Ryo?",
+		}
+	]
+}
+```
+
+We could then convert that AST to HTML to export to a website. [For NextJS blogs](https://nextjs.org/blog/markdown), they do this process in the `getStaticProps` server-side function, which generates HTML for the frontend to use.
+
+In Rust, the process will look very similar. We’ll take a giant string of Markdown text and use a library to parse that into an AST, then eventually into another format (HTML or back into Markdown).
+
+# Parsing Markdown in Rust
+
+In Rust, we can use the [comrak](https://github.com/kivikakk/comrak#usage) crate to parse our Markdown. This is a Rust port of a C library that, you guessed it, also parsed Markdown (aka “CommonMark”).
+
+## Project setup
+
+Let’s create a fresh environment and get things setup.
+
+1. Run `cargo new your-project` to create a new Rust project
+2. Go into the directory using `cd your-project`
+3. Add comrak as a dependency `cargo add comrak`
+4. We’ll also need Markdown! Create a sample `[README.md](http://README.md)` in the root folder (same level as `Cargo.toml`). _Maybe fill it with docs on getting the project running 😉_
+5. Open up the `[main.rs](http://main.rs)` file and let’s add the example code from the [comrak Github README](https://github.com/markedjs/marked#readme)
+
+```rust
+use comrak::{markdown_to_html, ComrakOptions};
+
+fn main() {
+		println!("Hello, world!");
+
+    let markdown = markdown_to_html("Hello, **世界**!", &ComrakOptions::default());
+
+    println!("{markdown}");
+}
+```
+
+In Rust we run code using `cargo run`. This should print out the HTML version of the sample string. Here’s [the commit on Github for reference.](https://github.com/whoisryosuke/rust-markdown-playground/commit/d246bec7191216c58f083a99ec5c91eebc17142b)
+
+Now lets parse the actual `[README.md](http://README.md)` we created.
+
+## Parsing Markdown files
+
+This is a pretty straightforward process, because comrak expects a `&str` or `&String` (basically a [pointer](https://doc.rust-lang.org/std/primitive.pointer.html) of 1 long string with all the Markdown). In Rust, we can conveniently load local files directly into strings using `std::fs::read_to_string()`. You can find [the Rust docs for that function here.](https://doc.rust-lang.org/std/fs/fn.read_to_string.html)
+
+```rust
+use comrak::{markdown_to_html, ComrakOptions};
+use std::fs;
+
+fn main() {
+    println!("Opening README \n");
+
+    let file_path = "README.md".to_string();
+    let contents = fs::read_to_string(file_path).expect("Couldn't read file");
+
+    let markdown = markdown_to_html(&contents, &ComrakOptions::default());
+
+    println!("Markdown parsed into HTML \n");
+    println!("{markdown}");
+}
+```
+
+If you run this, you should see the contents of the README file you created — but converted to HTML! Here’s [the commit on Github for reference.](https://github.com/whoisryosuke/rust-markdown-playground/commit/0b197bb4f2c59a64efed4f9788833c61452677de)
+
+## Parsing Markdown to AST
+
+Now that you’ve parsed your Markdown, let’s say you want to do stuff to it before it gets converted to HTML. We could edit the Markdown string, but with long text files this becomes inefficient. And if we’re looking for things like bold text, or links, we’d need to use some sort of regular expression (or [regex](https://docs.rs/regex/latest/regex/)) to find what we need. Instead, we can parse the Markdown into an AST - which is basically an array of all the elements from the Markdown.
+
+For example, one of the most common things you often need to extract from Markdown is “**frontmatter**”. This is metadata you can embed in your Markdown files, like a blog title or post date.
+
+```markdown
+---
+title: README
+url: https://github.com
+---
+```
+
+It’s actually not part of the CommonMark spec, so you’ll often need a 3rd party library to parse it out on top of your Markdown parser. In JavaScript we use [gray-matter](https://www.npmjs.com/package/gray-matter) which converts frontmatter into a JS object we can more easily use.
+
+Luckily, **comrak** offers frontmatter support out of the box! _Kinda_. We’ll still have to additionally parse it 😅
+
+Let’s check out the AST parsing example from the [comrak Github README](https://github.com/markedjs/marked#readme) and add a case to detect frontmatter:
+
+```rust
+use std::fs;
+extern crate comrak;
+use comrak::nodes::{AstNode, NodeValue};
+use comrak::{parse_document, Arena, ComrakOptions};
+
+fn main() {
+    println!("Opening README \n");
+
+    let file_path = "README.md".to_string();
+    let contents = fs::read_to_string(file_path).expect("Couldn't read file");
+
+    println!("Markdown parsed into AST \n");
+
+    // The returned nodes are created in the supplied Arena, and are bound by its lifetime.
+    let arena = Arena::new();
+
+    // Change any default options here for Comrak (parser, extensions, etc)
+    let mut options = &mut ComrakOptions::default();
+    // Enable frontmatter detection
+    options.extension.front_matter_delimiter = Some("---".to_string());
+
+    // The "root" node, which we parse our markdown into
+    let root = parse_document(&arena, &contents, options);
+
+    // Iterate through the nodes (and their children) recursively
+    // We pass the node to the callback provided as the second function param
+    fn iter_nodes<'a, F>(node: &'a AstNode<'a>, f: &F)
+    where
+        F: Fn(&'a AstNode<'a>),
+    {
+        f(node);
+        for c in node.children() {
+            iter_nodes(c, f);
+        }
+    }
+
+    // Call the iterate nodes function
+    iter_nodes(root, &|node| {
+        // Check the value of the node data
+        // This is basically a giant "switch" statement (for my JS peeps)
+        match &mut node.data.borrow_mut().value {
+            // Here we check for the "FrontMatter" enum type
+            NodeValue::FrontMatter(ref mut block) => {
+                // The block is returned as a utf8 integer array (basically letters = numbers)
+                // So we use a method to convert that to a String so we can read it
+                println!(
+                    "Frontmatter: {}",
+                    String::from_utf8(block.to_vec()).unwrap()
+                );
+            }
+            // Other enum types you can play with. Just comment out the `println!`
+            // Got text?
+            &mut NodeValue::Text(ref mut text) => {
+                let orig = std::mem::replace(text, vec![]);
+                // println!("{}", String::from_utf8(orig).unwrap());
+                // *text = String::from_utf8(orig).unwrap().replace("my", "your").as_bytes().to_vec();
+            }
+            _ => (),
+        }
+    });
+
+}
+```
+
+If you add some frontmatter to your `[README.md](http://README.md)` and run this, you should see the frontmatter appear in your shell as a single string (with line breaks and whatnot).
+
+Try playing around and adding more `NodeValue` enum types to the `match` statement to find different data types (like `NodeValue::Link` for links). You could even “mutate” or change these values, like finding and replacing text - or appending text like code snippets.
+
+<aside>
+⚠️ If we wanted to use each property, we’d still need to parse this further, but that starts to reach out of the scope of this beginner tutorial.
+
+</aside>
+
+## Going back to Markdown!
+
+We can convert our Markdown to an AST and HTML — but how do we go from an AST back to Markdown? The comrak library has our back with this one too and offers a `format_commonmark` method. This converts the AST back to “CommonMark” - aka Markdown.
+
+```rust
+use std::fs;
+extern crate comrak;
+use comrak::nodes::{AstNode, NodeValue};
+use comrak::{format_commonmark, format_html, parse_document, Arena, ComrakOptions};
+
+fn main() {
+    println!("Opening README \n");
+
+    let file_path = "README.md".to_string();
+    let contents = fs::read_to_string(file_path).expect("Couldn't read file");
+
+    println!("Markdown parsed into AST \n");
+
+    // The returned nodes are created in the supplied Arena, and are bound by its lifetime.
+    let arena = Arena::new();
+
+    // Change any default options here for Comrak (parser, extensions, etc)
+    let mut options = &mut ComrakOptions::default();
+    // Enable frontmatter detection
+    options.extension.front_matter_delimiter = Some("---".to_string());
+
+    // The "root" node, which we parse our markdown into
+    let root = parse_document(&arena, &contents, options);
+
+    // Iterate through the nodes (and their children) recursively
+    // We pass the node to the callback provided as the second function param
+    fn iter_nodes<'a, F>(node: &'a AstNode<'a>, f: &F)
+    where
+        F: Fn(&'a AstNode<'a>),
+    {
+        f(node);
+        for c in node.children() {
+            iter_nodes(c, f);
+        }
+    }
+
+    // Call the iterate nodes function
+    iter_nodes(root, &|node| {
+        // Check the value of the node data
+        match &mut node.data.borrow_mut().value {
+            NodeValue::SoftBreak => {
+                // println!("Soft break")
+            }
+            NodeValue::LineBreak => {
+                // println!("Line break")
+            }
+            NodeValue::Item(ref mut blocks) => {
+                // dbg!(blocks);
+            }
+            NodeValue::FrontMatter(ref mut block) => {
+                println!(
+                    "Frontmatter: {}",
+                    String::from_utf8(block.to_vec()).unwrap()
+                );
+
+                let raw_frontmatter = String::from_utf8(block.to_vec())
+                    .expect("Couldn't parse frontmatter into string.");
+            }
+            &mut NodeValue::CodeBlock(ref mut block) => {
+                let orig = std::mem::replace(&mut block.literal, vec![]);
+                // println!("Code Block: {}", String::from_utf8(orig).unwrap());
+            }
+            &mut NodeValue::Link(ref mut link) => {
+                let orig = std::mem::replace(&mut link.url, vec![]);
+                // println!("Link: {}", String::from_utf8(orig).unwrap());
+            }
+            &mut NodeValue::Strong => {
+                // println!("Bold text: ");
+            }
+            // Got text?
+            &mut NodeValue::Text(ref mut text) => {
+                let orig = std::mem::replace(text, vec![]);
+                // println!("{}", String::from_utf8(orig).unwrap());
+                // *text = String::from_utf8(orig).unwrap().replace("my", "your").as_bytes().to_vec();
+            }
+            _ => (),
+        }
+    });
+
+    // Output "CommonMark" (aka Markdown) format
+    let mut output = String::new();
+    let mut buffer = File::create("test.txt").expect("Couldn't create output file.");
+    format_commonmark(&root, &options, &mut buffer);
+}
+```
+
+Now we have all the power we need! We can take Markdown, change it (using the AST), and we can return the Markdown or HTML back to the user.
+
+Let’s make a frontend app that’ll let the user write Markdown!
+
+# Markdown Editor using Tauri
+
+At first I considered using a Rust GUI library for creating my app, but I found they were all very unstable and fairly undocumented. Although I’ll admit [Yew](https://yew.rs/) it a solid consideration in the future.
+
+I settled on using [**Tauri**](https://tauri.app/), an Electron alternative written in Rust. It’d let me [write Rust code for the “backend”](https://tauri.app/v1/guides/features/command/) (aka IPC layer in Electron), and the frontend could be in any web-based language I prefer (in this case - React and Typescript).
+
+## Project Setup
+
+The Tauri project setup is very simple thanks to [the fantastic quick start CLI](https://tauri.app/v1/guides/getting-started/setup/).
+
+```bash
+yarn create tauri-app
+```
+
+Once the Tauri app was setup with React, we could also add comrak as a dependency. To do that, we need to open up `src-tauri/Cargo.toml` and add comrak as a dependency (you could also just `cd src-tauri && cargo add comrak`):
+
+```bash
+[package]
+name = "tauri-markdown-editor"
+version = "0.0.0"
+description = "A Tauri App"
+authors = ["you"]
+license = ""
+repository = ""
+edition = "2021"
+rust-version = "1.57"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[build-dependencies]
+tauri-build = { version = "1.1", features = [] }
+
+[dependencies]
+serde_json = "1.0"
+serde = { version = "1.0", features = ["derive"] }
+tauri = { version = "1.1", features = ["api-all"] }
+# Add comrak here
+comrak = "0.14"
+
+[features]
+# by default Tauri runs in production mode
+# when `tauri dev` runs it is executed with `cargo run --no-default-features` if `devPath` is an URL
+default = [ "custom-protocol" ]
+# this feature is used used for production builds where `devPath` points to the filesystem
+# DO NOT remove this
+custom-protocol = [ "tauri/custom-protocol" ]
+```
+
+Here’s [the commit on Github for reference.](https://github.com/whoisryosuke/tauri-markdown-editor/commit/4bf5975727d5aea7bbd0fce34306350e20a3209c)
+
+Once that’s setup, we can create our UI for the user to write.
+
+## Simple text editor
+
+I opened up the `src/App.tsx` and added a `<textarea>` and synced any text changes to React state.
+
+```bash
+import { useState } from "react";
+import reactLogo from "./assets/react.svg";
+import { invoke } from "@tauri-apps/api/tauri";
+import "./App.css";
+
+function App() {
+  const [markdown, setMarkdown] = useState("");
+
+  return (
+    <div className="container">
+      <h1>Welcome to Tauri!</h1>
+
+      <div className="row">
+        <a href="https://vitejs.dev" target="_blank">
+          <img src="/vite.svg" className="logo vite" alt="Vite logo" />
+        </a>
+        <a href="https://tauri.app" target="_blank">
+          <img src="/tauri.svg" className="logo tauri" alt="Tauri logo" />
+        </a>
+        <a href="https://reactjs.org" target="_blank">
+          <img src={reactLogo} className="logo react" alt="React logo" />
+        </a>
+      </div>
+
+      <p>Click on the Tauri, Vite, and React logos to learn more.</p>
+
+      <div className="row">
+        <div>
+          <textarea
+            id="greet-input"
+            onChange={(e) => setMarkdown(e.currentTarget.value)}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default App;
+```
+
+Now that we have a textbox we can write Markdown inside, let’s convert that to HTML to preview.
+
+## Creating a Tauri command
+
+We’ll need to use [Tauri commands](https://tauri.app/v1/guides/features/command/) to communicate between the frontend and backend - and vice versa (similar to [the IPC layer in Electron](https://www.electronjs.org/docs/latest/tutorial/ipc)).
+
+Tauri comes with an example Tauri command called `greet()` already setup, so let’s use that and change it to parse Markdown. Open up `src-tauri/src/main.rs` and change it to the following:
+
+```rust
+#![cfg_attr(
+    all(not(debug_assertions), target_os = "windows"),
+    windows_subsystem = "windows"
+)]
+// Import comrak
+use comrak::{markdown_to_html, ComrakOptions};
+
+// Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
+#[tauri::command]
+fn greet(markdown: &str) -> String {
+    // format!("Hello, {}! You've been greeted from Rust!", name)
+
+		// Parse the markdown text to HTML
+    let html = markdown_to_html(&markdown, &ComrakOptions::default());
+
+    println!("Markdown parsed into HTML \n");
+    println!("{html}");
+
+		// We return the HTML to the frontend (in Rust, we return by omitting the `;`)
+    html
+}
+
+fn main() {
+    tauri::Builder::default()
+				// Here is where we add our Tauri commands to our app
+        .invoke_handler(tauri::generate_handler![greet])
+        .run(tauri::generate_context!())
+        .expect("error while running tauri application");
+}
+```
+
+And in our frontend, let’s create a `<button>` we can press to run the Tauri command. We use the `invoke` function provided by Tauri that’ll call a Tauri command with the same name.
+
+```jsx
+import { useState } from "react";
+import reactLogo from "./assets/react.svg";
+import { invoke } from "@tauri-apps/api/tauri";
+import "./App.css";
+
+function App() {
+  const [html, setHtml] = useState("");
+  const [markdown, setMarkdown] = useState("");
+
+  async function greet() {
+    // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
+    setHtml(await invoke("greet", { markdown }));
+  }
+
+  return (
+    <div className="container">
+      <h1>Welcome to Tauri!</h1>
+
+      <div className="row">
+        <a href="https://vitejs.dev" target="_blank">
+          <img src="/vite.svg" className="logo vite" alt="Vite logo" />
+        </a>
+        <a href="https://tauri.app" target="_blank">
+          <img src="/tauri.svg" className="logo tauri" alt="Tauri logo" />
+        </a>
+        <a href="https://reactjs.org" target="_blank">
+          <img src={reactLogo} className="logo react" alt="React logo" />
+        </a>
+      </div>
+
+      <p>Click on the Tauri, Vite, and React logos to learn more.</p>
+
+      <div className="row">
+        <div>
+          <textarea
+            id="greet-input"
+            onChange={(e) => setMarkdown(e.currentTarget.value)}
+          />
+          <button type="button" onClick={() => greet()}>
+            Convert to HTML
+          </button>
+        </div>
+      </div>
+      <p>{html}</p>
+    </div>
+  );
+}
+
+export default App;
+```
+
+If you type some Markdown into the text box and click the button, it should print out raw HTML representing your Markdown. Here’s [the commit on Github for reference.](https://github.com/whoisryosuke/tauri-markdown-editor/commit/321f5bcfb1c0e370c27b8781d6f70fd74e6b67df)
+
+### But how do we preview the HTML?
+
+If we wanted to preview the HTML, we could use React’s `dangerouslySetInnerHTML` to inject the HTML inside our app:
+
+```jsx
+const createMarkdownMarkup = () => ({
+  __html: html
+})
+
+<div dangerouslySetInnerHTML={createMarkdownMarkup()} />
+```
+
+And ideally, this isn’t as “dangerous” as it sounds, because [Comrak sanitizes the Markdown output for any malicious code](https://github.com/kivikakk/comrak#security) before converting to HTML 👍
+
+We could also update the `onChange` function to run our conversion process, instead of waiting for a button press, so we “instantly” see a live preview. In my case, I do it in a useEffect with a refresh boolean — but it’s all good. _Note, this is a little risky, since the user might be able to break the app, so in production it’d be best to create a cache of the last “working” preview just in case one fails._
+
+```jsx
+import { useEffect, useRef, useState } from "react";
+import reactLogo from "./assets/react.svg";
+import { invoke } from "@tauri-apps/api/tauri";
+import "./App.css";
+
+function App() {
+  const [html, setHtml] = useState("");
+  const [markdown, setMarkdown] = useState("");
+  const [refreshCheck, setRefreshCheck] = useState(false);
+
+  async function greet() {
+    setRefreshCheck(true);
+  }
+
+  useEffect(() => {
+    const parseMarkdown = async () => {
+      setHtml(await invoke("greet", { markdown }));
+      setRefreshCheck(false);
+      console.log("new markdown");
+    };
+    console.log("refreshed");
+    if (refreshCheck) {
+      parseMarkdown();
+      console.log("parsing!");
+    }
+  }, [refreshCheck]);
+
+  const createMarkdownMarkup = () => ({
+    __html: html,
+  });
+
+  const handleTextArea = (e) => {
+    setMarkdown(e.currentTarget.value);
+    setRefreshCheck(true);
+    console.log("need new markdown!");
+  };
+
+  return (
+    <div>
+      <div className="row">
+        <div>
+          <textarea id="greet-input" onChange={handleTextArea} />
+          <button type="button" onClick={() => greet()}>
+            Convert to HTML
+          </button>
+        </div>
+      </div>
+      <div dangerouslySetInnerHTML={createMarkdownMarkup()} />
+    </div>
+  );
+}
+
+export default App;
+```
+
+Here’s [the commit on Github for reference.](https://github.com/whoisryosuke/tauri-markdown-editor/commit/4a3b351509d1ec0b363950c778f4ea42f92a32f6)
+
+# The world is your Markdown
+
+Now you can parse Markdown using Rust, there’s lots of cool stuff you can do! From CLIs to UI apps, you can make tools that help people use Markdown. And ideally, this will run faster than most other implementations (like Electron apps) because it’s running in Rust _(unless you can write Markdown tooling in C or something)_.
+
+I hope this helped you understand some Rust fundamentals and new techniques to use down the line.
+
+As always, if you have any questions or make something using this guide, [tag me on Twitter](https://twitter.com/whoisryosuke). I’d love to help or see what cool stuff you’re hacking on.
+
+**You can find the complete code for this post in [my tauri-markdown-editor repo](https://github.com/whoisryosuke/tauri-markdown-editor).**
+
+Stay regular!
+Ryo

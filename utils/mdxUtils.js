@@ -1,11 +1,37 @@
-import fs from 'fs'
-import path from 'path'
+import fs from "fs";
+import path from "path";
+
+const getFiles = async (dir) => {
+  const folders = await fs.readdirSync(dir);
+
+  const files = await folders.reduce(async (waitFiles, folder) => {
+    // We have to await the accumulator here because function is async
+    let allFiles = await waitFiles;
+    // The full file path
+    const fullPath = `${dir}/${folder}`;
+
+    // Is it a folder? Recursively loop
+    if (fs.existsSync(fullPath) && fs.lstatSync(fullPath).isDirectory()) {
+      const folderFiles = await getFiles(fullPath);
+      allFiles = [...allFiles, ...folderFiles];
+    }
+    // Only add MDX files
+    if (/\.mdx?$/.test(folder)) {
+      allFiles.push(fullPath);
+    }
+    return allFiles;
+  }, []);
+
+  return files;
+};
+
+const getPosts = async () => {
+  const files = await getFiles(POSTS_PATH);
+  return files;
+};
 
 // POSTS_PATH is useful when you want to get the path to a specific file
-export const POSTS_PATH = path.join(process.cwd(), 'posts')
+export const POSTS_PATH = path.join(process.cwd(), "content");
 
 // postFilePaths is the list of all mdx files inside the POSTS_PATH directory
-export const postFilePaths = fs
-  .readdirSync(POSTS_PATH)
-  // Only include md(x) files
-  .filter((path) => /\.mdx?$/.test(path))
+export const postFilePaths = await getPosts();

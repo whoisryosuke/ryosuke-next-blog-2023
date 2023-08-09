@@ -1,0 +1,1028 @@
+---
+title: Render Pipelines in wgpu and Rust
+date: "2022-11-18"
+section: blog
+tags: ["rust", "3d", "game dev", "wgpu", "webgpu", "graphics"]
+cover_image: "./render-pipelines-in-wgpu-and-rust.png"
+
+layout: "@/layouts/BlogLayout.astro"
+---
+
+I finished [this great wgpu tutorial](https://sotrh.github.io/learn-wgpu/) that gets you up and running with WebGPU and Rust using the wgpu crate. It teaches you to setup the graphic context and render pipeline, import and render a textured model, and even add lighting. [You can see the end result in this video.](https://twitter.com/whoisryosuke/status/1578653432872767488?s=20&t=MiuU4lI6Idu1bnkHM2TuNA)
+
+Afterwards though, you end up with a few modules, but most of the code is in one giant file. In a real application, you’d probably split up a lot of the functionality happening into reusable modules. I started to ask myself: how would I render multiple models with different textures — or an _entire scene_?
+
+I thought I’d share my approach as I take the wgpu tutorial code and refactor it. We’ll split the functionality out and build in an architecture to allow for a flat scene of 3D models. I’ll even sprinkle in a little bit of nested scene architecture. This process helped me (and hopefully you) attain a deeper understanding of the render pipeline and how each component works together.
+
+TLDR?: [Here’s the final code.](https://github.com/whoisryosuke/wgpu-hello-world/tree/ecs-setup)
+
+> This is part of a series on wgpu in Rust. Find more posts in [the #wgpu tag](https://whoisryosuke.com/tags/#wgpu).
+
+![Screenshot of the final wgpu Rust app with a grid of 3D bananas and 2 cubes rendered in different colors](./vlcsnap-2022-11-18-17h40m48s262.png)
+
+# Research
+
+Before I set off on the journey of refactoring, I looked for other wgpu projects to see how they structured their app architecture. I found 2 great examples that I primarily referenced - both with “b” names funnily enough: [baryon](https://github.com/kvark/baryon/) and [bevy](https://bevyengine.org/).
+
+**[baryon](https://github.com/kvark/baryon)** is a lightweight toy renderer for prototyping 3D applications in Rust. It uses wgpu to render 3D elements, hecs for an ECS system (to make a scene with “entities” like 3D models), and winit for handling cross-platform window management (just like [the wgpu tutorial](https://sotrh.github.io/learn-wgpu/)). It also allows for setting different “render passes”, like a Phong (”cartoony”/fast) vs PBR (”realistic”) pass.
+
+Bevy is an entire game engine for creating 2D or 3D games in Rust. It uses wgpu for rendering everything, and a few other dependencies - [mostly their own crates](https://github.com/bevyengine/bevy/tree/main/crates). It’s not “fully featured” like Unity or Godot since it’s so early — but it’s jam-packed with a lot of great functionality (like most recently — [compute shaders](https://www.youtube.com/watch?v=v256-eRzak4)).
+
+I ended up referring to baryon more, because the codebase was much smaller and simpler. But bevy was a great alternate reference for specific functionality (like [figuring out how to render primitives](https://whoisryosuke.com/blog/2022/primitive-geometry-in-wgpu-and-rust) - or _soon_, parsing and rendering different 3D file formats).
+
+## Breaking down baryon
+
+I won’t go too deep here, but I want to quickly overview the architecture of Baryon to see what we can takeaway for our own app.
+
+The best place to start is [the library’s simplest example](https://github.com/kvark/baryon/blob/main/examples/scene.rs) to understand the shape of the API and kind of functions we’ll see run.
+
+- A `Window` is created and built (likely using [the builder pattern](https://rust-unofficial.github.io/patterns/patterns/creational/builder.html)) [(L#9)](https://github.com/kvark/baryon/blob/main/examples/scene.rs#L9)
+- `Context` is initialized using a reference to the window, and we use `pollster` to block the main thread from stopping [(L#10)](https://github.com/kvark/baryon/blob/main/examples/scene.rs#L10)
+- A `Scene` is created. [(L#11)](https://github.com/kvark/baryon/blob/main/examples/scene.rs#L11)
+- A `Camera` is created with initial data (like [a position](https://github.com/kvark/baryon/blob/main/examples/scene.rs#L18) and clear color)
+- Then the scene is populated with a light and 2 primitive entities.
+- We create a [“render pass”](https://developer.arm.com/documentation/102479/0100/How-Render-Passes-Work) - in this case a Phong pass [(L#42)](https://github.com/kvark/baryon/blob/main/examples/scene.rs#L42)
+- Now the magic happens — we `run` the `Window` method, which creates a infinite loop that we can render inside by matching the `Event::Draw` enum.
+- Inside the draw event, we use the `Context` to `present` (or likely ”render” our scene)
+
+That’s it! Not too bad. But there’s a bit happening behind the scenes to make this code look so short and elegant. You can also see some _similar_ modules from the wgpu tutorial, like the `Camera`.
+
+My goal was to use baryon as inspiration, but not just copy paste. I wanted to truly refactor the app and experience why and how baryon author got to their code (or end up on my own path if needed). It’ll be hard to convey everything I learned, so I highly recommend doing something like this as an exercise, especially if you want to learn more advanced Rust (like me).
+
+# The Process
+
+We’ll break down the app into a few different parts:
+
+- Window
+- Context
+- Render Pass
+
+I tried to keep the commits fairly organized, so feel free to [cruise through the commits](https://github.com/whoisryosuke/wgpu-hello-world/commits/ecs-setup) to get a clearer picture if needed.
+
+## The “gimmes”
+
+The wgpu tutorial did a great job of modularizing some of the code already, like the `Camera` or `Instance` structs. We can take those and separate them into their own modules to clean up the library file a bit. Here are the commits for [Camera](https://github.com/whoisryosuke/wgpu-hello-world/commit/2d5645bd69f4173e4d3e9797d16bb4cf5ffaf7c6) and [Instance](https://github.com/whoisryosuke/wgpu-hello-world/commit/a25871a80f910d7a340e7639c3855fd0ec3f0233). Great practice for basic understanding Rust modules.
+
+## Window
+
+This was probably the easiest module to pull out. I grabbed all the initialization methods at the top of the app and put them into a `Window` struct.
+
+```rust
+use winit::{
+    event::*,
+    event_loop::{ControlFlow, EventLoop, EventLoopWindowTarget},
+    window,
+};
+
+pub struct Window {
+    pub event_loop: EventLoop<()>,
+    pub window: window::Window,
+}
+
+impl Window {
+    pub fn new() -> Self {
+        // TODO: Add size
+        let event_loop = EventLoop::new();
+        let window = window::WindowBuilder::new()
+            .with_title("ryos wgpu playground")
+            .build(&event_loop)
+            .unwrap();
+
+        Self { event_loop, window }
+    }
+}
+```
+
+Then in the app, we could initialize the new `Window` struct and use the `window` reference we store inside:
+
+```rust
+let window = Window::new();
+// Later in the app
+window.window.set_inner_size(PhysicalSize::new(450, 400));
+```
+
+This worked great, but we get left with our event loop code (`window.event_loop`) outside the `Window` struct. And there’s [a lot of boilerplate code happening](https://github.com/whoisryosuke/wgpu-hello-world/blob/ebff432b5e9c9c9143bb3f267043e95000d333c9/src/lib.rs#L581-L632) that could be moved into the `Window` struct. So let’s do that ([commit for reference](https://github.com/whoisryosuke/wgpu-hello-world/commit/daa6413b6581be01ddf3096a104cff303ae73ad5)).
+
+First we have to create some window “events” to match inside our render loop. These are just `winit` events we pass down, like the window resizing, or keyboard events:
+
+```rust
+pub enum WindowEvents {
+    Resized {
+        width: u32,
+        height: u32,
+    },
+    Keyboard {
+        state: ElementState,
+        virtual_keycode: Option<VirtualKeyCode>,
+    },
+    Draw,
+}
+```
+
+I tried not to create new keyboard events like baryon, and just keep it simple by using the types provided by `winit` - like `VirtualKeyCode`.
+
+Now we need a method to “run” our window loop. And it needs to accept a callback function that gets the window event enums we just created. I looked up how to do a callback function parameter in Rust and it was recommend to use the `Fn()` or `FnMut()` types to wrap the result you return (the enum in this case `WindowEvents`). Rust did not like this…
+
+```rust
+// 🚫 Compiler error!
+pub fn run(self, mut callback: FnMut(WindowEvents) -> ()) {
+```
+
+I ended up doing essentially the same function signature as the baryon project because the Rust compiler suggested it 😅 — using the `impl 'static +` prefix:
+
+```rust
+pub fn run(self, mut callback: impl 'static + FnMut(WindowEvents) -> ()) {
+```
+
+Once I figured that out, it was just a matter of [copying/pasting the giant event loop](https://github.com/whoisryosuke/wgpu-hello-world/blob/daa6413b6581be01ddf3096a104cff303ae73ad5/src/window.rs#L36-L91) in the `Window.run()` method and adding the callback param.
+
+Now in the app, the window loop looked much cleaner ✨:
+
+```rust
+window.run(move |event| match event {
+    WindowEvents::Resized { width, height } => {
+        state.resize(winit::dpi::PhysicalSize { width, height });
+    }
+    WindowEvents::Draw => {
+        state.update();
+        state.render();
+    }
+    WindowEvents::Keyboard {
+        state,
+        virtual_keycode,
+    } => {}
+});
+```
+
+Now that we have a window setup, let’s move on to the graphical context.
+
+## Context
+
+This was was fairly simple (at first). Since we’d be splitting our app into a context and a “render pass”, the logic for the context itself is very short.
+
+We basically initialize the context (the “**surface**” we draw on, the “**device**” we use, the “**queue**” we schedule draws with, and the “**config**” of the surface) and keep it around using the struct. More of the good ol’ copy paste basically, and making sure the `GraphicsContext` struct types were correct.
+
+```rust
+use crate::{texture, window::Window};
+
+pub struct GraphicsContext {
+    // Graphic context
+    pub surface: wgpu::Surface,
+    pub device: wgpu::Device,
+    pub queue: wgpu::Queue,
+    pub config: wgpu::SurfaceConfiguration,
+}
+
+impl GraphicsContext {
+    pub async fn new(window: &Window) -> GraphicsContext {
+        let size = &window.window.inner_size();
+
+        // The instance is a handle to our GPU
+        // BackendBit::PRIMARY => Vulkan + Metal + DX12 + Browser WebGPU
+        let instance = wgpu::Instance::new(wgpu::Backends::all());
+        let surface = unsafe { instance.create_surface(&window.window) };
+        let adapter = instance
+            .request_adapter(&wgpu::RequestAdapterOptions {
+                power_preference: wgpu::PowerPreference::default(),
+                compatible_surface: Some(&surface),
+                force_fallback_adapter: false,
+            })
+            .await
+            .unwrap();
+
+        // Select a device to use
+        let (device, queue) = adapter
+            .request_device(
+                &wgpu::DeviceDescriptor {
+                    label: None,
+                    features: wgpu::Features::empty(),
+                    // WebGL doesn't support all of wgpu's features, so if
+                    // we're building for the web we'll have to disable some.
+                    limits: if cfg!(target_arch = "wasm32") {
+                        wgpu::Limits::downlevel_webgl2_defaults()
+                    } else {
+                        wgpu::Limits::default()
+                    },
+                },
+                // Some(&std::path::Path::new("trace")), // Trace path
+                None,
+            )
+            .await
+            .unwrap();
+
+        // Config for surface
+        let config = wgpu::SurfaceConfiguration {
+            usage: wgpu::TextureUsages::RENDER_ATTACHMENT,
+            format: surface.get_supported_formats(&adapter)[0],
+            width: size.width,
+            height: size.height,
+            present_mode: wgpu::PresentMode::Fifo,
+        };
+        surface.configure(&device, &config);
+
+        GraphicsContext {
+            surface,
+            device,
+            queue,
+            config,
+        }
+    }
+}
+```
+
+For the time being, I also copied the `create_render_pipeline` function into the module, since it seemed like a good place _(in hindsight, better alternative might be the render pass module)._
+
+Here’s [the full commit for reference.](https://github.com/whoisryosuke/wgpu-hello-world/commit/76cfcd50a42a28ee68ee6a6ab9ff164a153a7213)
+
+This is so easy! lol. Not exactly… But we’re moving past a lot the copy + paste stuff now. Time to figure out the render pass.
+
+## Render pass
+
+This was the most puzzling part to figure out. What exactly is a render pass in wgpu terms? Why do you need different kinds? Where does it start and end (depth texture, pipeline, buffers, etc)? How would I dynamically swap between one render pipeline and another? There were lots of basic questions that I had to research a bit before being able to answer.
+
+### What is a render pass?
+
+A [render pass](https://docs.rs/wgpu/0.12.0/wgpu/struct.RenderPass.html) usually represents a single “pass” of the renderer, using a specific rendering pipeline. [This article does a great job of breaking it down.](https://developer.arm.com/documentation/102479/0100/How-Render-Passes-Work)
+
+In most 3D engines, there are often several render passes that combine or “composite” into the final image. You can see [in the Unreal Engine documentation](https://docs.unrealengine.com/4.27/en-US/AnimatingObjects/Sequencer/HighQualityMediaExport/RenderSettings/RenderPasses/) that they do separate render passes for **lighting**, **shadows**, **reflections**, and the **unlit models**. Or in [the Godot docs](https://docs.godotengine.org/en/stable/tutorials/shaders/custom_postprocessing.html), you can see post processing as a render pass.
+
+[This video breaks down the rendering process for 10 PS2 games](https://youtu.be/q403hdH_S6c?list=PLUGDC1tkjMjd0nlzSNF4Mz2-5FnrCuKK2&t=73) - if you go to Metal Gear Solid or Okami section you can see that they render the all the models and lighting, then spend a few passes on post processing effects. If you want to learn more about the process of breaking down the rendering pipeline, I recommend checking out [RenderDocs](https://renderdoc.org/docs/getting_started/quick_start.html).
+
+![Screenshot of the render breakdown of Okami - before post processing render pass](./Untitled.png)
+
+![Screenshot of the render breakdown of Okami - after post processing render pass is applied](./Untitled%201.png)
+
+It gets even more complex when you go into the parts of a render pass, [like depth stencils](https://sotrh.github.io/learn-wgpu/beginner/tutorial8-depth/#sorting-from-back-to-front), but for now we’ll focus on the high level.
+
+### The render pass came from inside the house
+
+**But let’s take a few steps back**. During the wgpu tutorial, we actually created 2 separate render passes _whether you realized or not_.
+
+If you look at the tutorial code, we draw the lights - then the 3D models. This process happens by setting a specific render pipeline (lighting or 3D models), doing the draw calls, then rinse repeat with another pipeline (3D models in this case).
+
+```rust
+// Setup lighting pipeline
+render_pass.set_pipeline(&self.light_render_pipeline);
+// Draw/calculate the lighting on models
+render_pass.draw_light_model(
+    &self.obj_model,
+    &self.camera_bind_group,
+    &self.light_bind_group,
+);
+
+// Setup 3D model pipeline
+render_pass.set_pipeline(&self.render_pipeline);
+// Draw the models
+render_pass.draw_model_instanced(
+    &self.obj_model,
+    0..self.instances.len() as u32,
+    &self.camera_bind_group,
+    &self.light_bind_group,
+);
+```
+
+Why does this matter though (beyond giving us “stacked” effects like lighting, shadows, or post-FX)? As you can see in the example above, the render pipeline is also important to this process. With 2 different pipelines, we get 2 shaders running (the `light.wgsl` and the main shader).
+
+### What is the render pipeline?
+
+The [render pipeline](https://docs.rs/wgpu/0.12.0/wgpu/struct.RenderPipeline.html) is in charge of understanding the **pipeline layout** (aka any “uniforms” or data we pass to shaders), the **shaders** we’ll use (vertex, fragment, compute, etc) - as well as the **shader code** to run (`.wgsl` files). It also has configurations for how to render the elements, like the `cull_mode` which can avoid rendering the “back” of models the camera would never see (to save rendering time).
+
+The big thing we can takeaway from the render pipeline is that it defines the **uniforms** (all the variables we send to shader) — and the actual shader itself.
+
+### Why does the render pipeline matter?
+
+So let’s say we want to render our 3D scene with a different shader, like a **“toon” shader**. What if the shader also required new input (or “uniforms”), like a color or positional data (to help calculate an outline)?
+
+![[From Cel Shader wiki](https://en.wikipedia.org/wiki/Cel_shading#/media/File:Toon-shader.jpg)](./Untitled%202.png)
+
+[From Cel Shader wiki](https://en.wikipedia.org/wiki/Cel_shading#/media/File:Toon-shader.jpg)
+
+We’d need a whole new pipeline to accomplish this, since our current pipeline doesn’t accommodate for the new uniforms (color + position), and we need to use a different shader file to instruct the pipeline differently.
+
+Sometimes you might even want to do this as a stacked effect (e.g. for post processing). The ability to be able to modularly define a render pass and a pipeline is essential for this.
+
+## Creating render passes
+
+In this example I’ll focus on creating [a “Phong” pass](https://en.wikipedia.org/wiki/Phong_shading). Later you could create [a PBR (physically based rendering) pass.](https://github.com/kvark/baryon/blob/main/src/pass/real.rs)
+
+Keep in mind though, **this won’t actually be a Phong shader…** I’m just using that as a placeholder name. We’ll be migrating the existing render pipeline and shader from the wgpu tutorial.
+
+To start, I basically took all the relevant initialization code and [shoved it in a new struct](https://github.com/whoisryosuke/wgpu-hello-world/blob/76cfcd50a42a28ee68ee6a6ab9ff164a153a7213/src/pass/phong.rs) called `PhongPass`. Inside each pass struct we’d store:
+
+- Depth texture
+- Bind groups (the uniform “structure”)
+- Render pipelines
+- Buffers for uniform data
+- Uniform data (optional - could be app-level)
+
+We still need to [migrate the render/draw method](https://github.com/whoisryosuke/wgpu-hello-world/commit/98d83d5a55cfa2b0114a4768a9f2c3f32c0113db) with the actual render pass.
+
+Because we want to make multiple render passes, we need to create a `Trait` to define some shared functionality they can all implement. In the `pass/mod.rs` file, I created a `Pass` trait that has a `draw` function. We provide it all the parameters it needs (mostly from the `GraphicsContext` and the `obj_model` we’ll be rendering).
+
+```rust
+pub trait Pass {
+    fn draw(
+        &mut self,
+        surface: &Surface,
+        device: &Device,
+        queue: &Queue,
+        obj_model: &Model,
+    ) -> Result<(), wgpu::SurfaceError>;
+}
+```
+
+And you guessed it - for now lets just [throw most of the render code in there](https://github.com/whoisryosuke/wgpu-hello-world/blob/98d83d5a55cfa2b0114a4768a9f2c3f32c0113db/src/pass/phong.rs) from our `[lib.rs](http://lib.rs)` file:
+
+```rust
+impl Pass for PhongPass {
+    fn draw(
+        &mut self,
+        surface: &Surface,
+        device: &Device,
+        queue: &Queue,
+        obj_model: &Model,
+    ) -> Result<(), wgpu::SurfaceError> {
+				let output = surface.get_current_texture()?;
+        let view = output
+            .texture
+            .create_view(&wgpu::TextureViewDescriptor::default());
+
+        let mut encoder = device.create_command_encoder(&wgpu::CommandEncoderDescriptor {
+            label: Some("Render Encoder"),
+        });
+
+        {
+            let mut render_pass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
+                label: Some("Render Pass"),
+                color_attachments: &[Some(wgpu::RenderPassColorAttachment {
+                    view: &view,
+                    resolve_target: None,
+                    ops: wgpu::Operations {
+                        // Set the clear color during redraw
+                        // This is basically a background color applied if an object isn't taking up space
+                        load: wgpu::LoadOp::Clear(wgpu::Color {
+                            r: 0.1,
+                            g: 0.2,
+                            b: 0.3,
+                            a: 1.0,
+                        }),
+                        store: true,
+                    },
+                })],
+                // Create a depth stencil buffer using the depth texture
+                depth_stencil_attachment: Some(wgpu::RenderPassDepthStencilAttachment {
+                    view: &self.depth_texture.view,
+                    depth_ops: Some(wgpu::Operations {
+                        load: wgpu::LoadOp::Clear(1.0),
+                        store: true,
+                    }),
+                    stencil_ops: None,
+                }),
+            });
+
+						// ...truncated
+```
+
+Nice! Now we have a good structure to work with. Our app’s render function becomes as simple as:
+
+```rust
+self.pass.draw(
+    &self.ctx.surface,
+    &self.ctx.device,
+    &self.ctx.queue,
+    &self.obj_model,
+);
+```
+
+This app should work exactly the same as before — but a lot of our functionality has been split into it’s own module. Now we can do the cool stuff, like rendering more than one model.
+
+![Screenshot of the native wgpu Rust app rendering a grid of 3D bananas](./Untitled%203.png)
+
+So what’s missing from rendering multiple models now? We currently have one buffer for our instance data (`instance_buffer`), so if we tried to use `self.pass.draw()` with another 3D model, they’d share the exact same positions (and number of instances).
+
+In order to have different positions, we need to have a buffer setup for each object and [use that as a vertex buffer](https://github.com/whoisryosuke/wgpu-hello-world/blob/a25871a80f910d7a340e7639c3855fd0ec3f0233/src/lib.rs#L514) when we render each model.
+
+We also currently do things like pass the camera and light uniform data every time we render an object. Instead, we could batch them into a combined uniform (or bind group) and define them only once (”globally”).
+
+## Local vs global uniforms
+
+This is a concept that may be familiar to you if you use other 3D engines. There are shader uniforms that are used by all the shaders (like the camera position), and there are other uniforms that are “local” to the object (like it’s position, color, normals, etc).
+
+It’s a little confusing in our app though, because we setup instancing for models, so our “local” uniform data (like position) is stored there instead. But [we do have “local” uniforms](https://github.com/whoisryosuke/wgpu-hello-world/blob/98d83d5a55cfa2b0114a4768a9f2c3f32c0113db/src/shader.wgsl#L86-L89) in the form of our texture data.
+
+So my goal was to take the camera bind group and make it a “global” bind group. I’d also include the texture sampler in the global uniforms (instead of locals, like we do now), so we don’t waste buffer space on duplicate data.
+
+We’ll also create a “local” bind group. This will contain our object data. You might think we don’t need a position uniform here (since our instances each have a position) — but we could use this position to “offset” all our instances (like a `<group>` in ThreeJS or a `GameObject` in Unity that have child objects).
+
+```rust
+#[repr(C)]
+#[derive(Clone, Copy, bytemuck::Pod, bytemuck::Zeroable)]
+struct Globals {
+    view_position: [f32; 4],
+    view_proj: [[f32; 4]; 4],
+    ambient: [f32; 4],
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, bytemuck::Pod, bytemuck::Zeroable)]
+struct Locals {
+    position: [f32; 4],
+    color: [f32; 4],
+    normal: [f32; 4],
+    lights: [f32; 4],
+}
+```
+
+> _One note: We store the lights in `Locals` here (I think baryon does similar) - but might be better to lift them to `Globals`._
+
+### Setting up the global + local uniforms
+
+Now to use these uniforms we need to create a **bind group layout** to describe the data structure, a **buffer** to transmit data, and a **bind group** using the layout and buffer.
+
+Since we want to support multiple objects, we’ll also need a way to store multiple buffers and bind groups (since every object will have unique data - like position or color). To do that, we use `HashMap` to store the bind groups and buffers, and keep track using the object’s “ID” (aka a number or `usize`).
+
+> _Note: In this commit/version, I only have 1 uniform buffer, because we don’t have multiple objects yet. We’ll do something special later to handle that._
+
+```rust
+pub struct PhongPass {
+    // Uniforms
+    pub global_bind_group_layout: BindGroupLayout,
+    pub global_uniform_buffer: wgpu::Buffer,
+    pub global_bind_group: wgpu::BindGroup,
+    pub local_bind_group_layout: BindGroupLayout,
+    local_uniform_buffer: wgpu::Buffer,
+    local_bind_groups: HashMap<usize, wgpu::BindGroup>,
+		// Other properties
+}
+
+impl PhongPass {
+	pub fn new(
+        phong_config: &PhongConfig,
+        device: &wgpu::Device,
+        queue: &wgpu::Queue,
+        config: &wgpu::SurfaceConfiguration,
+        camera: &Camera,
+    ) -> PhongPass {
+		// Other stuff
+
+		// Initialize global uniforms
+		let global_size = mem::size_of::<Globals>() as wgpu::BufferAddress;
+	  let global_bind_group_layout =
+	      device.create_bind_group_layout(&wgpu::BindGroupLayoutDescriptor {
+	          label: Some("[Phong] Globals"),
+	          entries: &[
+	              // Global uniforms
+	              wgpu::BindGroupLayoutEntry {
+	                  binding: 0,
+	                  visibility: wgpu::ShaderStages::VERTEX | wgpu::ShaderStages::FRAGMENT,
+	                  ty: wgpu::BindingType::Buffer {
+	                      ty: wgpu::BufferBindingType::Uniform,
+	                      has_dynamic_offset: false,
+	                      min_binding_size: wgpu::BufferSize::new(global_size),
+	                  },
+	                  count: None,
+	              },
+	              // Lights
+	              wgpu::BindGroupLayoutEntry {
+	                  binding: 1,
+	                  visibility: wgpu::ShaderStages::FRAGMENT,
+	                  ty: wgpu::BindingType::Buffer {
+	                      ty: wgpu::BufferBindingType::Uniform,
+	                      has_dynamic_offset: false,
+	                      min_binding_size: wgpu::BufferSize::new(light_size),
+	                  },
+	                  count: None,
+	              },
+	              // Sampler for textures
+	              wgpu::BindGroupLayoutEntry {
+	                  binding: 2,
+	                  visibility: wgpu::ShaderStages::FRAGMENT,
+	                  ty: wgpu::BindingType::Sampler(wgpu::SamplerBindingType::Filtering),
+	                  count: None,
+	              },
+	          ],
+	      });
+
+	  // Global uniform buffer
+	  let global_uniform_buffer = device.create_buffer(&wgpu::BufferDescriptor {
+	      label: Some("[Phong] Globals"),
+	      size: global_size,
+	      usage: wgpu::BufferUsages::UNIFORM | wgpu::BufferUsages::COPY_DST,
+	      mapped_at_creation: false,
+	  });
+		let global_bind_group = device.create_bind_group(&wgpu::BindGroupDescriptor {
+	            label: Some("[Phong] Globals"),
+	            layout: &global_bind_group_layout,
+	            entries: &[
+	                wgpu::BindGroupEntry {
+	                    binding: 0,
+	                    resource: global_uniform_buffer.as_entire_binding(),
+	                },
+	                wgpu::BindGroupEntry {
+	                    binding: 1,
+	                    resource: light_buffer.as_entire_binding(),
+	                },
+	                wgpu::BindGroupEntry {
+	                    binding: 2,
+	                    resource: wgpu::BindingResource::Sampler(&sampler),
+	                },
+	            ],
+	        });
+	}
+}
+```
+
+We add the bind group layout to our pipeline layout:
+
+```rust
+// Setup the render pipeline
+let pipeline_layout = device.create_pipeline_layout(&wgpu::PipelineLayoutDescriptor {
+    label: Some("[Phong] Pipeline"),
+    bind_group_layouts: &[&global_bind_group_layout, &local_bind_group_layout],
+    push_constant_ranges: &[],
+});
+```
+
+And then in [our draw method and render pass](https://github.com/whoisryosuke/wgpu-hello-world/blob/e461c5e590ec586262ee112986a71a0859a334f3/src/pass/phong.rs#L463-L491), we can set the globals first, then the locals. Later, we’ll loop over all objects in the scene and create bind groups and buffers for each object.
+
+```rust
+render_pass.set_bind_group(0, &self.global_bind_group, &[]);
+
+self.local_bind_groups.entry(0).or_insert_with(|| {
+    device.create_bind_group(&wgpu::BindGroupDescriptor {
+        label: Some("[Phong] Locals"),
+        layout: &self.local_bind_group_layout,
+        entries: &[
+            wgpu::BindGroupEntry {
+                binding: 0,
+                resource: self.local_uniform_buffer.as_entire_binding(),
+            },
+            wgpu::BindGroupEntry {
+                binding: 1,
+                resource: wgpu::BindingResource::TextureView(
+                    &obj_model.materials[0].diffuse_texture.view,
+                ),
+            },
+        ],
+    })
+});
+```
+
+And we’ll also need to update our shader to accept the `Globals` now from the correct bind group binding index:
+
+```rust
+// Define any uniforms we expect from app
+struct Globals {
+    view_pos: vec4<f32>,
+    view_proj: mat4x4<f32>,
+    ambient: vec4<f32>,
+};
+// We create variables for the bind groups
+@group(0) @binding(0)
+var<uniform> globals: Globals;
+```
+
+You can see [the full commit here.](https://github.com/whoisryosuke/wgpu-hello-world/commit/e461c5e590ec586262ee112986a71a0859a334f3)
+
+### Writing to the buffer
+
+So how do we update the uniforms? The answer is to use the `Queue`’s `write_buffer()` method to update a specific buffer (like `global_uniform_buffer`) with the new data. We also need to cast the data into a buffer friendly data format using `bytemuck`.
+
+In our app file we can update the camera position like so:
+
+```rust
+self.ctx.queue.write_buffer(
+    &self.pass.global_uniform_buffer,
+    0,
+    bytemuck::cast_slice(&[self.pass.camera_uniform]),
+);
+```
+
+[See the full commit here.](https://github.com/whoisryosuke/wgpu-hello-world/commit/86b08015fcb342ee7262e5b96e15fac4de71d20d)
+
+## Multiple models
+
+We finally made it. It took a lot of setup to get here, but I promise, it was worth it. Now it should be much easier to change our system and render 2 models (or more!).
+
+In our app, let’s change our `obj_model` property to `models` and make it a `Vec`. This will let us store as many models as we need, and even change the size of the vector dynamically throughout the app (to add or remove models).
+
+```rust
+models: Vec<model::Model>,
+```
+
+Then in our app initialization, we can copy paste our `obj_model` code using the `load_model()` function. Make sure to set a different `.obj` model.
+
+```rust
+let obj_model = resources::load_model("banana.obj", &ctx.device, &ctx.queue)
+    .await
+    .expect("Couldn't load model. Maybe path is wrong?");
+let cube_model = resources::load_model("cube.obj", &ctx.device, &ctx.queue)
+    .await
+    .expect("Couldn't load model. Maybe path is wrong?");
+
+let models = vec![obj_model, cube_model];
+```
+
+And in the render method, let’s update the render pass draw call to use the `models` instead of `obj_model`:
+
+```rust
+self.pass.draw(
+    &self.ctx.surface,
+    &self.ctx.device,
+    &self.ctx.queue,
+    &self.models,
+);
+```
+
+And make sure to change that function signature in the `Pass` trait and the `PhongPass` implementation of the trait and function.
+
+```rust
+pub trait Pass {
+    fn draw(
+        &mut self,
+        surface: &Surface,
+        device: &Device,
+        queue: &Queue,
+				// 👇 Use the vector of models here
+        models: &Vec<Model>,
+    ) -> Result<(), wgpu::SurfaceError>;
+}
+```
+
+And in the `PhongPass` draw method, we can loop through the models and render each of them. But before we draw them - we need to create the bind group for each object. And when we create the bind group, we also assign each objects texture.
+
+> _Note: We do this in a separate loop because of Rust mutability, but you could probably get away with 1 loop and wrapping the bind group assignment in a block._
+
+```rust
+let mut model_index = 0;
+for model in models {
+    self.local_bind_groups
+        .entry(model_index)
+        .or_insert_with(|| {
+            device.create_bind_group(&wgpu::BindGroupDescriptor {
+                label: Some("[Phong] Locals"),
+                layout: &self.local_bind_group_layout,
+                entries: &[
+                    wgpu::BindGroupEntry {
+                        binding: 0,
+                        resource: self.local_uniform_buffer.as_entire_binding(),
+                    },
+                    wgpu::BindGroupEntry {
+                        binding: 1,
+                        resource: wgpu::BindingResource::TextureView(
+                            &model.materials[0].diffuse_texture.view,
+                        ),
+                    },
+                ],
+            })
+        });
+
+    model_index += 1;
+}
+
+model_index = 0;
+for model in models {
+    // Draw the models
+    render_pass.draw_model_instanced(
+        &model,
+        0..*&self.instances.len() as u32,
+        &self.local_bind_groups[&model_index],
+    );
+
+    model_index += 1;
+}
+```
+
+[See the full commit here.](https://github.com/whoisryosuke/wgpu-hello-world/commit/e90c167dbed64833c67d02721e3f15c607c8ef34)
+
+This should get multiple objects rendering in the scene. But you’ll notice a couple problems. Both objects are in the same positions! This is because we don’t set an instance buffer per-object, we do it once and then render all objects (so they use the same one). We also haven’t wired up our locals yet, and if you look close, we’re using the same buffer for all objects there too.
+
+![Screenshot of the native wgpu Rust app rendering a grid of 3D bananas and cubes in the same positions](./Untitled%204.png)
+
+### Multiple instance buffers
+
+So let’s add the ability to have multiple instance buffers. It’ll look very similar to our bind group setup.
+
+The first thing we need to do is define a new type to combine our `Model` and `Instances` types. We can name it `Node` (but `Element`, `Entity`, etc are all good). I created a separate file for it (since we might use it across the app). The parent property is for creating nesting later.
+
+```rust
+pub struct Node {
+    pub parent: u32,
+    // local: Matrix?
+    pub model: model::Model,
+    pub instances: Vec<Instance>,
+}
+```
+
+Now instead of having a `Vec<Model>` - we have a `Vec<Node>`. And when we initialize our models, we need to provide separate instance data:
+
+```rust
+let cube_instances = (0..2)
+    .map(|z| {
+        let z = SPACE_BETWEEN * (z as f32);
+        let position = cgmath::Vector3 { x: z, y: 1.0, z };
+        let rotation = if position.is_zero() {
+            cgmath::Quaternion::from_axis_angle(cgmath::Vector3::unit_z(), cgmath::Deg(0.0))
+        } else {
+            cgmath::Quaternion::from_axis_angle(position.normalize(), cgmath::Deg(45.0))
+        };
+        Instance { position, rotation }
+    })
+    .collect::<Vec<_>>();
+
+let banana_node = Node {
+    parent: 0,
+    model: obj_model,
+    instances: banana_instances,
+};
+
+let cube_node = Node {
+    parent: 0,
+    model: cube_model,
+    instances: cube_instances,
+};
+
+let models = vec![banana_node, cube_node];
+```
+
+Then in our `PhongPass` render pass, we use a `HashMap` to store buffers for each instance.
+
+```rust
+let mut model_index = 0;
+for node in nodes {
+		// Bind group code here...
+
+		// Find the instance buffer for this model, or create o ne
+    self.instance_buffers.entry(model_index).or_insert_with(|| {
+        // We condense the matrix properties into a flat array (aka "raw data")
+        // (which is how buffers work - so we can "stride" over chunks)
+        let instance_data = node
+            .instances
+            .iter()
+            .map(Instance::to_raw)
+            .collect::<Vec<_>>();
+        // Create the instance buffer with our data
+        let instance_buffer =
+            device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
+                label: Some("Instance Buffer"),
+                contents: bytemuck::cast_slice(&instance_data),
+                usage: wgpu::BufferUsages::VERTEX,
+            });
+
+        instance_buffer
+    });
+
+    model_index += 1;
+}
+```
+
+Then when we draw our model, we use the model’s specific instance buffer by using the `set_vertex_buffer` method before the draw:
+
+```rust
+model_index = 0;
+for node in nodes {
+    render_pass.set_vertex_buffer(1, self.instance_buffers[&model_index].slice(..));
+```
+
+And just like that, we have multiple models in our app, each with unique instancing!
+
+![Screenshot of the native wgpu Rust app rendering a grid of 3D bananas and 2 cubes in different positions](./Untitled%205.png)
+
+[🎥 See a video on Twitter here](https://twitter.com/whoisryosuke/status/1592692904996151296?s=20&t=dkT7yZgvMlPDkVs1Y_P4WA)
+
+## Using Local uniforms
+
+We still haven’t fully setup local uniforms in the app yet. The bind group layout and bind group are there, but we don’t have unique buffers for each object. We also don’t have any local data to pass yet, so we need to make some.
+
+Lets update our `Node` struct to accept a `locals` property:
+
+```rust
+use crate::{instance::Instance, model, pass::phong::Locals};
+
+// This represents a 3D model in a scene.
+// It contains the 3D model, instance data, and a parent ID (TBD)
+pub struct Node {
+    // ID of parent Node
+    pub parent: u32,
+    // Local position of model (for relative calculations)
+    pub locals: Locals,
+    // The vertex buffers and texture data
+    pub model: model::Model,
+    // An array of positional data for each instance (can just pass 1 instance)
+    pub instances: Vec<Instance>,
+}
+```
+
+Now when we initialize the nodes, we need to provide local data. We can just use our `Locals` struct from our render pass file and initialize it with dummy data. Here I provide a blue color to both objects (so we can check for it later in the shader):
+
+```rust
+// Create the nodes
+let banana_node = Node {
+    parent: 0,
+    locals: Locals {
+        position: [0.0, 0.0, 0.0, 0.0],
+        color: [0.0, 0.0, 1.0, 1.0],
+        normal: [0.0, 0.0, 0.0, 0.0],
+        lights: [0.0, 0.0, 0.0, 0.0],
+    },
+    model: obj_model,
+    instances: banana_instances,
+};
+
+let cube_node = Node {
+    parent: 0,
+    locals: Locals {
+        position: [0.0, 0.0, 0.0, 0.0],
+        color: [0.0, 0.0, 1.0, 1.0],
+        normal: [0.0, 0.0, 0.0, 0.0],
+        lights: [0.0, 0.0, 0.0, 0.0],
+    },
+    model: cube_model,
+    instances: cube_instances,
+};
+```
+
+We have local data, now we need to create a new buffer for each object. We could do basically what we did for the instances and create the buffers in the render loop using a `HashMap` to store them. But after looking at baryon, I noticed they use a “uniform pool” to handle this.
+
+It basically does the same thing as our instance buffer code, but instead of using a `HashMap`, we use a `Vec`. This `UniformPool` struct will also help us add “helper methods” like `update_uniform()` to simplify writing to the buffers.
+
+```rust
+/// Uniform buffer pool
+/// Used by render passes to keep track of each objects local uniforms
+/// and provides a way to update uniforms to render pipeline
+pub struct UniformPool {
+    label: &'static str,
+    pub buffers: Vec<wgpu::Buffer>,
+    size: u64,
+}
+
+impl UniformPool {
+    pub fn new(label: &'static str, size: u64) -> Self {
+        Self {
+            label,
+            buffers: Vec::new(),
+            size,
+        }
+    }
+
+    pub fn alloc_buffers(&mut self, count: usize, device: &Device) {
+        // We reset the buffers each time we allocate
+        // TODO: Ideally we should keep track of the object it belongs to,
+        // so we can add/remove objects (and their uniform buffers) dynamically
+        self.buffers = Vec::new();
+
+        for _ in 0..count {
+            let local_uniform_buffer = device.create_buffer(&wgpu::BufferDescriptor {
+                label: Some(&self.label),
+                size: self.size,
+                usage: wgpu::BufferUsages::UNIFORM | wgpu::BufferUsages::COPY_DST,
+                mapped_at_creation: false,
+            });
+            self.buffers.push(local_uniform_buffer);
+        }
+    }
+
+    pub fn update_uniform<T: bytemuck::Pod>(&self, index: usize, data: T, queue: &Queue) {
+        if &self.buffers.len() > &0 {
+            queue.write_buffer(&self.buffers[index], 0, bytemuck::cast_slice(&[data]));
+        }
+    }
+}
+```
+
+Now in our `PhongPass` struct we can use our `UniformPool` instead of our `local_uniform_buffer`.
+
+And in our draw method, we first initialize the buffers for each object:
+
+```rust
+// Allocate buffers for local uniforms
+if (self.uniform_pool.buffers.len() < nodes.len()) {
+    self.uniform_pool.alloc_buffers(nodes.len(), &device);
+}
+```
+
+Then when we loop over our nodes and create the bind groups for each object, we can assign each object’s unique buffer:
+
+```rust
+// Loop over the nodes/models in a scene and setup the specific models
+// local uniform bind group and instance buffers to send to shader
+// This is separate loop from the render because of Rust ownership
+// (can prob wrap in block instead to limit mutable use)
+let mut model_index = 0;
+for node in nodes {
+    let local_buffer = &self.uniform_pool.buffers[model_index];
+
+    // We create a bind group for each model's local uniform data
+    // and store it in a hash map to look up later
+    self.local_bind_groups
+        .entry(model_index)
+        .or_insert_with(|| {
+            device.create_bind_group(&wgpu::BindGroupDescriptor {
+                label: Some("[Phong] Locals"),
+                layout: &self.local_bind_group_layout,
+                entries: &[
+                    wgpu::BindGroupEntry {
+                        binding: 0,
+												// 👇 We use the buffer from UniformPool here
+                        resource: local_buffer.as_entire_binding(),
+                    },
+                    wgpu::BindGroupEntry {
+                        binding: 1,
+                        resource: wgpu::BindingResource::TextureView(
+                            &node.model.materials[0].diffuse_texture.view,
+                        ),
+                    },
+                ],
+            })
+        });
+```
+
+And since we passed our local bind groups to our draw method previously like so:
+
+```rust
+// Draw all the model instances
+render_pass.draw_model_instanced(
+    &node.model,
+    0..*&node.instances.len() as u32,
+    &self.local_bind_groups[&model_index],
+);
+```
+
+We can start using the local uniforms in our shader! Let’s open up the `shader.wgsl` file and add our local uniforms:
+
+```rust
+// Define any uniforms we expect from app
+struct Globals {
+    view_pos: vec4<f32>,
+    view_proj: mat4x4<f32>,
+    ambient: vec4<f32>,
+};
+struct Locals {
+    position:  vec4<f32>,
+    color:  vec4<f32>,
+    normal:  vec4<f32>,
+    lights:  vec4<f32>,
+}
+// We create variables for the bind groups
+@group(0) @binding(0)
+var<uniform> globals: Globals;
+@group(1) @binding(0)
+var<uniform> locals: Locals;
+```
+
+And in our fragment portion of our shader, we can use the `locals.color` to pass the color from our node all the way to the shader. We can use it directly:
+
+```rust
+return locals.color;
+```
+
+![Screenshot of the native wgpu Rust app rendering a grid of 3D bananas and 2 cubes, all colored in blue](./Untitled%206.png)
+
+Let’s use it to colorize our texture to a certain hue.
+
+```rust
+return locals.color * vec4<f32>(result, object_color.a);
+```
+
+You should see your texture with a blue hue applied!
+
+### Updating local uniforms
+
+So how do we update a local uniform, like moving an object while the app is running? It’s very similar to the process for globals: write the new data to the appropriate buffer.
+
+In our app’s `update()` method, let’s loop over our nodes and change the local data, then send that to the buffer using our `UniformPool.update_uniform()` method:
+
+```rust
+// Update local uniforms
+let mut node_index = 0;
+for node in &mut self.nodes {
+    node.locals.color = [
+        node.locals.color[0],
+        (node.locals.color[1] + 0.001),
+        (node.locals.color[2] - 0.001),
+        node.locals.color[3],
+    ];
+    &self
+        .pass
+        .uniform_pool
+        .update_uniform(node_index, node.locals, &self.ctx.queue);
+    node_index += 1;
+}
+```
+
+This should animate the color of your 3D object to go from blue to green (since we’re updating the RGBA values and adding/subtracting from the GB parts).
+
+[🎥 See a video on Twitter here](https://twitter.com/whoisryosuke/status/1593409473393045504?s=20&t=dkT7yZgvMlPDkVs1Y_P4WA)
+
+# You still here? 👀
+
+This was quite the long and arduous process just to get another 3D model running, but now we should have a nice architecture in place to do cooler stuff. We could create a cartoon or PBR render pass, or start to create a scene with nested objects with relative positioning to their parents. And did I mention all this code runs native and on the web? The potential is endless (or as much as the WebGPU spec allows for anyway).
+
+Want to share your progress or ask any questions? Feel free to reach out to me on [Twitter](https://twitter.com/whoisryosuke) or [Mastodon](https://mastodon.gamedev.place/@whoisryosuke). Also make sure to check out the [Rust Game Development](https://gamedev.rs/) group’s [Discord channel](https://discord.gg/j6QJsMd), there’s lots of cool people on there that work on wgpu too. And thanks again to [the author of Baryon](https://github.com/kvark) for such a great resource on advanced wgpu architecture.
+
+# References
+
+- [https://github.com/kvark/baryon](https://github.com/kvark/baryon)
+- [How render passes work](https://developer.arm.com/documentation/102479/0100/How-Render-Passes-Work)
+- [RenderPass in wgpu - Rust](https://docs.rs/wgpu/0.12.0/wgpu/struct.RenderPass.html)
+- [RenderPipeline in wgpu - Rust](https://docs.rs/wgpu/0.12.0/wgpu/struct.RenderPipeline.html)

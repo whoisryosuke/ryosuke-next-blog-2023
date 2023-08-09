@@ -1,0 +1,588 @@
+---
+title: Blog Refresh 2022
+date: "2022-10-06"
+section: blog
+tags:
+  [
+    "css",
+    "react",
+    "typescript",
+    "design system",
+    "astro",
+    "3d",
+    "threejs",
+    "r3f",
+  ]
+cover_image: "./thumbnail.png"
+
+layout: "@/layouts/BlogLayout.astro"
+---
+
+_It’s that time again_. The initial commit on the last version of my Gatsby-based site was [Mar 30, 2018](https://github.com/whoisryosuke/ryosuke-gatsby-blog/commit/93505ddb5ed85e8be560663e515c24e08d3c1b94), and the last major redesign was [October 14th 2019](https://whoisryosuke.com/blog/2019/the-redesign-begins/). It’s been **3 years** since I last touched the design of the site, so as a designer you can imagine I’ve been _reeling_ waiting to change things up.
+
+But I’ve also been quite busy lately between work and life, so I haven’t had the time to invest in the **wild** and **_ambitious_** redesign I’ve been envisioning for the past year or so. To keep things moving, I opted to do a mini redesign or a “**_refresh_**” where I kept things as **simple** as possible.
+
+My goal was to try a few new libraries and get experience under my belt (cause isn’t that what dev blogs are for?). I’d swap out [Gatsby](https://www.gatsbyjs.com/) for [\*\*Astro](https://astro.build/),** and [Styled Components](https://styled-components.com/) + [Styled System](https://styled-system.com/) for [**Vanilla Extract\*\*](https://vanilla-extract.style/). I was interested in trying Astro as it just hit 1.0, and I’ve been [experimenting for a while](https://github.com/whoisryosuke/gelato-ui) with Vanilla Extract as a way to write Typescript powered styles and export to CSS.
+
+In case you’re looking at an archived version of this post in the distant future, here’s a preview of what the redesign looked like:
+
+![Untitled](./Untitled.png)
+
+I’ll break down a bit of my redesign process and some of the issues that tripped me up along the way.
+
+# The Process
+
+I started initially in code. Then designed a rough and finalized version in Figma. Then brought the design to life in Astro, React, and Vanilla Extract.
+
+## Gatsby to Astro
+
+I had a framework from my Gatsby website to work with, and I needed to figure out how to migrate that content to another framework without too much effort. All my content is in MDX files, mostly Markdown with a few files using some custom React components (like a `<Box>` for layout).
+
+At first, I wasn’t sure I was going to use NextJS or Astro. But Astro won me over once I saw how plug and play the Markdown and MDX support was [with a couple of plugins](https://docs.astro.build/en/guides/markdown-content/) (even frontmatter! which lots of stuff struggles with).
+
+I learned a bit about how Astro works while prototyping a very rough and unstyled version of the blog. I started with a single blog post to see how things carried over. Things seemed good, so I proceeded with the design phase in Figma.
+
+## Figma Design
+
+This was probably the chillest part of the process. I had 2 mood boards I’d been accruing over months, one for an ambitious redesign and one for a simpler one. I took a look at those, and dug around for a bit more inspo.
+
+The first round didn’t deviate too far from where we ended up. I had a fairly clear vision of what I wanted, but the minor elements just needed to fall into place.
+
+![Untitled](./Untitled%201.png)
+
+I got a little distracted trying to incorporate texture into the website…
+
+![Untitled](./Untitled%202.png)
+
+But I eventually landed on using a 3D animation as the primary background element. I found [an abstract 3D render](https://www.istockphoto.com/photo/abstract-white-background-gm1189708364-336947701?utm_campaign=srp_photos_inline&utm_content=https%3A%2F%2Fwww.pexels.com%2Fsearch%2F3d%2520pattern%2F&utm_medium=affiliate&utm_source=pexels&utm_term=3d%20pattern) on a stock image website and figured I could recreate something similar in ThreeJS / R3F.
+
+![Untitled](./Untitled%203.png)
+
+With the design in place, I moved back over to the code to develop the design system and components.
+
+## Vanilla Extract with Sprinkles please
+
+I started to develop some of the components in isolation using Storybook and Vanilla Extract. I used one of my previous projects as the basis, [Gelato UI](https://github.com/whoisryosuke/gelato-ui), a design system I created using [Nx monorepo](https://nx.dev/).
+
+![Untitled](./Untitled%204.png)
+
+After finishing all the components here, I copied them over to my Astro website.
+
+It actually wasn’t that simple initially though — when I was working on the design system, Astro didn’t support Vanilla Extract (even as a pre-compiled 3rd party library). Luckily someone updated the [Vanilla Extract Vite plugin](https://www.npmjs.com/package/@vanilla-extract/vite-plugin) (which Astro uses under the hood).
+
+## Time to surf 3D waves
+
+For this part it was pretty straightforward since I had a 3D design I was using as the basis. I opened up CodeSandbox and forked [one of my old R3F sandboxes](https://codesandbox.io/s/r3f-particles-buffer-geometry-example-mn2xl) that had a custom shader material.
+
+![3d-waves-codesandbox-wip1.gif](./3d-waves-codesandbox-wip1.gif)
+
+<iframe
+  src="https://codesandbox.io/embed/waves-with-shadows-ribuge?fontsize=14&hidenavigation=1&theme=dark"
+  style="width:100%; height:500px; border:0; border-radius: 4px; overflow:hidden;"
+  title="Waves with Shadows"
+  allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
+  sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
+></iframe>
+
+I created a cube (or box) and formed it into a long rectangle (like strips of paper). I made sure to increase the number of “segments” in the box so it’d animate a bit smoother.
+
+```jsx
+import React, { useMemo, useRef } from "react";
+import { MeshProps, useFrame } from "@react-three/fiber";
+import { Line } from "@react-three/drei";
+import "./material";
+
+type WaveProps = MeshProps & {
+  offset: number,
+};
+
+// The box/cube parameters
+const WAVE_SIZE = {
+  width: 0.5,
+  height: 10,
+  depth: 0.05,
+  // How "subdivided" the mesh is (aka bigger number = more polygons)
+  widthSegment: 2,
+  heightSegment: 32,
+};
+
+function Wave({ offset, ...props }: WaveProps) {
+  const geom = useRef();
+  useFrame((state) => {
+    // Send (and update) "uniforms" or data to the shader (like the time)
+    geom.current.material.uniforms.time.value = state.clock.getElapsedTime();
+    geom.current.material.uniforms.offset.value = offset;
+    // geom.current.geometry.verticesNeedUpdate = true
+  });
+
+  return (
+    <mesh
+      ref={geom}
+      rotation={[-Math.PI / 2, 0, 0]}
+      castShadow
+      receiveShadow
+      {...props}
+    >
+      <boxBufferGeometry
+        args={[
+          WAVE_SIZE.width,
+          WAVE_SIZE.height,
+          WAVE_SIZE.depth,
+          WAVE_SIZE.widthSegment,
+          WAVE_SIZE.heightSegment,
+        ]}
+      />
+      <waveMaterial />
+      {/* <meshBasicMaterial wireframe /> */}
+    </mesh>
+  );
+}
+
+export default Wave;
+```
+
+Now that I had a wave, I just had to create a component that makes a bunch more. I make an empty array of 9 items and map over it with each `<Wave />` component.
+
+```jsx
+import React from "react";
+import Wave from "../Wave/Wave";
+
+const Waves = () => {
+  const waves = new Array(9)
+    .fill(0)
+    .map((_, index) => (
+      <Wave key={index} position={[index * 0.6, 0, 0]} offset={index} />
+    ));
+
+  return waves;
+};
+
+export default Waves;
+```
+
+Then the magic (or animation) happened in the shader. Essentially the boxes animate using **time** as a variable (so as time progresses, the variable changes). We take that time and use a `sin()` calculation to make it fluctuate between `0` and `1` (instead of going from `0` to `Infinity`). This makes the math a bit easier for stuff since it loops from `0` to `1` and back to `0` looping infinitely.
+
+We apply the animation to the `z` index, so it only animates vertices in the `z` direction (up and down in this case). And it’s offset using an `offset` variable, so all the waves don’t animate at the same pace. That variable is the array index we loop over to make waves (aka 0-9).
+
+```jsx
+float z = position.z + sin(position.y + time + offset);
+```
+
+Here is a version with the wireframe enabled as a visual aid:
+
+![3d-waves-codesandbox-wip1a.gif](./3d-waves-codesandbox-wip1a.gif)
+
+<iframe
+  src="https://codesandbox.io/embed/waves-with-shadows-wireframe-r7pui2?fontsize=14&hidenavigation=1&theme=dark"
+  style="width:100%; height:500px; border:0; border-radius: 4px; overflow:hidden;"
+  title="Waves with Shadows (Wireframe)"
+  allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
+  sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
+></iframe>
+
+After the scene was laid out and animated, I took some time to make to look better. This included lighting the scene, placing the camera, and adding post processing effects (like a bokeh).
+
+For the post processing I used [@react-three/post-processing](https://github.com/pmndrs/react-postprocessing) components, and to get the look just right I created a debug panel using [Leva](https://github.com/pmndrs/leva) to adjust some values (like bokeh blur).
+
+### Custom shadow shader
+
+Adding shadows (`castShadow` and `receiveShadow`) to all the objects helped give some depth — but I immediately noticed that my custom shader didn’t apply any shadows to the objects. After a bit of research, I found that the standard ThreeJS materials (like `MeshPhongMaterial`) have shadow calculations built into them. But when you create a custom shader, it’s a completely blank slate.
+
+In order to add shadows, I had to copy and paste the shadow related code from the default ThreeJS materials (or shaders really).
+
+```tsx
+import * as THREE from "three";
+import { extend } from "@react-three/fiber";
+import { mergeUniforms } from "three/src/renderers/shaders/UniformsUtils.js";
+import { UniformsLib } from "three/src/renderers/shaders/UniformsLib.js";
+
+class WaveMaterial extends THREE.ShaderMaterial {
+  constructor() {
+    super({
+      transparent: true,
+      // Enable fog/light/dithering maps to get passed to shader
+      fog: true,
+      lights: true,
+      dithering: true,
+      // wireframe: true,
+
+      // Merge in the light and fog uniforms with any of your custom ones
+      uniforms: mergeUniforms([
+        { time: { value: 1 }, offset: { value: 0 } },
+        UniformsLib.lights,
+        UniformsLib.fog,
+      ]),
+      vertexShader: `
+      // Include the shadow scripts
+    #include <common>
+    #include <fog_pars_vertex>
+    #include <shadowmap_pars_vertex>
+      
+      uniform float time;
+      uniform float offset;
+      attribute float size;
+      void main() {
+
+	      // Include the shadow scripts
+        vec3 objectNormal = vec3( normal );
+        vec3 transformedNormal = normalMatrix * objectNormal;
+        #include <begin_vertex>
+        #include <project_vertex>
+        #include <worldpos_vertex>
+        #include <shadowmap_vertex>
+        #include <fog_vertex>
+
+				// Do what you need (in this case, makes wave animation)
+        float x = sin(position.x);
+        float y = position.y;
+        float id = position.z;
+        float z = position.z + sin(position.y + time + offset);
+        vec3 pos = vec3(position.x, position.y, z);
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0 );
+      }`,
+      fragmentShader: `
+      // Include the shadow scripts
+      #include <common>
+      #include <packing>
+      #include <fog_pars_fragment>
+      #include <bsdfs>
+      #include <lights_pars_begin>
+      #include <shadowmap_pars_fragment>
+      #include <shadowmask_pars_fragment>
+      #include <dithering_pars_fragment>
+      
+      uniform float time;
+      void main() {
+        // CHANGE THAT TO YOUR NEEDS
+        // ------------------------------
+        vec3 finalColor = vec3(0.95, 0.95, 0.95);
+        vec3 shadowColor = vec3(0, 0, 0);
+        float shadowPower = 0.5;
+        // ------------------------------
+        
+        // it just mixes the shadow color with the frag color
+        gl_FragColor = vec4( mix(finalColor, shadowColor, (1.0 - getShadowMask() ) * shadowPower), 1.0);
+        #include <fog_fragment>
+        #include <dithering_fragment>
+      }`,
+    });
+  }
+}
+
+extend({ WaveMaterial });
+```
+
+This introduced a “banding” to my objects, which is technically incorrect I’m sure, but it looked kinda cool so I was ok with it.
+
+You can find [the final sandbox here](https://codesandbox.io/s/waves-with-shadows-ribuge) for reference.
+
+### Light vs Dark mode
+
+In the final site I also had to add a shader uniform to let the shader know if it was light or dark mode on the site.
+
+```jsx
+// Get theme value from Zustand store
+const { mainNav, theme } = useStore();
+
+// Change color based on theme
+const WAVE_PROPERTIES = {
+  color: {
+    light: new Color({
+      r: 0.95,
+      g: 0.95,
+      b: 0.95,
+    }),
+    dark: new Color("#000"),
+    hovered: new Color("#001BD8"),
+  },
+};
+const themeColor =
+  theme === "light" ? WAVE_PROPERTIES.color.light : WAVE_PROPERTIES.color.dark;
+
+useFrame((state) => {
+  geom.current.material.uniforms.color.value = themeColor;
+});
+```
+
+### Hover interaction
+
+Once I had the 3D in place, I wanted to include some sort of interaction with the user. So when the user hovers over a navigation item, it “highlights” a specific wave by changing it’s color. This was pretty simple, I just set some `onMouseEnter` and `onMouseLeave` props to sync which nav item was active to the store.
+
+```jsx
+const { mainNav, setMainNav } = useStore();
+
+const clearHover = () => {
+  setMainNav("none");
+};
+
+return (
+  <MainNavItem
+    href="/blog"
+    onMouseEnter={() => setMainNav("writing")}
+    onMouseLeave={clearHover}
+  >
+    Writing
+  </MainNavItem>
+);
+```
+
+Then inside the 3D I grab the menu items and use a little math to pick a wave to color:
+
+```jsx
+const NAV_TO_INDEX: Record<MainNavNames, number> = {
+  none: 0,
+  writing: 1,
+  work: 2,
+  resources: 3,
+  playlist: 4,
+};
+
+const { mainNav, theme } = useStore();
+
+// There's 18 waves, we want to do nearest ones and skip between
+// Take the NAV_TO_INDEX and multiply by 2 to adjust for spacing
+// And we add 8 to offset it enough to be in camera view
+const isColored =
+  mainNav !== "none" && offset === NAV_TO_INDEX[mainNav] * 2 + 8;
+
+useFrame((state) => {
+  if (isColored) {
+    geom.current.material.uniforms.color.value = WAVE_PROPERTIES.color.hovered;
+  } else {
+    geom.current.material.uniforms.color.value = themeColor;
+  }
+});
+```
+
+This effect was pretty simple and made the site a bit more fun to use.
+
+![Untitled](./Untitled%205.png)
+
+## Astro, blast off!
+
+With a final design and components in place, I started to lay out the various pages of the site. I had already roughly created the blog page, but I finished styling it, and moved on to the index page, then archive pages (blog and tags), and finally a playlist page.
+
+This process was full of **frustration** as I learned the Astro ecosystem and adapted to it. There were a lot of really simple things I wanted to do (like wrapping components in React Context providers) that would break the entire app. Most of these issues are described below. A lot of the issues I had were definitely a little niche in some cases, but I do think that a lot of users will expect to do most if not everything I did.
+
+# Astro-nomical Issues
+
+### Vanilla extract support
+
+As I was creating the blog initially, there was no Vanilla Extract support. I mentioned it on Twitter and in the same day someone mentioned they had just patched the Vanilla Extract Vite plugin to support Astro.
+
+Updated my dependency and it worked like a charm.
+
+Although it has been a bit buggy? Occasionally pages will load with none or incorrect styles, and require a reboot to the dev server to correct. This is probably something that’ll get patched down the line since everything is so _fresh hot_ 👍
+
+### MDX Provider not supported out of box
+
+Had to find a custom Astro plugin script to do it. It essentially is a middleware for the MDX and it goes in does a simple “find and replace” on the exported JS. This works well, but it tends to crash the dev server randomly with a “maximum call stack exceeded” error 🤷‍♂️
+
+```jsx
+// MDXComponents.tsx
+import Box from "../Box/Box";
+import Text from "../Text/Text";
+
+export const components = {
+  h1: (props) => (
+    <Box mt={7}>
+      <Text as="h1" fontFamily="heading" fontSize={5} {...props} />
+    </Box>
+  ),
+  div: (props) => <Box {...props} />,
+};
+```
+
+### Can’t use render props inside `.astro` files
+
+Tried to create a component that accepts another React component as a prop (`<Accordion title={<Text>Title</Text>}>`) and the compiler did not like it, crashing the site.
+
+Had to convert to a regular string-based prop.
+
+### React Context doesn’t work for components in Astro pages
+
+Lets say you have a `about.astro` page. You also have a `<PageLayout>` React component that wraps all the page content, and it has a few context providers inside (theme, shared app state, etc). You write your page markup in the `about.astro` file — cause why not?
+
+```jsx
+<DefaultPage>
+  {" "}
+  // Has context providers
+  <AnotherReactComponent>
+    {" "}
+    // Doesn't have access to context - despite being nested
+    <h1>About Page</h1>
+    <MoreReactStuff /> // Also can't access context
+  </AnotherReactComponent>
+</DefaultPage>
+```
+
+All the nested React components inside the Astro file will not get access to the context.
+
+**The solution?** Create your page entirely inside React, then import that whole page component into your Astro page.
+
+In my case however, this didn’t work. I had react-three-fiber components that needed a special `client:load` tag in Astro to load them. And when I added that tag to the entire page component, the page rendered — but the R3F component didn’t.
+
+**My workaround?** I ended up using [zustand](https://github.com/pmndrs/zustand) to create a store outside of “React-land” and using that between components. But this still was a **major issue** with a lot of wrapper components that needed access to context (like a theme provider).
+
+### Same with React `children`
+
+I had issues using `children` when it was content from an Astro page and the React component was `client:load`:
+
+```jsx
+<SomeComponent client:load>
+	<h1>Content inside Astro file</h1> // SomeComponent can't load this
+```
+
+This has to do with the way they isolate code into “islands”. If you inspect the HTML, you’ll see that the component we labeled with `client:load` is in an isolated island, but the HTML template it uses doesn’t included the nested `children` content.
+
+### Utility Props Problem
+
+A lot of my components are “dynamic” where they have Vanilla Extract’s Sprinkles API working to swap out classnames based on the props I pass to the component. For Astro, it’d initially render these components, but they’d lose their “interactivity” without a `client:load` directive. So I couldn’t see style changes when I swapped props.
+
+This got a little tedious, since a lot of components use or extend from a component that uses utility props.
+
+### A little slow and clunky
+
+I have archive pages that need to query **all** of my blog posts — every single one. This ends up being an intensive process, taking a **few minutes** for it to spin up a page (~75 blog posts). This doesn’t get cached between pages, so it re-runs.
+
+It’s smart enough to cache if I update other code, but the cache actually works against you? Sometimes it’ll cache broken code, and I’m forced to delete massive chunks to trigger a proper reload. It causes a lot of false positives when coding, which can be frustrating when debugging complex (or even trivial) issues.
+
+What makes it worse is there’s no built in cache clearing option? I think they’d benefit from an `astro clean` command to give you a clean slate sometimes.
+
+### Markdown images broken?
+
+One thing I didn’t notice until the website was built and in production on Netlify — all my markdown images were **broken**. Which was weird, because they **worked fine in development**.
+
+I literally went back and double checked and the development server was using:
+
+```html
+https://whoisryosuke.com/blog/2022/2022-05-17_182533_-_Windows_PowerShell_Setup.png
+```
+
+While the production server used:
+
+```html
+https://whoisryosuke.com/blog/2022/leveling-up-windows-powershell-with-oh-my-posh/2022-05-17_182533_-_Windows_PowerShell_Setup.png
+```
+
+I’m not sure what causes the difference between what the markdown parser shows in development vs production. Luckily though, because I was already migrating my content from my previous Gatsby blog, all I had to do was go back and change my migration script to use the production URLs.
+
+Speaking of which, here’s what that migration script looked like. It goes through all my blog folders, edits Markdown to add the Astro layout, and copies images over to a separate folder (to copy into `/public`):
+
+```jsx
+const fs = require("fs");
+const path = require("path");
+
+// Loop through all years
+// Go into each folder
+
+// Get MDX file
+// Add template to frontmatter
+// layout: "@/layouts/BlogLayout.astro"
+
+// Found images in folder with MDX?
+// Copy images to public/blog/YEAR folder
+
+const ROOT = "./content/blog/";
+const IMAGE_ROOT = "./images/";
+
+const years = fs.readdirSync(path.join(ROOT));
+
+years.forEach((year) => {
+  const blogPostFolders = fs.readdirSync(path.join(ROOT, year));
+
+  // Go into each folder
+  blogPostFolders.forEach((blogPostFolder) => {
+    const blogImagePath = path.join(IMAGE_ROOT, year);
+    const blogPostFolderContents = fs.readdirSync(
+      path.join(ROOT, year, blogPostFolder)
+    );
+
+    // Create folder if it doesn't exist
+    if (!fs.existsSync(blogImagePath)) {
+      fs.mkdirSync(blogImagePath);
+    }
+
+    blogPostFolderContents.forEach((file) => {
+      const filePath = path.join(ROOT, year, blogPostFolder, file);
+      const copyPath = path.join(IMAGE_ROOT, year, file);
+      // Get MDX file
+      // Add template to frontmatter
+      // layout: "@/layouts/BlogLayout.astro"
+      if (file.includes(".md")) {
+        const blogPostMdx = fs.readFileSync(filePath, "utf-8");
+        console.log("mdx", blogPostMdx);
+
+        // Find frontmatter closing tag (second `---`)
+        const splitPost = blogPostMdx.split("---");
+        console.log();
+        splitPost[1] = `${splitPost[1]}
+layout: "@/layouts/BlogLayout.astro"
+`;
+        const joinPost = splitPost.join("---");
+
+        // Save post
+        fs.writeFileSync(filePath, joinPost);
+      }
+
+      if (
+        file.includes(".png") ||
+        file.includes(".jpg") ||
+        file.includes(".jpeg") ||
+        file.includes(".gif") ||
+        file.includes(".svg")
+      ) {
+        fs.copyFileSync(filePath, copyPath);
+        fs.rmSync(filePath);
+      }
+    });
+  });
+});
+```
+
+That fixed it, but now when I look at the site in development, none of my blog images work 😓 I can probably create a plugin to fix it in development, but I feel like this is a bug that’ll get resolved down the line.
+
+# Would I use Astro again?
+
+**_Maybe._ Probably not though**. If I had a project that needed to merge multiple frontend frameworks, this would be a great pick. If I had a simple website that didn’t use too many dynamic elements, you’d avoid many of the headaches I had.
+
+I also like the island architecture, despite being at odds with it in this project and framework. I think if Astro could support it in a more clear way that didn’t require the user to read docs and run into walls.
+
+But if I had to create a **Markdown based site**, I’d definitely **pick another solution** (or wait until these bugs get worked out — cause it is easy to use compared to other frameworks).
+
+The whole experience honestly had me appreciating NextJS a bit. It was missing a few things that Astro had (like easy MDX imports and frontmatter support), but the minimalism and freedom NextJS provided make it more attractive for prototyping and even production projects.
+
+# Grain of new salt
+
+As someone who’s very new to the framework and didn’t bother to ask around on the Discord _before_ complaining in this blog posts, this is just sharing my initial experience and critiques. Like I mentioned before, many of these issues will be resolved in the (often near) future. And I have no excuse to contribute cause it’s open source 😅
+
+Are you using Astro in your project and enjoying it? Did I get something wrong about Astro? [Let me know on Twitter](https://twitter.com/whoisryosuke). Always interested in hearing other’s experiences.
+
+# So when’s the redesign?
+
+Soon.
+
+And expect wild things like gamepad input 🎮
+
+I’ve said too much already 😉
+
+See you next time!
+Ryo
+
+# References
+
+[Three.js no shadows on ShaderMaterial](https://stackoverflow.com/questions/18965283/three-js-no-shadows-on-shadermaterial)
+
+[A basic example of a ThreeJS (r108) ShaderMaterial with shadows, fog and dithering support.](https://gist.github.com/wmcmurray/6696fc95f25bbd2401d72a74e9493261)
+
+- How to add shadows to custom shaders using ShaderMaterial as basis
+- Basically need to include a bunch of scripts ThreeJS uses in other materials (like MeshLambertMaterial).
+- This is similar to the `THREE.ShaderChunk["common"]` process in older/vanilla stackoverflows
+
+[https://github.com/zadvorsky/three.bas/issues/7](https://github.com/zadvorsky/three.bas/issues/7)
+
+- Was finally able to import shader “chunks” (aka #include scripts from ThreeJS) — but was getting error about `transformedNormal` not existing. Had to define it myself.
+
+[react-three-fiber by example](https://onion2k.github.io/r3f-by-example/#lighting)
+
+[Three.js Shaders Tutorial (part 2/2) | GLSL Shaders with Uniforms and Varying](https://www.youtube.com/watch?v=dRo7SnOJlEM)

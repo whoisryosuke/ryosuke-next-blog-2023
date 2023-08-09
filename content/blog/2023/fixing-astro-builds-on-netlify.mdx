@@ -1,0 +1,72 @@
+---
+title: Fixing Astro Builds on Netlify
+date: "2023-02-08"
+section: blog
+tags: ["astrojs", "netlify", "devops"]
+cover_image: "./fixing-astro-builds-on-netlify.png"
+
+layout: "@/layouts/BlogLayout.astro"
+---
+
+I had a pretty big blog meltdown recently after I went to push a new post and the build failed with a mysterious “out of memory” error. I’ve had issues locally with AstroJS running a bit slow when building pages in development, so I can imagine it was probably doing heavy lifting during production builds. I was able to build locally - but I’m assuming the Netlify build servers didn’t have 32GB of RAM to kick around.
+
+I thought I’d share the **simple** solution I found to **fix my AstroJS builds** and the **JavaScript heap allocation error.**
+
+# The Error
+
+If you’re here, you’ve probably encountered this error in your Netlify (or build server) logs:
+
+```
+4:14:28 PM: <--- Last few GCs --->
+4:14:28 PM: [1503:0x6a81c70]    79191 ms: Mark-sweep 2006.9 (2075.6) -> 1985.3 (2068.9) MB, 812.3 / 0.0 ms  (average mu = 0.178, current mu = 0.032) allocation failure scavenge might not succeed
+4:14:28 PM: [1503:0x6a81c70]    80470 ms: Mark-sweep 2013.4 (2081.2) -> 1988.5 (2072.4) MB, 1256.8 / 0.0 ms  (average mu = 0.087, current mu = 0.018) allocation failure scavenge might not succeed
+4:14:28 PM: <--- JS stacktrace --->
+4:14:28 PM: FATAL ERROR: Ineffective mark-compacts near heap limit Allocation failed - JavaScript heap out of memory
+4:14:28 PM:  1: 0xb08e80 node::Abort() [/opt/buildhome/.nvm/versions/node/v16.19.0/bin/node]
+4:14:28 PM:  2: 0xa1b70e  [/opt/buildhome/.nvm/versions/node/v16.19.0/bin/node]
+4:14:28 PM:  3: 0xce1890 v8::Utils::ReportOOMFailure(v8::internal::Isolate*, char const*, bool) [/opt/buildhome/.nvm/versions/node/v16.19.0/bin/node]
+4:14:28 PM:  4: 0xce1c37 v8::internal::V8::FatalProcessOutOfMemory(v8::internal::Isolate*, char const*, bool) [/opt/buildhome/.nvm/versions/node/v16.19.0/bin/node]
+4:14:28 PM:  5: 0xe992a5  [/opt/buildhome/.nvm/versions/node/v16.19.0/bin/node]
+4:14:28 PM:  6: 0xe99d86  [/opt/buildhome/.nvm/versions/node/v16.19.0/bin/node]
+4:14:28 PM:  7: 0xea82ae  [/opt/buildhome/.nvm/versions/node/v16.19.0/bin/node]
+4:14:28 PM:  8: 0xea8cf0 v8::internal::Heap::CollectGarbage(v8::internal::AllocationSpace, v8::internal::GarbageCollectionReason, v8::GCCallbackFlags) [/opt/buildhome/.nvm/versions/node/v16.19.0/bin/node]
+4:14:28 PM:  9: 0xeabc6e v8::internal::Heap::AllocateRawWithRetryOrFailSlowPath(int, v8::internal::AllocationType, v8::internal::AllocationOrigin, v8::internal::AllocationAlignment) [/opt/buildhome/.nvm/versions/node/v16.19.0/bin/node]
+4:14:28 PM: 10: 0xe6d1aa v8::internal::Factory::NewFillerObject(int, bool, v8::internal::AllocationType, v8::internal::AllocationOrigin) [/opt/buildhome/.nvm/versions/node/v16.19.0/bin/node]
+4:14:28 PM: 11: 0x11e5f96 v8::internal::Runtime_AllocateInYoungGeneration(int, unsigned long*, v8::internal::Isolate*) [/opt/buildhome/.nvm/versions/node/v16.19.0/bin/node]
+4:14:28 PM: 12: 0x15d9c19  [/opt/buildhome/.nvm/versions/node/v16.19.0/bin/node]
+4:14:29 PM: Aborted (core dumped)
+4:14:29 PM: error Command failed with exit code 134. (https://ntl.fyi/exit-code-134)
+4:14:29 PM: info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.
+4:14:29 PM:
+4:14:29 PM:   "build.command" failed
+4:14:29 PM: ────────────────────────────────────────────────────────────────
+4:14:29 PM:
+4:14:29 PM:   Error message
+4:14:29 PM:   Command failed with exit code 134: yarn build (https://ntl.fyi/exit-code-134)
+4:14:29 PM:
+4:14:29 PM:   Error location
+4:14:29 PM:   In Build command from Netlify app:
+4:14:29 PM:   yarn build
+```
+
+# The Solution
+
+After a bit of research and checking the AstroJS, I found [an automated post](https://discord.com/channels/830184174198718474/853350631389265940/1057944453916131440) merging [an Astro Docs commit](https://github.com/withastro/docs/commit/545b6462454cf7d501708045d46c0f58a252aa9b) that mentioned “netlify memory”. Taking a look at the commit, it seems that they added a Netlify configuration file (`netlify.toml`) with a custom build script. ]
+
+The script essentially has an extra flag for increasing the amount of memory available (`--max_old_space_size=4096`). And it uses `pnpm` instead of `yarn` — which might improve performance as well.
+
+Creating a `netlify.toml` in my site root and pushing that commit got everything working!
+
+```toml
+[build]
+  command = "NODE_OPTIONS=--max_old_space_size=4096 pnpm build"
+```
+
+# Hope that helps!
+
+It’s always shocking to lose the ability to build your websites. I hope this info lets you publish again!
+
+As always, if you have any questions, feel free to share with me on [Mastodon](https://mastodon.gamedev.place/@whoisryosuke) or [Twitter](https://twitter.com/whoisryosuke).
+
+Stay curious,
+Ryo

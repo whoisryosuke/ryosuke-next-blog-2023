@@ -1,0 +1,776 @@
+---
+title: Primitive Geometry in wgpu and Rust
+date: "2022-10-14"
+section: blog
+tags: ["rust", "3d", "game dev", "wgpu", "webgpu", "graphics"]
+cover_image: "./Primitive_Geometry_in_wgpu_and_Rust.png"
+
+layout: "@/layouts/BlogLayout.astro"
+---
+
+I recently found the [Learn WGPU tutorial](https://sotrh.github.io/learn-wgpu/) and finished it, which teaches you how to write a custom 3D rendering engine using the [wgpu library](https://wgpu.rs/) to interface with [WebGPU](https://www.w3.org/TR/webgpu/).
+
+At the end of the tutorial you [essentially have a grid of instanced 3D](https://twitter.com/whoisryosuke/status/1578653432872767488) `.obj` models, a camera, light, and a couple shaders. Since the tutorial did such an excellent job breaking everything down, I wanted to practice a bit more and figure out how to add primitive 3D objects to the scene (like a cube, plane, or sphere).
+
+After plenty of helpful error codes (and a bit of frustration with non-existent errors), I was finally got a simple example working. I thought I’d share my findings for other fellow graphic programmers.
+
+![Screenshot of the final 3D app with cubes](./Untitled.png)
+
+> ⚠️ This tutorial assumes you’ve followed and completed [the “Learn wgpu” tutorial](https://sotrh.github.io/learn-wgpu/). You could also [use my repo here as a starting point](https://github.com/whoisryosuke/wgpu-hello-world) - but it will require Rust and Trunk setup in your local dev environment. You can also checkout [the final code here for reference.](https://github.com/whoisryosuke/wgpu-hello-world/blob/play/primitives-model-test/)
+
+# Research
+
+Before I dove too deep into the process, I was curious how other libraries handled their primitive geometry in Rust. I looked into [Bevy](https://bevyengine.org/) and [Baryon](https://github.com/kvark/baryon), the former being a well established (and huge) game engine and the latter being a smaller, easier to digest library.
+
+## Bevy Primitives
+
+First things first, Bevy is a workspace made up of a lot of sub crates (aka “monorepo with Yarn workspaces” in JS). You can find the logic for primitives in the [bevy-render crate](https://github.com/bevyengine/bevy/blob/dc3b4b6c850898c922dff9fd6d312823e07096f1/crates/bevy_render) under the [mesh shape module](https://github.com/bevyengine/bevy/blob/dc3b4b6c850898c922dff9fd6d312823e07096f1/crates/bevy_render/src/mesh/shape/mod.rs). I found this by [searching “Cube” on GitHub](https://github.com/bevyengine/bevy/search?q=cube), scrolling past all the examples, and finding the library it used. You could also trace it back in your Rust IDE if you have a Bevy project setup (e.g. using “Go to Definition” in VSCode).
+
+The method for creating the cube (or “Box” in this case) is done using an implementation (`impl`) that extends the `Mesh` struct to accept a `Box` `struct`. This is similar to a builder pattern, where you have a `struct` that handles accepting user configuration (in this case, the box sizing), and then that gets turned into the true product: a `Mesh`.
+
+You can see they create buffers for vertices and indices using a “min” and “max” size property:
+
+```rust
+impl From<Box> for Mesh {
+    fn from(sp: Box) -> Self {
+        let vertices = &[
+            // Top
+            ([sp.min_x, sp.min_y, sp.max_z], [0., 0., 1.0], [0., 0.]),
+            ([sp.max_x, sp.min_y, sp.max_z], [0., 0., 1.0], [1.0, 0.]),
+            ([sp.max_x, sp.max_y, sp.max_z], [0., 0., 1.0], [1.0, 1.0]),
+            ([sp.min_x, sp.max_y, sp.max_z], [0., 0., 1.0], [0., 1.0]),
+            // Bottom
+            ([sp.min_x, sp.max_y, sp.min_z], [0., 0., -1.0], [1.0, 0.]),
+            ([sp.max_x, sp.max_y, sp.min_z], [0., 0., -1.0], [0., 0.]),
+            ([sp.max_x, sp.min_y, sp.min_z], [0., 0., -1.0], [0., 1.0]),
+            ([sp.min_x, sp.min_y, sp.min_z], [0., 0., -1.0], [1.0, 1.0]),
+            // Right
+            ([sp.max_x, sp.min_y, sp.min_z], [1.0, 0., 0.], [0., 0.]),
+            ([sp.max_x, sp.max_y, sp.min_z], [1.0, 0., 0.], [1.0, 0.]),
+            ([sp.max_x, sp.max_y, sp.max_z], [1.0, 0., 0.], [1.0, 1.0]),
+            ([sp.max_x, sp.min_y, sp.max_z], [1.0, 0., 0.], [0., 1.0]),
+            // Left
+            ([sp.min_x, sp.min_y, sp.max_z], [-1.0, 0., 0.], [1.0, 0.]),
+            ([sp.min_x, sp.max_y, sp.max_z], [-1.0, 0., 0.], [0., 0.]),
+            ([sp.min_x, sp.max_y, sp.min_z], [-1.0, 0., 0.], [0., 1.0]),
+            ([sp.min_x, sp.min_y, sp.min_z], [-1.0, 0., 0.], [1.0, 1.0]),
+            // Front
+            ([sp.max_x, sp.max_y, sp.min_z], [0., 1.0, 0.], [1.0, 0.]),
+            ([sp.min_x, sp.max_y, sp.min_z], [0., 1.0, 0.], [0., 0.]),
+            ([sp.min_x, sp.max_y, sp.max_z], [0., 1.0, 0.], [0., 1.0]),
+            ([sp.max_x, sp.max_y, sp.max_z], [0., 1.0, 0.], [1.0, 1.0]),
+            // Back
+            ([sp.max_x, sp.min_y, sp.max_z], [0., -1.0, 0.], [0., 0.]),
+            ([sp.min_x, sp.min_y, sp.max_z], [0., -1.0, 0.], [1.0, 0.]),
+            ([sp.min_x, sp.min_y, sp.min_z], [0., -1.0, 0.], [1.0, 1.0]),
+            ([sp.max_x, sp.min_y, sp.min_z], [0., -1.0, 0.], [0., 1.0]),
+        ];
+
+        let positions: Vec<_> = vertices.iter().map(|(p, _, _)| *p).collect();
+        let normals: Vec<_> = vertices.iter().map(|(_, n, _)| *n).collect();
+        let uvs: Vec<_> = vertices.iter().map(|(_, _, uv)| *uv).collect();
+
+        let indices = Indices::U32(vec![
+            0, 1, 2, 2, 3, 0, // top
+            4, 5, 6, 6, 7, 4, // bottom
+            8, 9, 10, 10, 11, 8, // right
+            12, 13, 14, 14, 15, 12, // left
+            16, 17, 18, 18, 19, 16, // front
+            20, 21, 22, 22, 23, 20, // back
+        ]);
+
+        let mut mesh = Mesh::new(PrimitiveTopology::TriangleList);
+        mesh.insert_attribute(Mesh::ATTRIBUTE_POSITION, positions);
+        mesh.insert_attribute(Mesh::ATTRIBUTE_NORMAL, normals);
+        mesh.insert_attribute(Mesh::ATTRIBUTE_UV_0, uvs);
+        mesh.set_indices(Some(indices));
+        mesh
+    }
+}
+```
+
+They ultimately return a `Mesh` type, which contains the buffers and attributes (like position, normal, etc). Then when you use it in your app, the Mesh is placed inside their ECS system (kinda like a node tree) so it can be rendered.
+
+## Baryon Primitives
+
+Baryon’s system [was very similar](https://github.com/kvark/baryon/blob/main/src/geometry/cuboid.rs). They use a `Geometry` struct that acts as the overarching parent for the primitive types. Then the primitives extend it, and implement (`impl`) their own methods for generating geometry (like `cuboid()` for creating a cube).
+
+In this case, the size of the cube is also dynamic with a vector you can pass of X,Y,Z scaling. The function returns the vertex and index buffers, as well as normal attributes as a `Geometry` struct.
+
+```rust
+use std::iter;
+
+impl super::Geometry {
+    pub fn cuboid(streams: super::Streams, half_extent: mint::Vector3<f32>) -> Self {
+        let pos = |x, y, z| {
+            crate::Position([
+                (x as f32) * half_extent.x,
+                (y as f32) * half_extent.y,
+                (z as f32) * half_extent.z,
+            ])
+        };
+
+        // bounding radius is half of the diagonal length
+        let radius = (half_extent.x * half_extent.x
+            + half_extent.y * half_extent.y
+            + half_extent.z * half_extent.z)
+            .sqrt();
+
+        if streams.contains(super::Streams::NORMAL) {
+            let positions = vec![
+                // top (0, 0, 1)
+                pos(-1, -1, 1),
+                pos(1, -1, 1),
+                pos(1, 1, 1),
+                pos(-1, 1, 1),
+                // bottom (0, 0, -1)
+                pos(-1, 1, -1),
+                pos(1, 1, -1),
+                pos(1, -1, -1),
+                pos(-1, -1, -1),
+                // right (1, 0, 0)
+                pos(1, -1, -1),
+                pos(1, 1, -1),
+                pos(1, 1, 1),
+                pos(1, -1, 1),
+                // left (-1, 0, 0)
+                pos(-1, -1, 1),
+                pos(-1, 1, 1),
+                pos(-1, 1, -1),
+                pos(-1, -1, -1),
+                // front (0, 1, 0)
+                pos(1, 1, -1),
+                pos(-1, 1, -1),
+                pos(-1, 1, 1),
+                pos(1, 1, 1),
+                // back (0, -1, 0)
+                pos(1, -1, 1),
+                pos(-1, -1, 1),
+                pos(-1, -1, -1),
+                pos(1, -1, -1),
+            ];
+
+            let normals = [
+                crate::Normal([0.0, 0.0, 1.0]),
+                crate::Normal([0.0, 0.0, -1.0]),
+                crate::Normal([1.0, 0.0, 0.0]),
+                crate::Normal([-1.0, 0.0, 0.0]),
+                crate::Normal([0.0, 1.0, 0.0]),
+                crate::Normal([0.0, -1.0, 0.0]),
+            ]
+            .iter()
+            .flat_map(|&n| iter::repeat(n).take(4))
+            .collect::<Vec<_>>();
+
+            let indices = vec![
+                0u16, 1, 2, 2, 3, 0, // top
+                4, 5, 6, 6, 7, 4, // bottom
+                8, 9, 10, 10, 11, 8, // right
+                12, 13, 14, 14, 15, 12, // left
+                16, 17, 18, 18, 19, 16, // front
+                20, 21, 22, 22, 23, 20, // back
+            ];
+
+            Self {
+                radius,
+                positions,
+                normals: Some(normals),
+                indices: Some(indices),
+            }
+        } else {
+            let positions = vec![
+                // top (0, 0, 1)
+                pos(-1, -1, 1),
+                pos(1, -1, 1),
+                pos(1, 1, 1),
+                pos(-1, 1, 1),
+                // bottom (0, 0, -1)
+                pos(-1, 1, -1),
+                pos(1, 1, -1),
+                pos(1, -1, -1),
+                pos(-1, -1, -1),
+            ];
+
+            let indices = vec![
+                0u16, 1, 2, 2, 3, 0, // top
+                4, 5, 6, 6, 7, 4, // bottom
+                6, 5, 2, 2, 1, 6, // right
+                0, 3, 4, 4, 7, 0, // left
+                5, 4, 3, 3, 2, 5, // front
+                1, 0, 7, 7, 6, 1, // back
+            ];
+
+            Self {
+                radius,
+                positions,
+                normals: None,
+                indices: Some(indices),
+            }
+        }
+    }
+}
+```
+
+Baryon also used an ECS system to contain multiple “objects” (or `Geometry`) and render them through the pipeline.
+
+Cool, it seems simple enough, get some vertices and indices - maybe some normals, and we’re good to go…right?
+
+# Primitives in wgpu
+
+## The wrong way
+
+Early in the “Learn WGPU” tutorial you end up making a very simple vertex buffer to make a triangle, and eventually an octagon (using the index buffer). I initially started copying that code as the basis, but I quickly found that I was duplicating a lot of the code I already had (like creating a new Vertex implementation — `PrimitiveVertex`).
+
+I created a `PrimitiveMesh` struct that would hold our buffers and allow us to instantiate multiple objects. Then I created a `PrimitiveVertex` to contain the position and color and extended the `Vertex` trait. I put this in it’s own core module, and then I created another module to contain the cube code.
+
+```rust
+// src/primitives/mod.rs
+use crate::Vertex;
+use std::ops::Range;
+use wgpu::util::DeviceExt;
+pub mod cube;
+
+/// General methods shared with all primitives
+#[repr(C)]
+#[derive(Copy, Clone, Debug, bytemuck::Pod, bytemuck::Zeroable)]
+pub struct PrimitiveVertex {
+    pub position: [f32; 3],
+    pub color: [f32; 3],
+}
+
+impl Vertex for PrimitiveVertex {
+    fn desc<'a>() -> wgpu::VertexBufferLayout<'a> {
+        use std::mem;
+        wgpu::VertexBufferLayout {
+            array_stride: mem::size_of::<PrimitiveVertex>() as wgpu::BufferAddress,
+            step_mode: wgpu::VertexStepMode::Vertex,
+            attributes: &[
+                // Position
+                wgpu::VertexAttribute {
+                    offset: 0,
+                    shader_location: 0,
+                    format: wgpu::VertexFormat::Float32x3,
+                },
+                // Color
+                wgpu::VertexAttribute {
+                    offset: std::mem::size_of::<[f32; 3]>() as wgpu::BufferAddress,
+                    shader_location: 1,
+                    format: wgpu::VertexFormat::Float32x3,
+                },
+            ],
+        }
+    }
+}
+pub struct PrimitiveMesh {
+    pub vertex_buffer: wgpu::Buffer,
+    num_vertices: u32,
+}
+
+impl PrimitiveMesh {
+    pub fn new(device: &wgpu::Device, vertices: &[PrimitiveVertex]) -> Self {
+        let num_vertices = vertices.len() as u32;
+        let vertex_buffer = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
+            label: Some("Primitive Vertex Buffer"),
+            contents: bytemuck::cast_slice(vertices),
+            usage: wgpu::BufferUsages::VERTEX,
+        });
+
+        Self {
+            num_vertices,
+            vertex_buffer,
+        }
+    }
+}
+```
+
+The cube code was very simple. I imported the new `PrimitiveVertex` type and created an array of them, initializing each with a triangle’s position:
+
+```rust
+// src/primitives/cube.rs
+use super::PrimitiveVertex;
+
+pub const CUBE_VERTICES: &[PrimitiveVertex] = &[
+    PrimitiveVertex {
+        position: [0.0, 0.5, 0.0],
+        color: [1.0, 0.0, 0.0],
+    },
+    PrimitiveVertex {
+        position: [-0.5, -0.5, 0.0],
+        color: [0.0, 1.0, 0.0],
+    },
+    PrimitiveVertex {
+        position: [0.5, -0.5, 0.0],
+        color: [0.0, 0.0, 1.0],
+    },
+];
+```
+
+I realized I needed a custom draw method to handle the new mesh type (`PrimitiveMesh` vs `ModelMesh`) so I copied the structure from the `model.rs` and removed things like the index buffer (since we didn’t need it yet).
+
+```rust
+// src/primitives/mod.rs
+
+// ...Code from above...
+
+pub trait DrawPrimitive<'a> {
+    fn draw_primitive(
+        &mut self,
+        mesh: &'a PrimitiveMesh,
+        camera_bind_group: &'a wgpu::BindGroup,
+        light_bind_group: &'a wgpu::BindGroup,
+        play_bind_group: &'a wgpu::BindGroup,
+    );
+    fn draw_primitive_instanced(
+        &mut self,
+        mesh: &'a PrimitiveMesh,
+        instances: Range<u32>,
+        camera_bind_group: &'a wgpu::BindGroup,
+        light_bind_group: &'a wgpu::BindGroup,
+        play_bind_group: &'a wgpu::BindGroup,
+    );
+}
+
+impl<'a, 'b> DrawPrimitive<'b> for wgpu::RenderPass<'a>
+where
+    'b: 'a,
+{
+    fn draw_primitive(
+        &mut self,
+        mesh: &'b PrimitiveMesh,
+        camera_bind_group: &'b wgpu::BindGroup,
+        light_bind_group: &'b wgpu::BindGroup,
+        play_bind_group: &'a wgpu::BindGroup,
+    ) {
+        self.draw_primitive_instanced(
+            mesh,
+            0..1,
+            camera_bind_group,
+            light_bind_group,
+            play_bind_group,
+        );
+    }
+
+    fn draw_primitive_instanced(
+        &mut self,
+        mesh: &'b PrimitiveMesh,
+        instances: Range<u32>,
+        camera_bind_group: &'b wgpu::BindGroup,
+        light_bind_group: &'b wgpu::BindGroup,
+        play_bind_group: &'a wgpu::BindGroup,
+    ) {
+        self.set_vertex_buffer(0, mesh.vertex_buffer.slice(..));
+        // self.set_index_buffer(mesh.index_buffer.slice(..), wgpu::IndexFormat::Uint32);
+        self.set_bind_group(1, camera_bind_group, &[]);
+        self.set_bind_group(2, light_bind_group, &[]);
+        self.set_bind_group(3, play_bind_group, &[]);
+        self.draw(0..mesh.num_vertices, instances);
+    }
+}
+```
+
+With all this code in place, we could toss it into our render flow. It’d require a bit of setup though.
+
+1. Initialize the cube struct, which also initializes the buffers.
+2. Save the cube in our app state (so we can use it during the render)
+3. Add an extra draw call for the cube in our render method
+
+And it should work! But it didn’t.
+
+I kept getting errors about the pipeline not supporting my vertex type. This led me down a rabbit hole.
+
+- Added the `PrimitiveVertex` to the render pipeline, this didn’t solve it.
+- Created a new render pipeline called `primitive_render_pipeline` for the `PrimitiveVertex`. I initialized it, added it to the app state, applied it before my primitive draw call and…new errors.
+- I thought I might have needed to implement the index buffer, so I created a very simple index buffer (`vec![0,1,2]`), initialized it, and added it to the `PrimitiveMesh` struct. That didn’t seem to solve things.
+- I realized that the render pipeline also defines the shader used for the mesh. Because I was using the same shader as the OBJ model, it was expecting much more data from the buffers and bind groups. At this point I could have created a specific shader to accomdate the simpler `PrimitiveVertex` - but I figured users would want to do things like texture their primitives (which make the current shader work fine — if I gave it the right data…)
+
+Ultimately I started to get some code smells so I stopped exploring this branch, but [you can find an error-free (but still broken) version here.](https://github.com/whoisryosuke/wgpu-hello-world/tree/play/primitives)
+
+## The right way
+
+Initially the triangle was simple because out render pipeline was also simple. Now our render pipeline was expecting a very specific shape of data, like `ModelVertex` or bind groups like a texture — all things we got for “free” by importing an `.obj` model.
+
+In order to render a primitive in this pipeline, we need to create a similar structure of data. So I started looking at the `.obj` parser that imports models into the app (inside `resources.rs`). I noticed they were doing a very similar process to the one I was trying — creating vertex + indices buffers (and bind groups in their case).
+
+```rust
+pub async fn load_model(
+    file_name: &str,
+    device: &wgpu::Device,
+    queue: &wgpu::Queue,
+    layout: &wgpu::BindGroupLayout,
+) -> anyhow::Result<model::Model> {
+		// Load the obj file into a buffer
+    let obj_text = load_string(file_name).await?;
+    let obj_cursor = Cursor::new(obj_text);
+    let mut obj_reader = BufReader::new(obj_cursor);
+
+		// Use tobj crate to load the obj from the file buffer we created
+    let (models, obj_materials) = tobj::load_obj_buf_async(
+        &mut obj_reader,
+        &tobj::LoadOptions {
+            triangulate: true,
+            single_index: true,
+            ..Default::default()
+        },
+        |p| async move {
+            let mat_text = load_string(&p).await.unwrap();
+            tobj::load_mtl_buf(&mut BufReader::new(Cursor::new(mat_text)))
+        },
+    )
+    .await?;
+
+		// Loop over the materials , create bind groups, and add it to a vec
+    let mut materials = Vec::new();
+    for m in obj_materials? {
+        let diffuse_texture = load_texture(&m.diffuse_texture, device, queue).await?;
+        let bind_group = device.create_bind_group(&wgpu::BindGroupDescriptor {
+            layout,
+            entries: &[
+                wgpu::BindGroupEntry {
+                    binding: 0,
+                    resource: wgpu::BindingResource::TextureView(&diffuse_texture.view),
+                },
+                wgpu::BindGroupEntry {
+                    binding: 1,
+                    resource: wgpu::BindingResource::Sampler(&diffuse_texture.sampler),
+                },
+            ],
+            label: None,
+        });
+
+        materials.push(model::Material {
+            name: m.name,
+            diffuse_texture,
+            bind_group,
+        })
+    }
+
+		// Loop over models, create vertex and index buffers, and push all meshes into vec
+		// This assumes there may be multiple objects in a single OBJ file
+    let meshes = models
+        .into_iter()
+        .map(|m| {
+            let vertices = (0..m.mesh.positions.len() / 3)
+                .map(|i| model::ModelVertex {
+                    position: [
+                        m.mesh.positions[i * 3],
+                        m.mesh.positions[i * 3 + 1],
+                        m.mesh.positions[i * 3 + 2],
+                    ],
+                    tex_coords: [m.mesh.texcoords[i * 2], m.mesh.texcoords[i * 2 + 1]],
+                    normal: [
+                        m.mesh.normals[i * 3],
+                        m.mesh.normals[i * 3 + 1],
+                        m.mesh.normals[i * 3 + 2],
+                    ],
+                })
+                .collect::<Vec<_>>();
+
+            let vertex_buffer = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
+                label: Some(&format!("{:?} Vertex Buffer", file_name)),
+                contents: bytemuck::cast_slice(&vertices),
+                usage: wgpu::BufferUsages::VERTEX,
+            });
+            let index_buffer = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
+                label: Some(&format!("{:?} Index Buffer", file_name)),
+                contents: bytemuck::cast_slice(&m.mesh.indices),
+                usage: wgpu::BufferUsages::INDEX,
+            });
+
+            model::Mesh {
+                name: file_name.to_string(),
+                vertex_buffer,
+                index_buffer,
+                num_elements: m.mesh.indices.len() as u32,
+                material: m.mesh.material_id.unwrap_or(0),
+            }
+        })
+        .collect::<Vec<_>>();
+
+    Ok(model::Model { meshes, materials })
+}
+```
+
+With this structure in mind, I revisited my module I created for primitives. Instead of using the `PrimitiveVertex` and `PrimitiveMesh` — I used `ModelVertex` and `model::Model`. This simplified my code a bit.
+
+The only major issue I had immediately was that the `Model` struct required a texture. I tried omitting it at first, but the shader kept complaining about undefined data. So I put in a placeholder texture for the time being. I feel like there’s a better way to handle this though, maybe with an empty buffer.
+
+```rust
+// src/primitives/mod.rs
+use crate::{
+    model::{self, Material, ModelVertex},
+    resources::load_texture,
+    texture::Texture,
+    Vertex,
+};
+use std::ops::Range;
+use wgpu::util::DeviceExt;
+pub mod cube;
+pub struct PrimitiveMesh {
+    pub model: model::Model,
+}
+
+impl PrimitiveMesh {
+    pub async fn new(
+        device: &wgpu::Device,
+        queue: &wgpu::Queue,
+        layout: &wgpu::BindGroupLayout,
+        vertices: &[ModelVertex],
+        indices: &Vec<u32>,
+    ) -> Self {
+        let primitive_type = "Cube";
+
+        println!("[PRIMITIVE] Creating cube materials");
+        // Setup materials
+        // We can't have empty material (since shader relies o n bind group)
+        // And it doesn't accept Option/None, so we give it a placeholder image
+        let mut materials = Vec::new();
+        let diffuse_texture = load_texture(&"banana.png", device, queue)
+            .await
+            .expect("Couldn't load placeholder texture for primitive");
+        let bind_group = device.create_bind_group(&wgpu::BindGroupDescriptor {
+            layout,
+            entries: &[
+                wgpu::BindGroupEntry {
+                    binding: 0,
+                    resource: wgpu::BindingResource::TextureView(&diffuse_texture.view),
+                },
+                wgpu::BindGroupEntry {
+                    binding: 1,
+                    resource: wgpu::BindingResource::Sampler(&diffuse_texture.sampler),
+                },
+            ],
+            label: None,
+        });
+
+        materials.push(model::Material {
+            name: primitive_type.to_string(),
+            diffuse_texture,
+            bind_group,
+        });
+
+        println!("[PRIMITIVE] Creating cube mesh buffers");
+        let mut meshes = Vec::new();
+
+        let vertex_buffer = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
+            label: Some(&format!("{:?} Vertex Buffer", primitive_type)),
+            contents: bytemuck::cast_slice(&vertices),
+            usage: wgpu::BufferUsages::VERTEX,
+        });
+        let index_buffer = device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
+            label: Some(&format!("{:?} Index Buffer", primitive_type)),
+            contents: bytemuck::cast_slice(&indices),
+            usage: wgpu::BufferUsages::INDEX,
+        });
+
+        meshes.push(model::Mesh {
+            name: primitive_type.to_string(),
+            vertex_buffer,
+            index_buffer,
+            num_elements: indices.len() as u32,
+            material: 0,
+        });
+
+        let model = model::Model { meshes, materials };
+
+        Self { model }
+    }
+}
+```
+
+Using it inside the app was very similar. I initialized the cube (and subsequently, the buffers and bind groups). I call 2 functions here, `cube_vertices()` and `cube_indices()` which generate the cube positional data.
+
+```rust
+// src/lib.rs
+
+// Load primitives
+let cube = PrimitiveMesh::new(
+    &device,
+    &queue,
+    &texture_bind_group_layout,
+    &cube_vertices(),
+    &cube_indices(),
+)
+.await;
+```
+
+And when I need to render the primitive, I can use the same draw function as the OBJ model:
+
+```rust
+// src/lib.rs
+render_pass.draw_model_instanced(
+  &self.cube.model,
+  0..self.instances.len() as u32,
+  &self.camera_bind_group,
+  &self.light_bind_group,
+  &self.play_bind_group,
+);
+```
+
+Here are the cube functions that contain the data. I had to make them functions because Rust didn’t like creating a `const` / static `Vec` with pre-initialized values. I also let the user pass in a “scale” to change the size of the cube (not as much control as Baryons XYZ scaling - but quick and dirty):
+
+```rust
+// src/primitives/cube.rs
+use crate::model::ModelVertex;
+
+pub fn cube_vertices(scale: f32) -> Vec<ModelVertex> {
+    vec![
+        // Front face
+        ModelVertex {
+            position: [-scale, -scale, scale],
+            normal: [0.0, 0.0, scale],
+            tex_coords: [0.0, 0.5],
+        },
+        ModelVertex {
+            position: [scale, -scale, scale],
+            normal: [0.0, 0.0, -scale],
+            tex_coords: [0.0, 0.5],
+        },
+        ModelVertex {
+            position: [scale, scale, scale],
+            normal: [scale, 0.0, 0.0],
+            tex_coords: [0.0, 0.5],
+        },
+        ModelVertex {
+            position: [-scale, scale, scale],
+            normal: [-scale, 0.0, 0.0],
+            tex_coords: [0.0, 0.5],
+        },
+        // Back face
+        ModelVertex {
+            position: [-scale, -scale, -scale],
+            normal: [0.0, scale, 0.0],
+            tex_coords: [0.0, 0.5],
+        },
+        ModelVertex {
+            position: [-scale, scale, -scale],
+            normal: [0.0, -scale, 0.0],
+            tex_coords: [0.0, 0.5],
+        },
+        ModelVertex {
+            position: [scale, scale, -scale],
+            normal: [0.0, 0.0, scale],
+            tex_coords: [0.0, 0.5],
+        },
+        ModelVertex {
+            position: [scale, -scale, -scale],
+            normal: [0.0, 0.0, -scale],
+            tex_coords: [0.0, 0.5],
+        },
+        // Top face
+        ModelVertex {
+            position: [-scale, scale, -scale],
+            normal: [scale, 0.0, 0.0],
+            tex_coords: [0.0, 0.5],
+        },
+        ModelVertex {
+            position: [-scale, scale, scale],
+            normal: [-scale, 0.0, 0.0],
+            tex_coords: [0.0, 0.5],
+        },
+        ModelVertex {
+            position: [scale, scale, scale],
+            normal: [0.0, scale, 0.0],
+            tex_coords: [0.0, 0.5],
+        },
+        ModelVertex {
+            position: [scale, scale, -scale],
+            normal: [0.0, -scale, 0.0],
+            tex_coords: [0.0, 0.5],
+        },
+        // Bottom face
+        ModelVertex {
+            position: [-scale, -scale, -scale],
+            normal: [0.0, 0.0, scale],
+            tex_coords: [0.0, 0.5],
+        },
+        ModelVertex {
+            position: [scale, -scale, -scale],
+            normal: [0.0, 0.0, -scale],
+            tex_coords: [0.0, 0.5],
+        },
+        ModelVertex {
+            position: [scale, -scale, scale],
+            normal: [scale, 0.0, 0.0],
+            tex_coords: [0.0, 0.5],
+        },
+        ModelVertex {
+            position: [-scale, -scale, scale],
+            normal: [-scale, 0.0, 0.0],
+            tex_coords: [0.0, 0.5],
+        },
+        // Right face
+        ModelVertex {
+            position: [scale, -scale, -scale],
+            normal: [0.0, scale, 0.0],
+            tex_coords: [0.0, 0.5],
+        },
+        ModelVertex {
+            position: [scale, scale, -scale],
+            normal: [0.0, -scale, 0.0],
+            tex_coords: [0.0, 0.5],
+        },
+        ModelVertex {
+            position: [scale, scale, scale],
+            normal: [0.0, 0.0, scale],
+            tex_coords: [0.0, 0.5],
+        },
+        ModelVertex {
+            position: [scale, -scale, scale],
+            normal: [0.0, 0.0, -scale],
+            tex_coords: [0.0, 0.5],
+        },
+        // Left face
+        ModelVertex {
+            position: [-scale, -scale, -scale],
+            normal: [scale, 0.0, 0.0],
+            tex_coords: [0.0, 0.5],
+        },
+        ModelVertex {
+            position: [-scale, -scale, scale],
+            normal: [-scale, 0.0, 0.0],
+            tex_coords: [0.0, 0.5],
+        },
+        ModelVertex {
+            position: [-scale, scale, scale],
+            normal: [0.0, scale, 0.0],
+            tex_coords: [0.0, 0.5],
+        },
+        ModelVertex {
+            position: [-scale, scale, -scale],
+            normal: [0.0, -scale, 0.0],
+            tex_coords: [0.0, 0.5],
+        },
+    ]
+}
+
+pub fn cube_indices() -> Vec<u32> {
+    vec![
+        0, 1, 2, 0, 2, 3, // front
+        4, 5, 6, 4, 6, 7, // back
+        8, 9, 10, 8, 10, 11, // top
+        12, 13, 14, 12, 14, 15, // bottom
+        16, 17, 18, 16, 18, 19, // right
+        20, 21, 22, 20, 22, 23, // left
+    ]
+}
+```
+
+This got the cubes rendering!
+
+![Screenshot of the final 3D app with cubes - larger and more yellow than the top image](./vlcsnap-2022-10-14-16h45m58s201.png)
+
+You can find [the full final code here on Github.](https://github.com/whoisryosuke/wgpu-hello-world/blob/play/primitives-model-test/)
+
+# The Recap
+
+So basically, to render primitive geometry we need to:
+
+- Understand the current structure of the render pipeline and adapt or assimilate our primitive geometry to it. If you have a render pipeline, you probably have a **Vertex** type to use, as well as defined bind groups (like any shader uniforms your app might use).
+- Or create a new render pipeline that supports our primitive geometry (if we need to pass less or different properties). This presumes your existing render pipelines might be too complex for simple primitives (like too many bind groups). In this case you’ll want to create a new Vertex and Mesh type, a new pipeline to support them, and an appropriate shader that’s structured to the new pipeline. Often though for primitives, you’ll want to keep them consistent with other models in your app (since the user will often need similar attributes, like normals or texture coordinates).
+
+You can see [an example in the Bevy repo of how they handle render pipelines](https://github.com/bevyengine/bevy/blob/018509c3a1b238fe4e2569357267de428ca2ad06/crates/bevy_render/src/render_resource/pipeline_cache.rs#L31-L34) - it seems like they have 2, one for “rendering” (probably 99% of everything) and one for “computing” (aka compute shaders).
+
+I hope this was informative and helped enlighten you a bit more on how low level render pipelines work. If you have any questions or comments, [feel free to hit me up on Twitter.](https://twitter.com/whoisryosuke)
+
+Stay curious,
+Ryo

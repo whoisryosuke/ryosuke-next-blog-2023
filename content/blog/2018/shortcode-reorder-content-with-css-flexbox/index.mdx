@@ -1,0 +1,61 @@
+---
+title: shortcode - Reorder content with CSS Flexbox
+date: "2018-06-05"
+section: blog
+cover_image: "../../../../src/assets/img/categories/shortcode-code-snippets.jpg"
+tags: ["laravel", "php", "api", "shortcode", "code snippet", "tips"]
+
+layout: "@/layouts/BlogLayout.astro"
+---
+
+Ever had a situation where you have elements side by side on desktop, but they stack in the wrong order on mobile? Maybe the image should be above the title, or vice versa. Move the image (or any element) under content if it's hardcoded above it in HTML using this bit of CSS Flexbox magic:
+
+```html
+<style>
+  @media (max-width: 800px) {
+    .container {
+      display: -webkit-box;
+      display: -moz-box;
+      display: -ms-flexbox;
+      display: -webkit-flex;
+      display: flex;
+      -webkit-box-orient: vertical;
+      -moz-box-orient: vertical;
+      -webkit-flex-direction: column;
+      -ms-flex-direction: column;
+      flex-direction: column;
+    }
+    .content {
+      -webkit-box-ordinal-group: 1;
+      -moz-box-ordinal-group: 1;
+      -ms-flex-order: 1;
+      -webkit-order: 1;
+      order: 1;
+    }
+    .sidebar {
+      -webkit-box-ordinal-group: 2;
+      -moz-box-ordinal-group: 2;
+      -ms-flex-order: 2;
+      -webkit-order: 2;
+      order: 2;
+    }
+  }
+</style>
+
+<div class="container">
+  <div class="sidebar"></div>
+  <div class="content"></div>
+</div>
+```
+
+The code works by hard-coding the "order" property, which flexbox uses to determine the order the elements should be displayed. We only hard-code it on mobile, using CSS Media Queries.
+
+Hope that helps,
+Ryo
+
+---
+
+**References**
+
+- [Original tweet](https://twitter.com/whoisryosuke/status/1004117307411427329)
+- [See the code gist](https://gist.github.com/whoisryosuke/b8b67331d115b772c4dae99fea16fe79)

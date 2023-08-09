@@ -1,0 +1,33 @@
+---
+title: shortcode - Make yourself Wordpress admin using SQL 🔑⚡️
+date: "2018-07-08"
+section: blog
+cover_image: "../../../../src/assets/img/categories/shortcode-code-snippets.jpg"
+tags: ["wordpress", "sql", "shortcode", "code snippet", "tips"]
+
+layout: "@/layouts/BlogLayout.astro"
+---
+
+I recently ran into an issue where I wasn't the admin in a Wordpress install, and after running this bit of SQL, I was quickly back in command:
+
+```sql
+INSERT INTO `wp_users` (`user_login`, `user_pass`, `user_nicename`, `user_email`, `user_status`)
+VALUES ('ryo', MD5('easy123'), 'firstname lastname', 'ryo@example.com', '0');
+
+INSERT INTO `wp_usermeta` (`umeta_id`, `user_id`, `meta_key`, `meta_value`)
+VALUES (NULL, (Select max(id) FROM wp_users), 'wp_capabilities', 'a:1:{s:13:"administrator";s:1:"1";}');
+
+INSERT INTO `wp_usermeta` (`umeta_id`, `user_id`, `meta_key`, `meta_value`)
+VALUES (NULL, (Select max(id) FROM wp_users), 'wp_user_level', '10');
+```
+
+Hope that helps,
+Ryo
+
+---
+
+**References**
+
+- [Original tweet](https://twitter.com/whoisryosuke/status/1013615808948285441)
+- [See the code gist](https://gist.github.com/whoisryosuke/9c49aed1a0b759731f0bc019ec903975)
+- [Add admin via SQL](https://www.inmotionhosting.com/support/edu/wordpress/333-add-admin-via-mysql)

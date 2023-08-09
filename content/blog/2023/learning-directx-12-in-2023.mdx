@@ -1,0 +1,185 @@
+---
+title: Learning DirectX 12 in 2023
+date: "2023-01-30"
+section: blog
+tags: ["directx", "directx 12", "c++", "graphics"]
+cover_image: "./Learning_DirectX_12_in_2023.png"
+
+layout: "@/layouts/BlogLayout.astro"
+---
+
+For the past couple months I’ve been slowly diving into DirectX 12. After learning other graphic backends like OpenGL or WebGPU, I was interested in trying something more advanced and industry standard. After a lot of reading documentation, doing tutorials, and playing with a lot of example code - I thought I’d share the multitude of resources I discovered. And I’ll share my experience with most of the content, to give you a better idea of what might work or not for you.
+
+This is my journey to learning DirectX 12, and tips to help get you ready to learn it.
+
+_Normally there’s a TLDR here with a link or two, but this article is packed full of helpful links, so it’s definitely worth going through!_
+
+# Why learn DirectX 12?
+
+There’s definitely lots of reasons not to, like if you need to create a cross-platform renderer or mobile specific renderer. I wouldn’t feel pressured to dive into a new and very complicated API if you don’t have a good reason to already.
+
+But if you’re even slightly interested in DirectX 12, you probably have a slight idea of how amazing it is. It’s provides developers with much greater access and control over resource and memory management in applications and games — allowing you to optimize them more than DirectX 11 or similar, simpler graphic APIs.
+
+If you’re looking to create AAA games on PC or Xbox, or high fidelity 3D applications, you’ll definitely need to learn DirectX 12. Likewise, you’ll need it to use new 3D technology, like raytracing or compute shaders.
+
+# “Learn DirectX 11!”
+
+The first thing everyone will tell you to do when learning DirectX 12 is to go back and learn 11 if you haven’t already. A lot of the APIs you’ll use in DX12 were used in DX11, and some are even just renamed.
+
+But if you’re like me, **_you probably skipped this step_**. I figured as someone who’s used a few different graphic backends, I’d be alright. That wasn’t the case! But would have DX11 helped me? Not completely.
+
+Most of the issues I had were understanding the dramatically different architecture for drawing (aka the Draw Command Lists, Vsync and Swap Chains, etc). These weren’t in DirectX 11, so learning that first wouldn’t have helped. What would have helped? **Learning Vulkan first**. If you have any experience with Vulkan, it’s a very similar architecture to DirectX 12.
+
+> ⚠️ That being said, I wouldn’t learn DirectX 12 until you have a solid grasp of one of the other “simpler” graphic backends like OpenGL, DirectX 11, or even Web GPU.
+
+# “Before You DirectX 12” Checklist
+
+I never like to say “you absolutely need to know X before Y”, but when you’re learning a new concept it’s easier when you know what’s what. Is this a DirectX 12 API or just C++ stuff? The more I rushed I found myself asking these questions. It’s not a wrong approach - though you’ll find it can become overwhelming quickly looking everything up.
+
+The more knowledge you can come reinforced with will make your journey a breeze. So these are the topics you should brush up on prior to DirectX 12:
+
+- ☑ **Learn all basic C++ concepts** like the basic types (int, vector, etc), classes, conditionals, loops — you’ll need a lot of it.
+- ☑ **Dig into advanced C++ concepts** like [I/O streaming](https://cplusplus.com/reference/iolibrary/) or [memory allocation](https://cplusplus.com/reference/memory/) (like stack vs heap). These concepts will be used heavily since graphics programming tends to be very low level and deal with streams of data inside “buffers”.
+- ☑ **Using libraries in C++**. Like much graphics projects, you’ll find yourself linking to DLLs to access APIs from graphic drivers (_like DirectX 12 itself_) — or maybe other libraries like **DirectXTK** for utilities or **imgui** for UI. Most [tutorials for OpenGL](https://learnopengl.com/) will cover this process, ideally you just need to learn how to do it in Visual Studio (instead of going down a CMake rabbit hole).
+- ☑ **Refresh on modern C++** standards from C++ 11, 17, and _maybe_ 20. Tips like using `auto` to quickly define variables will help you work faster or understand code examples from tutorials. Don’t worry about going too deep here.
+- ☑ **Learn the basics of graphics programming.** From transformation matrices, to vertices, to techniques like depth buffers or shadow maps — these are all things you’ll exercise in DirectX 12 and previous experience with a simpler API (like OpenGL) would make the process easier. I recommend following the tutorials on [the Learn OpenGL website](https://learnopengl.com/), it does a great job of going over each concept and explaining them with visual diagrams.
+- ☑ **Learn common design patterns and architectures.** From the simple infinite game loop, to factories or observers — you’ll find these patterns repeated in a lot of codebases and tutorials without much explanation. I recommend reading over [the Game Programming Patterns](https://gameprogrammingpatterns.com/contents.html), and a couple introductory game development tutorials. If you have experience with another programming language like JavaScript you might already be familiar with these concepts.
+
+## Not required - but consider…
+
+- ☑ **Maybe read a Vulkan tutorial or two…** Like I mentioned earlier, DirectX 12 is very low level, way more than OpenGL. There’s way more Vulkan stuff out there than DirectX 12, so you might have an easier time finding an article or video that helps “click” some concepts before you dive into DX12.
+- ☑ **Play around with Microsoft UWP or WinRT apps.** Most DirectX 12 tutorials will use Windows APIs for windows management (aka creating a blank window for DX12 to render inside). These window APIs come from a library called [WinRT](https://learn.microsoft.com/en-us/windows/uwp/cpp-and-winrt-apis/), part of [the Universal Windows Platform (UWP).](https://learn.microsoft.com/en-us/windows/uwp/get-started/universal-application-platform-guide) **This isn’t a requirement**, since you can use open source and cross-platform libraries like [GLFW](glfw.org) to do similar operations — but most DX12 tutorials won’t use GLFW, so keep that in mind.
+
+# What will learn alongside DirectX 12?
+
+This is probably where the **_“start with DirectX 11”_** supporters win a bit — there’s a quite a few legacy Microsoft libraries you’ll find yourself using alongside DirectX 12 to simplify development.
+
+From **SimpleMath** for calculating matrix math to **DirectXTex** load and process textures, you’ll inevitably learn and use these libraries as you explore DirectX 12 deeper. And most of these libraries are not new to DirectX 12, if you’ve used DirectX 11 you probably have experience with them.
+
+- [DirectXTK 12](https://github.com/microsoft/DirectXTK12/wiki/DirectXTK) (includes [SimpleMath](https://github.com/Microsoft/DirectXTK/wiki/SimpleMath) and other goodies)
+- [DirectX Shader Compiler](https://github.com/microsoft/DirectXShaderCompiler)
+- [DirectXTex](https://github.com/microsoft/DirectXTex)
+- [D3D12 Memory Allocator](https://github.com/GPUOpen-LibrariesAndSDKs/D3D12MemoryAllocator)
+- [Win32 window APIs](https://learn.microsoft.com/en-us/windows/win32/learnwin32/creating-a-window)
+
+# Getting started with DirectX 12
+
+When you’re initially getting started with DirectX 12, there are a few ways to get off the ground. From the official template in Visual Studio, to Microsoft’s examples on Github, to plenty of tutorials online.
+
+I outlined a bunch of the different methods I tried during my studies, and the pros/cons of using each one.
+
+## Visual Studio Template
+
+When I initially started, I used the official DirectX 12 template that comes with Visual Studio. This gets you up and running with DirectX 12 rendering a spinning cube. Just install Visual Studio, make sure DirectX development is enabled, and you should find a DirectX 12 template.
+
+It’s a great way to jump from nothing to a cube, but it also relies heavily on Windows APIs (for things like window management) and their custom framework abstraction. It’s a decent app to reverse engineer [while you read the extensive DirectX docs.](https://learn.microsoft.com/en-us/windows/win32/direct3d12/directx-12-programming-guide)
+
+![Screenshot of a native DirectX 12 app rendering a triangle](./Untitled.png)
+
+## Official Examples
+
+I eventually moved on to [the official **DirectX 12 Graphic Samples**](https://github.com/microsoft/DirectX-Graphics-Samples), which had isolated examples that were easier to learn from incrementally. The [“Hello World” sample](https://github.com/microsoft/DirectX-Graphics-Samples/tree/master/Samples/Desktop/D3D12HelloWorld) is the best starting point to get the renderer setup with a triangle. This repo is a great reference when you need to verify process and structure (like the order of operation of APIs). Whenever I had a strange bug in my app, I’d go back to these examples to do a diff and see what I was missing.
+
+## Alain Galvan tutorial
+
+Since the DirectX documentation was a bit hard to difficult to read through (not very human friendly - gets lost in it’s acronyms), I started looking for alternative and modern resources for learning. I stumbled onto this blog post [**Raw DirectX 12** by Alain Galvan](https://alain.xyz/blog/raw-directx12) (and his entire blog full of fantastic graphic programming tips) which breaks down the DX12 render pipeline with nice visual diagrams and quick code examples.
+
+![An example of the visuals from [Alain’s Raw DirectX 12 tutorial.](https://alain.xyz/blog/raw-directx12)](./Untitled%201.png)
+
+I’ll be honest, this also was nice - but didn’t do a good job of explaining relationships between parts of the pipeline. It’s likely because they also have a book you can buy that goes into more detail. I also had issues spinning up the [directx12-seed repo](https://github.com/alaingalvan/directx12-seed). Since my PC / graphics card doesn’t support all the DX12 features (like raytracing), the app would error out instead of running. As someone new to DirectX 12, stuff like this is an immediate productivity killer.
+
+## Alex Tardiff tutorial
+
+Still not satisfied, I kept searching for more tutorials. I stumbled on [this “gentle” introduction to DirectX12 by Alex Tardif](https://alextardif.com/DX12Tutorial.html). This one was probably one of the more confusing tutorials as a beginner.
+
+![Screenshot from the Alex Tardiff tutorial. A native Windows desktop window renders a triangle centered in the screen with a different primary color gradating from each corner.](./Untitled%202.png)
+
+Most of the tutorial is done using a custom abstraction around DirectX 12 (named “**D3D12Lite**”), which simplifies many of the operations like creating buffers or managing memory. The issue is that the tutorial doesn’t cover what **D3D12Lite** is doing under the hood, so you end up having to reverse engineer it yourself. You end up learning their framework - more than D3D12.
+
+This was better as a resource to come back to once I had established a foundation using a “hello world” tutorial/template, and progressed with that far enough to consider higher level abstractions. The architecture of **D3D12Lite** was easier to understand that something like say [MiniEngine](https://github.com/microsoft/DirectX-Graphics-Samples/tree/master/MiniEngine).
+
+## 3Dgep tutorial
+
+Then I finally found one the best tutorials I’d seen yet on [3dgep called Learning DirectX 12](https://www.3dgep.com/learning-directx-12-1/). The article series goes into the history of DirectX, each part of the pipeline, and how to setup everything from scratch. I didn’t actually follow the tutorial part because they focused on using Windows APIs for things like windows management, but it was a fantastic read compared to the official Microsoft docs.
+
+## Braynzarsoft tutorial
+
+This one was [another fantastic tutorial](https://www.braynzarsoft.net/viewtutorial/q16390-04-directx-12-braynzar-soft-tutorials) that also speaks human (and not acronyms), and gives clear examples for what things are - [like a code example for root parameters.](https://www.braynzarsoft.net/viewtutorial/q16390-directx-12-constant-buffers-root-descriptor-tables) It was lacking visuals, but I appreciated complete code examples at the end of each post for clarity. Another great reference if one of the tutorials doesn’t work for you.
+
+## Video tutorials
+
+![A screenshot from the 5th episode of the Olympus Mons Tutorials DirectX 12 series showing a Visual Studio IDE in the background and a small window showing the game engine splash screen with the text “The Olympus Engine” and a logo centered. ](./Untitled%203.png)
+
+There’s not a wealth of introductory DirectX 12 video content online, but [this series by Olympus Mons Tutorials](https://www.youtube.com/watch?v=2vrEIhAajhM&list=PLN2s0qemU7W0NfgfMF_WvKcP2BCOX1E2c&index=1) was great for starting from scratch and going step by step. It uses Microsoft APIs for window management, but beyond that it’s DX12.
+
+# Taking DX12 further
+
+After the beginner tutorials and articles, you might ask yourself, where do I go?
+
+## Microsoft ATG Samples
+
+This is the [original repo for DirectX sample code for Xbox and PC](https://github.com/microsoft/Xbox-ATG-Samples/tree/main/PCSamples/). If you're developing modern games for current-gen consoles (Xbox One), it's recommended you use [the latest GDK samples](https://github.com/microsoft/Xbox-GDK-Samples/) (that use [the Microsoft Game Development Kit](https://learn.microsoft.com/en-us/gaming/gdk/)). The GDK samples have PC samples, but there's way less than the ATG version.
+
+Both repos contain examples of basic 3D graphics and game development techniques, like rendering a texture, a PBR pipeline, or MSAA post processing.
+
+Most of these samples use library code from Microsoft, like gamepad support, so keep in mind that some of the functionality won't be cross-platform. I'd only recommend exploring these samples if you're desperate for more advanced examples and can separate the "magic" SDK code from real DirectX 12.
+
+## MiniEngine
+
+![Screenshot of the MiniEngine DirectX 12 app rendering a Roman colosseum](./Untitled%204.png)
+
+The best place to get started is [MiniEngine, part of the DirectX Graphic Samples.](https://github.com/microsoft/DirectX-Graphics-Samples/tree/master/MiniEngine) It’s a 3D game engine written in DirectX 12 with a lot of features built out (resource management architecture, shaders like PBR, etc). The app itself can load any 3D model provided (or use a default one) and allow the user to preview it. It’s a great reference for creating a whole application around DirectX.
+
+## DirectXTK
+
+Alongside MiniEngine, you’ll want to look into [the DirectX Toolkit](https://github.com/microsoft/DirectXTK12/wiki/Getting-Started). This is a set of utilities by Microsoft that simplify graphics and game development. It contains libraries like DirectXMesh for parsing and optimizing meshes for DX12, or [DirectXMath](https://github.com/Microsoft/DirectXMath) which handles 3D math operations like the OpenGL library [glm](https://github.com/g-truc/glm). It also has utilities for gamepad input or sprite fonts. You can [see a list of the headers here](https://github.com/microsoft/DirectXTK12/wiki/Adding-the-DirectX-Tool-Kit#adding-the-headers) to get an idea of the features. You’ll definitely want to include this in your project if you don’t want to think about a lot of these solved problems (and don’t have to worry about cross-platform support).
+
+The DXTK also has [a great tutorial series on creating a game loop](https://github.com/microsoft/DirectXTK12/wiki/The-basic-game-loop) that breaks down the DX12 pipeline through the process. They also have [a repo with Xbox game SDK samples](https://github.com/microsoft/Xbox-GDK-Samples) (not games — but features you’d use in games like [gamepad input](https://github.com/microsoft/Xbox-GDK-Samples/tree/main/Samples/System/GameInputInterfacing)).
+
+## Cauldron
+
+![A grid of 6 different screenshots of the Cauldron DirectX 12 app rendering different scenes, like a Roman colosseum or space helmet](./Untitled%205.png)
+
+[Cauldron](https://github.com/GPUOpen-LibrariesAndSDKs/Cauldron) is a 3D render engine framework that uses [DirectX 12](https://github.com/GPUOpen-LibrariesAndSDKs/Cauldron/tree/master/src/DX12) or Vulkan as the backend. It was built by AMD for internal prototypes and projects. You use it like a static library and import it into your existing C++ app to use as a framework. It was built first using DirectX 12, then Vulkan support added later, so great project to analyze from that perspective.
+
+It features a lot of intermediate to advanced features you’d want to add to your own DirectX 12 engine, like a ring buffer or post processing effects (anti-aliasing, bloom, HDR skyboxes). And it’s fairly well structured and documented, so it’s easy to reverse engineer.
+
+## Game Engine Series
+
+If you’re more of a video person, there’s not a lot of videos on YouTube for DirectX 12. Most of it is pretty high level or conceptual - like [presentations from Microsoft developers](https://www.youtube.com/playlist?list=PLeHvwXyqearWT_NT7CiGm_kEiKabWNPKw). But I did find one video series that was very in-depth and impressive.
+
+This series on creating a cross-platform game engine had [a section on adding DirectX 12](https://www.youtube.com/watch?v=mrxTQAtNFuc&list=PLU2nPsAdxKWQw1qBS9YdFi9hUMazppjV7&index=3). It comes from the perspective of making a Unity/Unreal Engine-like game engine, using Windows APIs for UI, and multiple graphic backends (using DirectX12 as the primary one).
+
+This series definitely isn’t for beginners of DirectX 12, it’s better when you’ve learned the basics and you want to take it to the next level and apply it in a realistic application.
+
+## Unreal Engine
+
+If you sign up to become a Unreal Engine developer (which is free), you can get access to [the engine’s source code on Github](https://github.com/EpicGames/UnrealEngine). This would probably be best saved for the end of your studies because this is like asking someone to learn by reading a book on rocket science right off the bat. There are much better and simpler resources that break down features inside Unreal Engine (like the video series above!).
+
+Unreal Engine is very complicated and has heavy abstractions around graphic backends. Check out [this blog post by Kostas Anagnostou on How Unreal Renders a Frame](https://interplayoflight.wordpress.com/2017/10/25/how-unreal-renders-a-frame/) to get an idea of how complex it is. [This post by Alain](https://alain.xyz/blog/unreal-engine-architecture) also has a nice GIF showing the render order of the UI.
+
+## Learning from AI
+
+I also experimented with using Notion AI as a tool for learning various DirectX concepts. I prompted the AI to explain a concept, and even provide code samples. [You can see the results of that here](https://whoisryosuke.com/blog/2023/letting-ai-write-my-notes-and-code/), and see how accurate — and inaccurate — the AI was at teaching. [Here’s a link to the full notes](https://www.notion.so/DirectX-12-5635ea56e66a4fffae3017f3bfba887d) if you’re curious.
+
+I wouldn’t recommend this for beginners, since the AI tends to “invent” APIs that don’t exist. Without prior experience, you’ll have a harder time debugging and picking up bad practices.
+
+# Community
+
+When the videos and tutorials fail and you need a helping hand, or you just want to connect with other people doing similar cool 3D renderer stuff — I’d definitely recommend checking out these Discords communities.
+
+- [**DirectX Discord**](https://discord.gg/directx) - The official DirectX community.
+- [**Graphics Programming Discord**](https://discord.gg/RbKBxG8Q) - They have a DirectX 11 study group happening now that’s making [an introductory tutorial series](https://graphicsprogramming.github.io/learnd3d11/).
+- [**RenderDoc**](https://discord.gg/BQtAvXT4) - Not directly DirectX, but if you need help debugging apps using RenderDoc.
+- **[Shadertoy](https://discord.gg/bBUSK9cj)** - Also not directly DirectX, but a great resource for shader debugging and tips.
+
+# Just dive in
+
+The most important thing to do is dive right in. Don’t get intimidated how much you think you have to learn, or the mountain of documentation and resources that you have to dig through. Like I mentioned in the beginning, I jumped in without DirectX 11 knowledge, and I’m doing fine.
+
+There are plenty of entry points into DirectX 12, especially if you have any experience in similar fields (game dev, C++, etc). It’s also ok to walk away, learn other stuff, and come back. It’ll surprise you how much things become easier to learn once you’ve done it, and if it’s with OpenGL or Vulkan and not DirectX first — that’s ok.
+
+As always, if you have any questions or want to share your own DirectX work, feel free to message me on [Twitter](https://twitter.com/whoisryosuke) or [Mastodon](https://mastodon.gamedev.place/@whoisryosuke).
+
+Stay curious
+Ryo
