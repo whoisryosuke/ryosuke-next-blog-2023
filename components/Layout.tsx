@@ -1,6 +1,15 @@
-export default function Layout({ children }) {
+import Head from 'next/head';
+import { PropsWithChildren } from 'react';
+
+type Props = {
+  blog?: boolean;
+}
+
+const Layout = ({ children, blog = false }: PropsWithChildren<Props>) => {
   return (
     <>
+      <Head>
+      </Head>
       <div className="wrapper">{children}</div>
       <style jsx>{`
         .wrapper {
@@ -47,3 +56,5 @@ export default function Layout({ children }) {
     </>
   )
 }
+
+export default Layout
