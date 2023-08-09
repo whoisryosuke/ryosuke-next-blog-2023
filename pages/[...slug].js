@@ -6,9 +6,9 @@ import dynamic from "next/dynamic";
 import Head from "next/head";
 import Link from "next/link";
 import path from "path";
-import CustomLink from "../../components/CustomLink";
-import Layout from "../../components/Layout";
-import { postFilePaths, POSTS_PATH } from "../../utils/mdxUtils";
+import CustomLink from "@components/CustomLink";
+import Layout from "@components/Layout";
+import { postFilePaths, POSTS_PATH } from "@utils/mdxUtils";
 import { visit } from "unist-util-visit";
 
 // Adds the blog post slug to the image URL
@@ -36,7 +36,7 @@ const components = {
   // It also works with dynamically-imported components, which is especially
   // useful for conditionally loading components for certain routes.
   // See the notes in README.md for more details.
-  TestComponent: dynamic(() => import("../../components/TestComponent")),
+  TestComponent: dynamic(() => import("../components/TestComponent")),
   Head,
 };
 
@@ -81,8 +81,7 @@ export const getStaticProps = async ({ params }) => {
   console.log("page slug", params.slug, params.slug.join("/"));
 
   // We add back the `blog/` to the path
-  const slugs = ["blog", ...params.slug];
-  const slugPath = slugs.join("/");
+  const slugPath = params.slug.join("/");
 
   let postFilePath;
   // Check if it exists
@@ -143,8 +142,7 @@ export const getStaticPaths = async () => {
       const slug = path
         .replace(/^\/|\/$/g, "") // Remove before/after trailing slashes
         .replace("/index", "") // Trim off index
-        .split("/") // Create an array format - required for getStaticProps above
-        .filter((slug) => slug !== "blog"); // Filter out the blog folder
+        .split("/"); // Create an array format - required for getStaticProps above
 
       return { params: { slug } };
     });
