@@ -15,7 +15,8 @@
     "next-mdx-remote": "^3.0.1",
     "next-remote-watch": "1.0.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "unist-util-visit": "^5.0.0"
   },
   "devDependencies": {
     "@linaria/babel-preset": "^4.2.1",

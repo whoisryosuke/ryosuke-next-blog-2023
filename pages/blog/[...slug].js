@@ -9,6 +9,20 @@ import path from "path";
 import CustomLink from "../../components/CustomLink";
 import Layout from "../../components/Layout";
 import { postFilePaths, POSTS_PATH } from "../../utils/mdxUtils";
+import { visit } from "unist-util-visit";
+
+function transformImgSrc({ slug }) {
+  return (tree, file) => {
+    visit(tree, "paragraph", (node) => {
+      const image = node.children.find((child) => child.type === "image");
+
+      if (image) {
+        const fileName = image.url.replace("./", "");
+        image.url = `/${slug}/${fileName}`;
+      }
+    });
+  };
+}
 
 // Custom components/renderers to pass to MDX.
 // Since the MDX files aren't loaded by webpack, they have no knowledge of how
@@ -92,7 +106,7 @@ export const getStaticProps = async ({ params }) => {
   const mdxSource = await serialize(content, {
     // Optionally pass remark/rehype plugins
     mdxOptions: {
-      remarkPlugins: [],
+      remarkPlugins: [[transformImgSrc, { slug: slugPath }]],
       rehypePlugins: [],
     },
     scope: data,
