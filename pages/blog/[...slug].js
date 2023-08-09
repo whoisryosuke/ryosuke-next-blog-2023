@@ -107,6 +107,7 @@ export const getStaticProps = async ({ params }) => {
   };
 };
 
+// Generate a path for each MDX file
 export const getStaticPaths = async () => {
   const paths = postFilePaths
     // Remove root path
