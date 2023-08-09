@@ -10,6 +10,8 @@ import CustomLink from "@components/CustomLink";
 import Layout from "@components/Layout";
 import { postFilePaths, POSTS_PATH } from "@utils/mdxUtils";
 import { visit } from "unist-util-visit";
+import remarkPrism from "remark-prism";
+import "prismjs/themes/prism-tomorrow.css";
 
 // Adds the blog post slug to the image URL
 // We do this because NextJS pages don't include the blog post slug
@@ -111,6 +113,7 @@ export const getStaticProps = async ({ params }) => {
       remarkPlugins: [
         // Fixes image URLs with correct slug
         [transformImgSrc, { slug: slugPath }],
+        remarkPrism,
       ],
       rehypePlugins: [],
     },
