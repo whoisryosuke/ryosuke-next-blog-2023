@@ -11,6 +11,9 @@ import Layout from "../../components/Layout";
 import { postFilePaths, POSTS_PATH } from "../../utils/mdxUtils";
 import { visit } from "unist-util-visit";
 
+// Adds the blog post slug to the image URL
+// We do this because NextJS pages don't include the blog post slug
+// and images are organized into folders by that slug
 function transformImgSrc({ slug }) {
   return (tree, file) => {
     visit(tree, "paragraph", (node) => {
@@ -106,7 +109,10 @@ export const getStaticProps = async ({ params }) => {
   const mdxSource = await serialize(content, {
     // Optionally pass remark/rehype plugins
     mdxOptions: {
-      remarkPlugins: [[transformImgSrc, { slug: slugPath }]],
+      remarkPlugins: [
+        // Fixes image URLs with correct slug
+        [transformImgSrc, { slug: slugPath }],
+      ],
       rehypePlugins: [],
     },
     scope: data,
@@ -123,6 +129,8 @@ export const getStaticProps = async ({ params }) => {
 
 // Generate a path for each MDX file
 export const getStaticPaths = async () => {
+  // The goal here is to sanitize the file names to work as URLs
+  // and return an array of the slug
   const paths = postFilePaths
     // Remove root path
     .map((path) => path.replace(POSTS_PATH, ""))
