@@ -1,12 +1,12 @@
 import fs from "fs";
 import path from "path";
 
-const getFiles = async (dir) => {
+const getFiles = async (dir): Promise<string[]> => {
   // Are we client-side or something stupid NextJS requires? Check for fs.
   if (!fs || !("readdirSync" in fs)) return;
   const folders = await fs.readdirSync(dir);
 
-  const files = await folders.reduce(async (waitFiles, folder) => {
+  const files = await folders.reduce<Promise<string[]>>(async (waitFiles, folder) => {
     // We have to await the accumulator here because function is async
     let allFiles = await waitFiles;
     // The full file path
@@ -22,7 +22,7 @@ const getFiles = async (dir) => {
       allFiles.push(fullPath);
     }
     return allFiles;
-  }, []);
+  }, new Promise(() => []));
 
   return files;
 };
