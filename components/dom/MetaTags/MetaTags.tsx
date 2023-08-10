@@ -1,10 +1,12 @@
 import React from "react";
 
 export type MetaTagsProps = {
-  title: string;
-  description: string;
-  image: string;
-  url: string;
+  title?: string;
+  description?: string;
+  // Path of image locally on domain (e.g. `/images/favicon.png`)
+  image?: string;
+  // Path appended to domain (e.g. `/blog`)
+  url?: string;
 };
 
 const MetaTags = ({

@@ -6,17 +6,18 @@ import ThemeProvider from '../ThemeProvider/ThemeProvider'
 import Copyright from '../Copyright/Copyright'
 import { MetaTagsProps } from '../MetaTags/MetaTags'
 import ThemeToggle from '../ThemeToggle/ThemeToggle'
+import Paper from '../Paper/Paper'
 
 type Props = {
     title: string;
-    meta: MetaTagsProps;
+    meta?: MetaTagsProps;
 }
 
 const Page = ({children, title, meta}: PropsWithChildren<Props>) => {
   return (
     <ThemeProvider>
         <Html title={title} meta={meta}>
-                <Box
+                <Paper
                     // display="flex"
                     flexDirection="column"
                     justifyContent="space-between"
@@ -38,7 +39,7 @@ const Page = ({children, title, meta}: PropsWithChildren<Props>) => {
                     <footer>
                         {/* <Copyright /> */}
                     </footer>
-                </Box>
+                </Paper>
         </Html>
     </ThemeProvider>
   )

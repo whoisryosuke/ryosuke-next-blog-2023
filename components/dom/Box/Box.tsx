@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 import { space, layout, flex, grid, color, background, border, ColorProps, SpaceProps, LayoutProps, FlexProps, GridProps, BackgroundProps, BorderProps } from 'styled-system'
 
-type BoxProps = SpaceProps & LayoutProps & FlexProps & GridProps & ColorProps & BackgroundProps & BorderProps & {
+export type BoxProps = SpaceProps & LayoutProps & FlexProps & GridProps & ColorProps & BackgroundProps & BorderProps & {
   
 }
 // example using object syntax
