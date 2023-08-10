@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import Page from "@components/dom/Page/Page";
 import { postFilePaths, POSTS_PATH } from "../utils/mdxUtils";
 import Test from "@components/Test";
+import React from "react";
 
 // Prefer dynamic import for production builds
 // But if you have issues and need to debug in local development
