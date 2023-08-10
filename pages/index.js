@@ -6,12 +6,15 @@ import path from "path";
 import Layout from "@components/Layout";
 import { postFilePaths, POSTS_PATH } from "../utils/mdxUtils";
 import Test from "@components/Test";
-import Canvas from "@components/3d/Canvas";
+// import Canvas from "@components/3d/Canvas";
 
 // Prefer dynamic import for production builds
 // But if you have issues and need to debug in local development
 // comment these out and import above instead
 // https://github.com/pmndrs/react-three-next/issues/49
+const Canvas = dynamic(() => import("@components/3d/Canvas"), {
+  ssr: false,
+});
 const Shader = dynamic(
   () => import("@components/3d/ShaderExample/ShaderExample"),
   {

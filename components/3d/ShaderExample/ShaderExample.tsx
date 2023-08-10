@@ -3,6 +3,7 @@ import { useFrame, extend, MeshProps } from "@react-three/fiber";
 import { useRef, useState } from "react";
 import { shaderMaterial } from "@react-three/drei";
 
+
 import vertex from "./shaders/shader.vert";
 import fragment from "./shaders/shader.frag";
 
@@ -48,7 +49,7 @@ const ShaderExample = (props: ShaderProps) => {
       onPointerOut={(e) => setHover(false)}
       {...props}
     >
-      <boxBufferGeometry args={[1, 1, 1]} />
+      <boxGeometry args={[1, 1, 1]} />
       {/* @ts-ignore */}
       <colorShiftMaterial key={ColorShiftMaterial.key} time={3} />
     </mesh>
