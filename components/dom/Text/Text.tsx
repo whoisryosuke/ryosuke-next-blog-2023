@@ -66,7 +66,7 @@ export type TextProps = ThemeProp & React.HTMLProps<HTMLDivElement> & {
     fontSize?: keyof Theme['fontSizes'];
     fontFamily?: keyof Theme['fonts'];
     fontWeight?: keyof Theme['fontWeights'];
-    lineHeight?: keyof Theme['space'];
+    lineHeight?: keyof Theme['fontSizes'];
   };
   
 const Text = withTheme(styled.div<TextProps>`
@@ -81,7 +81,7 @@ Text.defaultProps = {
   fontSize: 1,
   fontFamily: 'body',
   fontWeight: 'regular',
-  lineHeight: 2,
+  lineHeight: 3,
 }
 
 export default Text;

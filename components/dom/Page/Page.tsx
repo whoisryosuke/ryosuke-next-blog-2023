@@ -27,10 +27,10 @@ const Page = ({children, title, meta}: PropsWithChildren<Props>) => {
                         <header>
                             <ThemeToggle />
                             <Box><Text>Test</Text></Box>
-                            <Box>Test</Box>
-                            <Box>Test</Box>
-                            <Box>Test</Box>
-                            <Box>Test</Box>
+                            <Box><Text>Test</Text></Box>
+                            <Box><Text>Test</Text></Box>
+                            <Box><Text>Test</Text></Box>
+                            <Box><Text>Test</Text></Box>
                         </header>
 
                         {children}
