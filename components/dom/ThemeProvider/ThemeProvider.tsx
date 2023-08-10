@@ -1,10 +1,6 @@
-import { ThemeContext, ThemeNames } from "../../context/theme";
-import { useState } from "react";
-import { createTheming } from '@callstack/react-theme-provider';
 import { useAppStore } from "store/app";
-import { base, defaultTheme, themes } from "@theme/index";
-
-const { ThemeProvider: LinariaThemeProvider, withTheme, useTheme } = createTheming(defaultTheme);
+import { base, themes } from "@theme/index";
+import { ThemeProvider as StyledThemeProvider } from 'styled-components'
 
 /* eslint-disable-next-line */
 export interface ThemeProviderProps {}
@@ -19,11 +15,7 @@ export function ThemeProvider({
     ...base,
     ...colorMode,
   }
-  return <LinariaThemeProvider theme={currentTheme}>{children}</LinariaThemeProvider>;
+  return <StyledThemeProvider theme={currentTheme}>{children}</StyledThemeProvider>;
 }
 
 export default ThemeProvider;
-export {
-  withTheme,
-  useTheme
-}

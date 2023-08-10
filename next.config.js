@@ -3,6 +3,9 @@ const withLinaria = require("next-linaria");
 // The NextJS config defined separately
 // Gets passed to next-offline
 const nextConfig = {
+  compiler: {
+    styledComponents: true,
+  },
   // Can be safely removed in newer versions of Next.js
   future: {
     // by default, if you customize webpack config, they switch back to version 4.
