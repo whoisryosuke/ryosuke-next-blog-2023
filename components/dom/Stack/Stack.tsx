@@ -1,10 +1,11 @@
 import clsx from "clsx";
-import React, { PropsWithChildren } from "react";
+import React, { CSSProperties, PropsWithChildren } from "react";
 import Box, { BoxProps } from "../Box/Box";
 
 type Props = BoxProps & {
   gap?: React.CSSProperties["margin"];
   vertical?: boolean;
+  style: CSSProperties
 };
 
 const Stack = ({
@@ -19,13 +20,6 @@ const Stack = ({
   const gapStyle = {
     [gapDirection]: gap,
   };
-
-  // Change direction of flex
-  const containerDirection =
-    vertical &&
-    ({
-      flexDirection: "column",
-    } as React.CSSProperties);
 
   // Loop through children and apply gap (unless it's the last child)
   const childArray = React.Children.toArray(children);
@@ -42,7 +36,7 @@ const Stack = ({
   });
 
   return (
-    <Box display="flex" flexDirection={{mobile: 'column', computer: vertical ? 'column' : 'row'}} style={style} {...props}>
+    <Box display="flex" flexDirection={['column', vertical ? 'column' : 'row']} style={style} {...props}>
       {spacedChildren}
     </Box>
   );
