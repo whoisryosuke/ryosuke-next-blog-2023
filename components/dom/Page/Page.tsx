@@ -1,6 +1,7 @@
 import React, { PropsWithChildren } from 'react'
 import Html from '../Html/Html'
 import Box from '../Box/Box'
+import Text from '../Text/Text'
 import ThemeProvider from '../ThemeProvider/ThemeProvider'
 import Copyright from '../Copyright/Copyright'
 import { MetaTagsProps } from '../MetaTags/MetaTags'
@@ -25,7 +26,7 @@ const Page = ({children, title, meta}: PropsWithChildren<Props>) => {
                     <main>
                         <header>
                             <ThemeToggle />
-                            <Box>Test</Box>
+                            <Box><Text>Test</Text></Box>
                             <Box>Test</Box>
                             <Box>Test</Box>
                             <Box>Test</Box>

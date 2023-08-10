@@ -32,3 +32,6 @@ export const color = up('color', 'colors');
 
 // Fonts
 export const fontSize = up('fontSize', 'fontSizes');
+export const fontFamily = up('fontFamily', 'fonts');
+export const fontWeight = up('fontWeight', 'fontWeights');
+export const lineHeight = up('lineHeight', 'space');
