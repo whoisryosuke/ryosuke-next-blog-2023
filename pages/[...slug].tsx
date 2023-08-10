@@ -12,6 +12,8 @@ import { postFilePaths, POSTS_PATH } from "@utils/mdxUtils";
 import { visit } from "unist-util-visit";
 import remarkPrism from "remark-prism";
 import "prismjs/themes/prism-tomorrow.css";
+import { MetaTagsProps } from "@components/dom/MetaTags/MetaTags";
+import Page from "@components/dom/Page/Page";
 
 // Adds the blog post slug to the image URL
 // We do this because NextJS pages don't include the blog post slug
@@ -43,8 +45,14 @@ const components = {
 };
 
 export default function PostPage({ source, frontMatter, slug }) {
+  const meta: MetaTagsProps = {
+    title: frontMatter.title,
+    description: frontMatter.description ?? "",
+    image: frontMatter.cover_image,
+    url: slug,
+  }
   return (
-    <Layout>
+    <Page title={frontMatter.title} meta={meta}>
       <header>
         <nav>
           <Link href="/" legacyBehavior>
@@ -61,20 +69,7 @@ export default function PostPage({ source, frontMatter, slug }) {
       <main>
         <MDXRemote {...source} components={components} />
       </main>
-
-      <style jsx>{`
-        .post-header h1 {
-          margin-bottom: 0;
-        }
-
-        .post-header {
-          margin-bottom: 2rem;
-        }
-        .description {
-          opacity: 0.6;
-        }
-      `}</style>
-    </Layout>
+    </Page>
   );
 }
 

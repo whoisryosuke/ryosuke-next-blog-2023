@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import Page from "@components/dom/Page/Page";
 import { postFilePaths, POSTS_PATH } from "../utils/mdxUtils";
 import Test from "@components/Test";
+import { MetaTagsProps } from "@components/dom/MetaTags/MetaTags";
 
 // Prefer dynamic import for production builds
 // But if you have issues and need to debug in local development
@@ -21,8 +22,9 @@ const Shader = dynamic(
 );
 
 export default function Index({ posts }) {
+  const pageTitle = "Ryosuke's Blog and Portfolio";
   return (
-    <Page>
+    <Page title={pageTitle}>
       <Test />
       {/* <div style={{ width: "400px", height: "400px", margin: "auto" }}>
         <Canvas>
