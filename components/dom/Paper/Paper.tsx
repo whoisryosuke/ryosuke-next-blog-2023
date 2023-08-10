@@ -5,7 +5,7 @@ type Props = BoxProps & {}
 
 const Paper = ({children, ...props}: PropsWithChildren<Props>) => {
   return (
-    <Box background="background" {...props}>{children}</Box>
+    <Box background="gradients.background" {...props}>{children}</Box>
   )
 }
 
