@@ -28,6 +28,7 @@ export const colors = {
 export const gradients = {
   // subtle: `linear-gradient(180deg, ${colors.blue['500']} 0%, ${colors.secondary} 100%)`,
   // purple: `linear-gradient(180deg, ${colors.primary} 0%, #A000C4 100%)`,
+  none: 'none',
   background:
     "radial-gradient(73.75% 106.2% at 5.07% 34.92%, #090909 0%, #141416 100%)",
   blue: {

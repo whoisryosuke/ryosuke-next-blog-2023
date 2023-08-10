@@ -2,9 +2,28 @@ import { styled } from '@linaria/react';
 import { Theme, ThemeProp } from '@theme/index';
 import { PropsWithChildren } from "react";
 import { withTheme } from '../ThemeProvider/ThemeProvider';
+import { 
+  m,
+  mt,
+  mr,
+  mb,
+  ml,
+  mx,
+  my,
+  p,
+  pt,
+  pr,
+  pb,
+  pl,
+  px,
+  py,
+  bg,
+ } from '@utils/theme-utils';
+
+console.log('utility prop fns', bg)
 
 export type BoxProps = ThemeProp & React.HTMLProps<HTMLDivElement> & {
-    color?: keyof Theme['colors'];
+    bg?: keyof Theme['colors'];
     m?: keyof Theme['space'];
     mt?: keyof Theme['space'];
     mr?: keyof Theme['space'];
@@ -22,8 +41,21 @@ export type BoxProps = ThemeProp & React.HTMLProps<HTMLDivElement> & {
   };
   
 const Box = withTheme(styled.div<BoxProps>`
-  margin: ${props => props.m in props.theme.space ? props.theme.space[props.m] : ''};
-  background: ${props => props.color in props.theme.gradients ? props.theme.gradients[props.color] : ''};
+  margin: ${m};
+  margin-top: ${mt};
+  margin-right: ${mr};
+  margin-bottom: ${mb};
+  margin-left: ${ml};
+  /* margin: ${mx}; */
+  /* margin: ${my}; */
+  padding: ${p};
+  padding-top: ${pt};
+  padding-right: ${pr};
+  padding-bottom: ${pb};
+  padding-left: ${pl};
+  /* padding: ${px}; */
+  /* padding: ${py}; */
+  background: ${bg};
 `)
 
 export default Box;

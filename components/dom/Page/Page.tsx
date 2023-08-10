@@ -19,12 +19,17 @@ const Page = ({children, title, meta}: PropsWithChildren<Props>) => {
                     // display="flex"
                     flexDirection="column"
                     justifyContent="space-between"
-                    color="background"
+                    bg="background"
                     style={{ flex: 1 }}
                 >
                     <main>
                         <header>
                             <ThemeToggle />
+                            <Box>Test</Box>
+                            <Box>Test</Box>
+                            <Box>Test</Box>
+                            <Box>Test</Box>
+                            <Box>Test</Box>
                         </header>
 
                         {children}
