@@ -1,9 +1,9 @@
 import fs from "fs";
 import path from "path";
 
-const getFiles = async (dir): Promise<string[]> => {
+const getFiles = async (dir: string): Promise<string[]> => {
   // Are we client-side or something stupid NextJS requires? Check for fs.
-  if (!fs || !("readdirSync" in fs)) return;
+  if (!fs || !("readdirSync" in fs)) return [];
   const folders = await fs.readdirSync(dir);
 
   const files = await folders.reduce<Promise<string[]>>(async (waitFiles, folder) => {
@@ -22,8 +22,11 @@ const getFiles = async (dir): Promise<string[]> => {
       allFiles.push(fullPath);
     }
     return allFiles;
-  }, new Promise(() => []));
+    // This should technically be a Promise wrapped array or something
+    //@ts-ignore
+  }, []);
 
+  //@ts-ignore
   return files;
 };
 
