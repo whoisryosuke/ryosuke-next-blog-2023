@@ -2,6 +2,8 @@ import fs from "fs";
 import path from "path";
 
 const getFiles = async (dir) => {
+  // Are we client-side or something stupid NextJS requires? Check for fs.
+  if (!fs || !("readdirSync" in fs)) return;
   const folders = await fs.readdirSync(dir);
 
   const files = await folders.reduce(async (waitFiles, folder) => {
