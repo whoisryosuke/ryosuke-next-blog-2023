@@ -2,11 +2,9 @@ import fs from "fs";
 import matter from "gray-matter";
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import path from "path";
-import Layout from "@components/Layout";
+import Page from "@components/dom/Page/Page";
 import { postFilePaths, POSTS_PATH } from "../utils/mdxUtils";
 import Test from "@components/Test";
-// import Canvas from "@components/3d/Canvas";
 
 // Prefer dynamic import for production builds
 // But if you have issues and need to debug in local development
@@ -24,7 +22,7 @@ const Shader = dynamic(
 
 export default function Index({ posts }) {
   return (
-    <Layout>
+    <Page>
       <Test />
       <Canvas>
         <Shader />
@@ -48,7 +46,7 @@ export default function Index({ posts }) {
           </li>
         ))}
       </ul>
-    </Layout>
+    </Page>
   );
 }
 

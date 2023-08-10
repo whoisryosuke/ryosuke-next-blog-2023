@@ -1,15 +1,24 @@
-import { light } from "./light.css";
-import { base } from "./base.css";
-import { colorTokens as tokens } from "./colormode.css";
-import { dark } from "./dark.css";
+import light from "./colors/light";
+import base from "./base";
+import dark from "./colors/dark";
 
 /**
  * Color tokens and "themes" (aka color modes)
  */
 const themes = {
   light,
-  tokens,
   dark,
 };
 
-export { themes, base };
+const defaultTheme = {
+  ...base,
+  ...dark,
+}
+
+export type Theme = typeof defaultTheme;
+export type ThemeOptions = keyof typeof themes;
+export type ThemeProp = {
+  theme: Theme;
+}
+
+export { themes, base, defaultTheme };

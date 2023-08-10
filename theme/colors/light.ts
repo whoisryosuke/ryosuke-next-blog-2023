@@ -1,6 +1,3 @@
-import { createTheme } from "@vanilla-extract/css";
-import { colorTokens } from "./colormode.css";
-
 export const primaryColors = {
   text: "rgba(6,6,19,1)",
   reading: "rgba(16,15,40,1)",
@@ -53,7 +50,9 @@ export const gradients = {
   },
 };
 
-export const light = createTheme(colorTokens, {
+const light = {
   colors,
   gradients,
-});
+};
+
+export default light
