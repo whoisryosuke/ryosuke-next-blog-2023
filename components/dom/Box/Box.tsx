@@ -1,8 +1,10 @@
 import { styled } from '@linaria/react';
 import { Theme, ThemeProp } from '@theme/index';
 import { PropsWithChildren } from "react";
+import { withTheme } from '../ThemeProvider/ThemeProvider';
 
 export type BoxProps = ThemeProp & React.HTMLProps<HTMLDivElement> & {
+    color?: keyof Theme['colors'];
     m?: keyof Theme['space'];
     mt?: keyof Theme['space'];
     mr?: keyof Theme['space'];
@@ -19,10 +21,9 @@ export type BoxProps = ThemeProp & React.HTMLProps<HTMLDivElement> & {
     py?: keyof Theme['space'];
   };
   
-const Box = styled.div<BoxProps>`
-  margin: ${props => {
-    console.log('test', props)
-  }};
-`
+const Box = withTheme(styled.div<BoxProps>`
+  margin: ${props => props.m in props.theme.space ? props.theme.space[props.m] : ''};
+  background: ${props => props.color in props.theme.gradients ? props.theme.gradients[props.color] : ''};
+`)
 
 export default Box;

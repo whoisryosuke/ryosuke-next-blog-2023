@@ -4,6 +4,7 @@ import Box from '../Box/Box'
 import ThemeProvider from '../ThemeProvider/ThemeProvider'
 import Copyright from '../Copyright/Copyright'
 import { MetaTagsProps } from '../MetaTags/MetaTags'
+import ThemeToggle from '../ThemeToggle/ThemeToggle'
 
 type Props = {
     title: string;
@@ -15,13 +16,15 @@ const Page = ({children, title, meta}: PropsWithChildren<Props>) => {
     <ThemeProvider>
         <Html title={title} meta={meta}>
                 <Box
-                    display="flex"
+                    // display="flex"
                     flexDirection="column"
                     justifyContent="space-between"
+                    color="background"
                     style={{ flex: 1 }}
                 >
                     <main>
                         <header>
+                            <ThemeToggle />
                         </header>
 
                         {children}

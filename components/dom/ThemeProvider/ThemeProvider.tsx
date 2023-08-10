@@ -23,3 +23,7 @@ export function ThemeProvider({
 }
 
 export default ThemeProvider;
+export {
+  withTheme,
+  useTheme
+}
