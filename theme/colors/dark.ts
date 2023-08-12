@@ -1,11 +1,13 @@
 export const primaryColors = {
   text: "rgba(234,234,241,1)",
+  textInverted: "rgba(6,6,19,1)",
   reading: "rgba(221,221,228,1)",
   background: "rgba(10,10,14,1)",
   background_level1: "rgba(225,225,225,1)",
   background_level2: "rgba(200,200,200,1)",
   background_level3: "rgba(100,100,100,1)",
   glass: "rgba(40, 40, 40, 0.65)",
+  button: "rgba(242, 242, 242, 0.36)",
   primary: {
     default: "rgba(72,69,239,1)",
     hovered: "#7A77FD",
@@ -31,6 +33,9 @@ export const gradients = {
   none: 'none',
   background:
     "radial-gradient(73.75% 106.2% at 5.07% 34.92%, #090909 0%, #141416 100%)",
+  glass: {
+    border: "radial-gradient(253.85% 474.76% at 50% -83.65%, rgba(255, 255, 255, 0.13) 0%, rgba(255, 255, 255, 0.0) 33%, rgba(255, 255, 255, 0.16) 100%)",
+  },
   blue: {
     default: `linear-gradient(90deg, #1F1BD8 0%, #4845EF 36.1%)`,
     hover: `linear-gradient(90deg, #4845EF 0%, #1F1BD8 36.1%)`,

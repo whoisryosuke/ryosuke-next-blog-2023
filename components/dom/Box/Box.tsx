@@ -1,7 +1,7 @@
 import styled from 'styled-components'
-import { space, layout, flex, grid, color, background, border, ColorProps, SpaceProps, LayoutProps, FlexProps, GridProps, BackgroundProps, BorderProps } from 'styled-system'
+import { space, layout, flexbox, color, background, border, position, ColorProps, SpaceProps, LayoutProps, FlexProps, BackgroundProps, BorderProps, PositionProps, FlexboxProps } from 'styled-system'
 
-export type BoxProps = SpaceProps & LayoutProps & FlexProps & GridProps & ColorProps & BackgroundProps & BorderProps & {
+export type BoxProps = SpaceProps & LayoutProps & FlexboxProps & PositionProps & ColorProps & BackgroundProps & BorderProps & {
   
 }
 // example using object syntax
@@ -10,9 +10,9 @@ const Box = styled('div')<BoxProps>(
     boxSizing: 'border-box',
   },
   space,
+  position,
   layout,
-  flex,
-  grid,
+  flexbox,
   color,
   background,
   border

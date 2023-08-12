@@ -5,7 +5,7 @@ import Box, { BoxProps } from "../Box/Box";
 type Props = BoxProps & {
   gap?: React.CSSProperties["margin"];
   vertical?: boolean;
-  style: CSSProperties
+  style?: CSSProperties
 };
 
 const Stack = ({
@@ -36,7 +36,7 @@ const Stack = ({
   });
 
   return (
-    <Box display="flex" flexDirection={['column', vertical ? 'column' : 'row']} style={style} {...props}>
+    <Box display="flex" flexDirection={{mobile: 'column', tablet: vertical ? 'column' : 'row'}} style={style} {...props}>
       {spacedChildren}
     </Box>
   );

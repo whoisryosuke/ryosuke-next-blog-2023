@@ -13,36 +13,29 @@ type Props = {
     meta?: MetaTagsProps;
 }
 
-const Page = ({children, title, meta}: PropsWithChildren<Props>) => {
-  return (
+const Page = ({children, title, meta}: PropsWithChildren<Props>) => (
     <ThemeProvider>
         <Html title={title} meta={meta}>
-                <Paper
-                    // display="flex"
-                    flexDirection="column"
-                    justifyContent="space-between"
-                    bg="background"
-                    style={{ flex: 1 }}
-                >
-                    <main>
-                        <header>
-                            <ThemeToggle />
-                            <Box><Text>Test</Text></Box>
-                            <Box><Text>Test</Text></Box>
-                            <Box><Text>Test</Text></Box>
-                            <Box><Text>Test</Text></Box>
-                            <Box><Text>Test</Text></Box>
-                        </header>
+            <Paper
+                // display="flex"
+                flexDirection="column"
+                justifyContent="space-between"
+                bg="background"
+                style={{ flex: 1 }}
+            >
+                <main>
+                    <Box as="header" position="absolute" bottom={1} left={1}>
+                        <ThemeToggle />
+                    </Box>
 
-                        {children}
-                    </main>
-                    <footer>
-                        {/* <Copyright /> */}
-                    </footer>
-                </Paper>
+                    {children}
+                </main>
+                <footer>
+                    {/* <Copyright /> */}
+                </footer>
+            </Paper>
         </Html>
     </ThemeProvider>
-  )
-}
+)
 
 export default Page

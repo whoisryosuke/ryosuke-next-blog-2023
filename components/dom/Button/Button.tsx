@@ -1,27 +1,24 @@
-import { buttonStyles } from "./Button.css";
-import { sizeVariants } from "../../styles/variants/size.css";
-import clsx from "clsx";
-import { DetailedHTMLProps, ButtonHTMLAttributes } from "react";
+import React, { ButtonHTMLAttributes, DetailedHTMLProps } from 'react'
+import styled from 'styled-components'
+import Text from '../Text/Text'
 
-/* eslint-disable-next-line */
-export interface ButtonProps
-  extends Omit<
-    DetailedHTMLProps<
+type ButtonProps = DetailedHTMLProps<
       ButtonHTMLAttributes<HTMLButtonElement>,
       HTMLButtonElement
-    >,
-    "size"
-  > {
-  size?: keyof typeof sizeVariants;
-  children: React.ReactNode;
+    > & {
+
 }
 
-export function Button({ children, size = "medium", ...props }: ButtonProps) {
-  return (
-    <button className={clsx(buttonStyles, sizeVariants[size])} {...props}>
-      {children}
-    </button>
-  );
+const StyledButton = styled('button')<ButtonProps>`
+  background: ${({theme}) => theme.colors.button};
+  mix-blend-mode: screen;
+  border-radius: 14px;
+  border:0;
+  padding: ${({theme}) => theme.space[1]} ${({theme}) => theme.space[3]};
+`
+
+const Button = ({children, ...props}) => {
+  return(<StyledButton {...props}><Text color="textInverted">{children}</Text></StyledButton>)
 }
 
-export default Button;
+export default Button

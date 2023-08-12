@@ -6,9 +6,10 @@ type TextProps = ColorProps & TypographyProps & {
 }
 
 // example using object syntax
-const Text = styled('div')<TextProps>(
+const Text = styled('p')<TextProps>(
   {
     boxSizing: 'border-box',
+    margin:0,
   },
   color,
   typography
@@ -19,6 +20,7 @@ Text.defaultProps = {
   fontSize: 2,
   fontWeight: 1,
   lineHeight: 2,
+  fontFamily: "body",
 }
 
 export default Text
