@@ -45,19 +45,20 @@ export const FONT_SIZE_PROPERTIES = {
 
 // export const SPACE = [0, 4, 8, 16, 32, 64, 128, 256, 512];
 export const SPACE_PROPERTIES = {
-  0: "2px",
-  1: "4px",
-  2: "8px",
-  3: "16px",
-  4: "24px",
-  5: "32px",
-  6: "48px",
-  7: "64px",
-  8: "96px",
-  9: "128px",
-  10: "192px",
-  11: "256px",
-  12: "512px",
+  0: "0px",
+  1: "2px",
+  2: "4px",
+  3: "8px",
+  4: "16px",
+  5: "24px",
+  6: "32px",
+  7: "48px",
+  8: "64px",
+  9: "96px",
+  10: "128px",
+  11: "192px",
+  12: "256px",
+  13: "512px",
 };
 
 export const COLUMN_PROPERTIES = {
@@ -75,3 +76,10 @@ export const COLUMN_PROPERTIES = {
   11: "1152px",
   12: "1280px",
 };
+
+export const BLUR_PROPERTIES = {
+  0: '0px',
+  1: '4px',
+  2: '12px',
+  3: '36px',
+}

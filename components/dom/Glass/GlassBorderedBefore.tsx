@@ -1,16 +1,14 @@
 import React from 'react'
 import styled from 'styled-components'
 import Box from '../Box/Box'
-import { Theme } from '@theme/index';
 
 type GlassProps = {
-    transparent?: boolean;
-    blur?: keyof Theme['blur'];
+
 }
 
 const GlassBorder = styled('div')<GlassProps>`
     background: ${({theme}) => theme.gradients.glass.border};
-    padding: 0.0625em; 
+    padding: 2px;
     border-radius: 32px;
 `
 
@@ -21,7 +19,8 @@ const GlassInterior = styled(Box)<GlassProps>`
     /* border: 1px solid rgba( 255, 255, 255, 0.18 ); */
 
 
-    /* The actual BG. Since it uses "inner" Box Shadow */
+    /* The actual BG. Since it uses CSS Blend Mode, 
+    it has to be separate element or content would be obscured */
     &:before {
         content: "";
         position: absolute;
@@ -31,16 +30,17 @@ const GlassInterior = styled(Box)<GlassProps>`
         left: 0;
         z-index: -1;
         border-radius: 30px;
-        background: ${({theme, transparent}) => !transparent && theme.colors.glass};
-        backdrop-filter: blur(${({theme, blur}) => theme.blur[blur]});
+        background: ${({theme}) => theme.colors.glass};
+        backdrop-filter: blur( 26px );
         /* -webkit-backdrop-filter: blur( 20px ); */
-        box-shadow: inset 2px 2px 2px rgba(255,255,255,0.25);
+
+        mix-blend-mode: multiply;
     }
 
-    box-shadow: 0 2px 16px 0 rgba( 10,10,14, 0.1 );
+    /* box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 ); */
 `
 
-const GlassBordered = ({children, ...props}) => {
+const GlassBorderedBefore = ({children, ...props}) => {
     return(
         <GlassBorder>
             <GlassInterior {...props}>
@@ -50,8 +50,4 @@ const GlassBordered = ({children, ...props}) => {
     )
 }
 
-export default GlassBordered
-
-GlassBordered.defaultProps = {
-    blur: 1,
-}
+export default GlassBorderedBefore

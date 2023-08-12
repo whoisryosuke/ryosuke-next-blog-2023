@@ -11,16 +11,17 @@ import Paper from '../Paper/Paper'
 type Props = {
     title: string;
     meta?: MetaTagsProps;
+    transparent?: boolean;
 }
 
-const Page = ({children, title, meta}: PropsWithChildren<Props>) => (
+const Page = ({children, title, meta, transparent = false}: PropsWithChildren<Props>) => (
     <ThemeProvider>
         <Html title={title} meta={meta}>
             <Paper
                 // display="flex"
                 flexDirection="column"
                 justifyContent="space-between"
-                bg="background"
+                bg={transparent && "background"}
                 style={{ flex: 1 }}
             >
                 <main>

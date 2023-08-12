@@ -12,9 +12,9 @@ type ButtonProps = DetailedHTMLProps<
 const StyledButton = styled('button')<ButtonProps>`
   background: ${({theme}) => theme.colors.button};
   mix-blend-mode: screen;
-  border-radius: 14px;
+  border-radius: 32px;
   border:0;
-  padding: ${({theme}) => theme.space[1]} ${({theme}) => theme.space[3]};
+  padding: ${({theme}) => `${theme.space[1]} ${theme.space[4]}`};
 `
 
 const Button = ({children, ...props}) => {

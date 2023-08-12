@@ -6,7 +6,7 @@ export const primaryColors = {
   background_level1: "rgba(225,225,225,1)",
   background_level2: "rgba(200,200,200,1)",
   background_level3: "rgba(185,185,185,1)",
-  glass: "rgba(255,255,255,0.1)",
+  glass: "rgba(255,255,255,0.05)",
   button: "rgba(242, 242, 242, 0.36)",
   primary: {
     default: "rgba(31,27,216,1)",
