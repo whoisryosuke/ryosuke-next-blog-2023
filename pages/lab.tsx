@@ -41,7 +41,6 @@ export default function LabPage() {
   }
 
   const handleWeightChange = (e: React.FormEvent<HTMLInputElement>, type: keyof Theme['fontWeights']) => {
-    console.log('range', e.currentTarget.value);
     setUserTheme({
       fontWeights: {
         ...customizations.theme.fontWeights,
