@@ -1,16 +1,16 @@
+import { Theme } from '@theme/index'
 import styled from 'styled-components'
 import { ColorProps, TypographyProps, color, typography } from 'styled-system'
 
 type TextProps = ColorProps & TypographyProps & {
-  
+  fontWeight?: keyof Theme['fontWeights']
 }
 
-// example using object syntax
 const Text = styled('p')<TextProps>(
   {
     boxSizing: 'border-box',
     margin:0,
-    "--wght": 300,
+    "--wght": ({fontWeight, theme}) => theme.fontWeights[fontWeight],
     fontVariationSettings: `"wght" var(--wght)`,
   },
   color,

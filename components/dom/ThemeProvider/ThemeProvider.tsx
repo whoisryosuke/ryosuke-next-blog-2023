@@ -8,11 +8,12 @@ export interface ThemeProviderProps {}
 export function ThemeProvider({
   children,
 }: React.PropsWithChildren<ThemeProviderProps>) {
-  const { theme } = useAppStore();
+  const { theme, customizations } = useAppStore();
 
   const colorMode = theme === "light" ? themes.light : themes.dark;
   const currentTheme = {
     ...base,
+    ...customizations.theme,
     ...colorMode,
   }
   return <StyledThemeProvider theme={currentTheme}>{children}</StyledThemeProvider>;

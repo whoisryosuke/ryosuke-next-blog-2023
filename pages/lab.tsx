@@ -10,6 +10,8 @@ import Stack from "@components/dom/Stack/Stack";
 import Button from "@components/dom/Button/Button";
 import IconButton from "@components/dom/IconButton/IconButton";
 import {MdHomeFilled} from "react-icons/md"
+import { useAppStore } from "store/app";
+import { Theme } from "@theme/index";
 
 // Prefer dynamic import for production builds
 // But if you have issues and need to debug in local development
@@ -26,6 +28,28 @@ const Shader = dynamic(
 );
 
 export default function LabPage() {
+  const { customizations, setUserTheme } = useAppStore();
+
+  const fontWeightProps = customizations.theme.fontWeights;
+
+  const handleWeightChangeRegular = (e: React.FormEvent<HTMLInputElement>) => {
+    handleWeightChange(e, 'regular');
+  }
+
+  const handleWeightChangeBold = (e: React.FormEvent<HTMLInputElement>) => {
+    handleWeightChange(e, 'bold');
+  }
+
+  const handleWeightChange = (e: React.FormEvent<HTMLInputElement>, type: keyof Theme['fontWeights']) => {
+    console.log('range', e.currentTarget.value);
+    setUserTheme({
+      fontWeights: {
+        ...customizations.theme.fontWeights,
+        [type]: e.currentTarget.value,
+      }
+    })
+  }
+
   return (
     <Page>
         <Box backgroundImage="url(./images/room1.png)" backgroundSize="cover" backgroundPosition="bottom center" minHeight="100vh" width="100%" zIndex={-2} position={"absolute"} top={0} left={0} />
@@ -56,6 +80,12 @@ export default function LabPage() {
                     </GlassBordered>
                     
                     <Glass p={5} blur={3}><Text color="textInverted">Long text</Text></Glass>
+                    <Glass p={5} blur={3}>
+                      <Text color="textInverted" fontSize={6} lineHeight={7}>Regular: {fontWeightProps.regular}</Text>
+                      <input type="range" id="volume" name="volume" value={customizations.theme.fontWeights.regular} min="100" max="900" step="1" onChange={handleWeightChangeRegular} />
+                      <Text color="textInverted" fontWeight="bold" fontSize={6} lineHeight={7}>Bold: {fontWeightProps.bold}</Text>
+                      <input type="range" id="volume" name="volume" value={customizations.theme.fontWeights.bold} min="100" max="900" step="1" onChange={handleWeightChangeBold} />
+                    </Glass>
                 </Stack>
             </Box>
         </Box>
