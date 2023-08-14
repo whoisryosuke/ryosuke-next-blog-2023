@@ -24,7 +24,6 @@ const Html = ({ title, meta, children }: PropsWithChildren<Props>) => {
         <MetaTags {...meta} />
         <link rel="me" href="https://mastodon.gamedev.place/@whoisryosuke" />
 
-        <Fonts />
       </Head>
       <div>{children}</div>
     </>

@@ -10,6 +10,8 @@ const Text = styled('p')<TextProps>(
   {
     boxSizing: 'border-box',
     margin:0,
+    "--wght": 300,
+    fontVariationSettings: `"wght" var(--wght)`,
   },
   color,
   typography

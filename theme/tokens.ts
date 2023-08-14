@@ -21,7 +21,7 @@ export const MEDIA_QUERIES: MediaQueries = Object.entries(BREAKPOINTS).reduce(
 );
 
 export const FONTS = {
-  body: `'Libre Franklin', Helvetiva Neue, Helvetica, Arial, sans-serif`,
+  body: `'Inter', Helvetiva Neue, Helvetica, Arial, sans-serif`,
   heading: `'Days One', Montserrat, Helvetica, Arial, sans-serif`,
   monospace: "Menlo, monospace",
 };
