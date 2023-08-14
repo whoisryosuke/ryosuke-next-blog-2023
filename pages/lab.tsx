@@ -55,7 +55,7 @@ export default function LabPage() {
                         </Stack>
                     </GlassBordered>
                     
-                    <GlassBordered p={5} blur={3}><Text color="textInverted">Long text</Text></GlassBordered>
+                    <Glass p={5} blur={3}><Text color="textInverted">Long text</Text></Glass>
                 </Stack>
             </Box>
         </Box>

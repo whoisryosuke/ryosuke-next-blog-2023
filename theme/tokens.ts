@@ -78,8 +78,16 @@ export const COLUMN_PROPERTIES = {
 };
 
 export const BLUR_PROPERTIES = {
-  0: '0px',
-  1: '4px',
-  2: '12px',
-  3: '36px',
+  radius: {
+    0: '0px',
+    1: '4px',
+    2: '12px',
+    3: '36px',
+  },
+  mask: {
+    0: '0.1',
+    1: '0.25',
+    2: '0.5',
+    3: '0.9',
+  }
 }

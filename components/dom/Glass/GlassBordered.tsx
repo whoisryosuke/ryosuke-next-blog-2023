@@ -32,7 +32,7 @@ const GlassInterior = styled(Box)<GlassProps>`
         z-index: -1;
         border-radius: 30px;
         background: ${({theme, transparent}) => !transparent && theme.colors.glass};
-        backdrop-filter: blur(${({theme, blur}) => theme.blur[blur]});
+        backdrop-filter: blur(${({theme, blur}) => theme.blur.radius[blur]});
         /* -webkit-backdrop-filter: blur( 20px ); */
         box-shadow: inset 2px 2px 2px rgba(255,255,255,0.25);
     }
