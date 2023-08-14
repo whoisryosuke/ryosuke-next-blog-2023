@@ -12,6 +12,7 @@ const base = {
   fonts: FONTS,
   fontSizes: FONT_SIZE_PROPERTIES,
   fontWeights: FONT_WEIGHTS,
+  lineHeights: FONT_SIZE_PROPERTIES,
   breakpoints: BREAKPOINTS,
   animation: ANIMATION,
   space: SPACE_PROPERTIES,

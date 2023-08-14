@@ -20,7 +20,7 @@ const Text = styled('p')<TextProps>(
 Text.defaultProps = {
   color: 'text',
   fontSize: 2,
-  fontWeight: 1,
+  fontWeight: 'regular',
   lineHeight: 2,
   fontFamily: "body",
 }
