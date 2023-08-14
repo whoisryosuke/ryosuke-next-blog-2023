@@ -5,7 +5,7 @@ import { Theme } from '@theme/index';
 
 type GlassProps = {
     transparent?: boolean;
-    blur?: keyof Theme['blur'];
+    blur?: keyof Theme['blur']['radius'];
 }
 
 const Glass = styled(Box)<GlassProps>`
