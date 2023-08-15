@@ -34,10 +34,21 @@ const StyledInput = styled('input')<Props>`
 const StyledContainer = styled('div')`
     width: 100%;
     position: relative;
-    background: ${({theme}) => theme.colors.darkGlass.input};
-    border-radius: ${({theme}) => theme.radius[0]};
 
-    box-shadow: 0px -1px 4px rgba(0, 0, 0, 0.25), 1px 2px 1px rgba(255, 255, 255, 0.2), inset 4px 4px 4px rgba(0, 0, 0, 0.25);
+    &:after {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: -2;
+        background: ${({theme}) => theme.colors.darkGlass.input};
+        border-radius: ${({theme}) => theme.radius[0]};
+
+        box-shadow: 0px -1px 4px rgba(0, 0, 0, 0.25), 1px 2px 1px rgba(255, 255, 255, 0.2), inset 4px 4px 4px rgba(0, 0, 0, 0.25);
+
+    }
 `
 
 type StyledProgressBarProps = {
@@ -50,15 +61,17 @@ const StyledProgressBar  = styled('div')<StyledProgressBarProps>`
     position: absolute;
     top: 3px;
     left: 3px;
+    z-index: -1;
     background: ${({theme}) => theme.colors.darkGlass.focused};
     border-radius: ${({theme}) => theme.radius[0]};
     box-shadow: 0px -1px 4px rgba(0, 0, 0, 0.1), 1px 2px 1px rgba(255, 255, 255, 0.1), inset 3px 3px 3px rgba(0, 0, 0, 0.2);
 `
 
-const Slider = ({style, value, min, max, ...props}: Props) => {
+const Slider = ({style, value, min, max,  ...props}: Props) => {
     // @ts-ignore
     const percentComplete = ((value-min) /(max - min)) * 100;
     console.log('percent', percentComplete, min, max, value)
+
   return (
     <StyledContainer style={style}>
         <StyledProgressBar percent={percentComplete} />
