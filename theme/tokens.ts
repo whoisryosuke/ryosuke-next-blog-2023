@@ -77,6 +77,14 @@ export const COLUMN_PROPERTIES = {
   12: "1280px",
 };
 
+export const RADIUS_PROPERTIES = {
+  0: "12px",
+  1: "16px",
+  2: "18px",
+  default: "40px",
+  round: '99em'
+}
+
 export const BLUR_PROPERTIES = {
   radius: {
     0: '0px',

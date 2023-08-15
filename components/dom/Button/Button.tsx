@@ -32,7 +32,7 @@ const borderStyles = () => css<ButtonProps>`
 const StyledButton = styled('button')<ButtonProps>`
   position:relative;
   background: ${({theme, solid}) => solid ? theme.colors.glass : 'transparent'};
-  border-radius: ${({icon}) => icon ? '99em' : '32px'};
+  border-radius: ${({icon, theme}) => icon ? theme.radius.round : theme.radius.default};
   border:0;
   padding: ${({theme, icon}) => icon ? theme.space[3] : `${theme.space[3]} ${theme.space[4]}`};
 
