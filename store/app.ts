@@ -1,7 +1,12 @@
 import { Theme, ThemeOptions, base } from '@theme/index'
 import { create } from 'zustand'
 
+type UserAnimationSettings = {
+  active: boolean;
+}
+
 export type UserCustomizations = {
+  animation: UserAnimationSettings
   theme: {
     fontWeights: Theme['fontWeights'];
   }
@@ -16,6 +21,7 @@ interface AppState {
   // User Customizations
   customizations: UserCustomizations
   setUserTheme: (theme: Partial<UserCustomizations['theme']>) => void
+  setUserAnimation: (settings: UserAnimationSettings) => void
 }
 
 export const useAppStore = create<AppState>()((set) => ({
@@ -27,9 +33,13 @@ export const useAppStore = create<AppState>()((set) => ({
     })),
 
   customizations: {
+    animation: {
+      active: true,
+    },
     theme: {
       fontWeights: base.fontWeights,
     }
   },
   setUserTheme: (theme) => set((state) => ({ customizations: { ...state.customizations, theme: { ...state.customizations.theme, ...theme} } })),
+  setUserAnimation: (settings) => set((state) => ({ customizations: { ...state.customizations, animation: { ...state.customizations.animation, ...settings} } })),
 }))

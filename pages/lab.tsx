@@ -57,7 +57,7 @@ export default function LabPage() {
         {/* <Box backgroundImage="url(./images/room1.png)" backgroundSize="cover" backgroundPosition="bottom center" minHeight="100vh" width="100%" zIndex={-2} position={"absolute"} top={0} left={0} /> */}
         <Box minHeight="100vh" width="100%" position="absolute" top="0" left="0" zIndex={-420}>
           <Canvas shadows camera={{ position: [0, 0, 30], fov: 50 }} style={{height: "100vh"}}>
-            <Scene />
+            <Scene customizations={customizations} />
           </Canvas>
         </Box>
         <Box minHeight="100vh" width="100%">

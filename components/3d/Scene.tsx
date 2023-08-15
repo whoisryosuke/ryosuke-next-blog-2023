@@ -1,15 +1,18 @@
 import { ContactShadows, Environment, Lightformer, MeshTransmissionMaterial, OrbitControls } from "@react-three/drei";
 import { GroupProps } from "@react-three/fiber";
 import { EffectComposer, N8AO, TiltShift2 } from "@react-three/postprocessing"
+import {UserCustomizations } from "@store/app"
 
 import { PropsWithChildren } from "react";
 import GlassCube from "./GlassCube";
 
-type Props = Partial<GroupProps> & {};
+type Props = Partial<GroupProps> & {
+  customizations: UserCustomizations
+};
 
 const FLOOR_HEIGHT = 15
 
-const Scene = ({ ...props }: Props) => {
+const Scene = ({ customizations, ...props }: Props) => {
   return (
     <>
         <Environment background files="./images/neon_photostudio_1k.hdr" {...props}>
@@ -35,7 +38,7 @@ const Scene = ({ ...props }: Props) => {
 
         <ContactShadows scale={100} position={[0, -FLOOR_HEIGHT, 0]} blur={1} far={100} opacity={0.85} />
 
-        <OrbitControls autoRotate rotateSpeed={0.01} />    
+        <OrbitControls autoRotate={customizations.animation.active} rotateSpeed={0.01} />    
 {/*         
         <EffectComposer disableNormalPass>
           <N8AO aoRadius={1} intensity={2} />

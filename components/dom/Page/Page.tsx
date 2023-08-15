@@ -7,6 +7,7 @@ import Copyright from '../Copyright/Copyright'
 import { MetaTagsProps } from '../MetaTags/MetaTags'
 import ThemeToggle from '../ThemeToggle/ThemeToggle'
 import Paper from '../Paper/Paper'
+import A11yCheck from '../A11yCheck'
 
 type Props = {
     title: string;
@@ -17,6 +18,7 @@ type Props = {
 const Page = ({children, title, meta, transparent = false}: PropsWithChildren<Props>) => (
     <ThemeProvider>
         <Html title={title} meta={meta}>
+            <A11yCheck />
             <Paper
                 // display="flex"
                 flexDirection="column"

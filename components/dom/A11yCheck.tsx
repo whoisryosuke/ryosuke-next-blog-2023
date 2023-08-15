@@ -1,0 +1,42 @@
+import React, { useEffect } from 'react'
+import { useAppStore } from 'store/app';
+
+type Props = {}
+
+type MediaQueryEventCallback = (this: any, ev: MediaQueryListEvent) => void;
+const useMediaQuery = (query: string, event: MediaQueryEventCallback) => {
+    const mediaQuery = window.matchMedia(query);
+
+    useEffect(() => {
+        mediaQuery.addEventListener('change', event);
+    
+      return () => {
+        mediaQuery.removeEventListener('change', event);
+      }
+    }, [])
+    
+}
+
+const A11yCheck = (props: Props) => {
+    const { setUserAnimation } = useAppStore();
+
+    const updateMotionSetting = (event) => {
+        console.log('motion changed', event)
+        // We're checking if they want to reduce motion so
+        // reduce motion = true
+        // animation ok = false
+        const shouldReduceMotion = event.matches
+
+        setUserAnimation({
+            active: !shouldReduceMotion
+        })
+    }
+
+    useMediaQuery("(prefers-reduced-motion: reduce)", updateMotionSetting)
+
+  return (
+    <></>
+  )
+}
+
+export default A11yCheck
