@@ -5,13 +5,16 @@ type Props = {}
 
 type MediaQueryEventCallback = (this: any, ev: MediaQueryListEvent) => void;
 const useMediaQuery = (query: string, event: MediaQueryEventCallback) => {
-    const mediaQuery = window.matchMedia(query);
 
     useEffect(() => {
-        mediaQuery.addEventListener('change', event);
+        let mediaQuery;
+        if (typeof window !== "undefined") {
+            mediaQuery = window.matchMedia(query);
+            mediaQuery.addEventListener('change', event);
+        }
     
       return () => {
-        mediaQuery.removeEventListener('change', event);
+        if(mediaQuery) mediaQuery.removeEventListener('change', event);
       }
     }, [])
     
