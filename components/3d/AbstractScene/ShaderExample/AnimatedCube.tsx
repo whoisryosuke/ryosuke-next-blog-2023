@@ -11,7 +11,7 @@ const ColorShiftMaterial = shaderMaterial(
   {
     time: 0,
     offset: 0,
-    color: new THREE.Color(0.05, 0.2, 0.025),
+    color: new THREE.Color(0.05, 0.2, 0.825),
   },
   vertex,
   fragment
