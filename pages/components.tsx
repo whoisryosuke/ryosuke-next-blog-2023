@@ -49,7 +49,11 @@ export default function ComponentsPage() {
                         </Stack></Glass>
                     <Glass p={3}>
                         <Stack>
-                            <IconButton color="textInverted"><MdHomeFilled /></IconButton>
+                            <Button icon iconSize={{width: '64px', height: '64px'}}><MdHomeFilled /></Button>
+                            <Button icon><MdHomeFilled /></Button>
+                            <Button icon><MdHomeFilled /></Button>
+                            <Button icon><MdHomeFilled /></Button>
+                            <Button icon><MdHomeFilled /></Button>
                         </Stack>
                       </Glass>
                     <Glass p={5} blur={3}><Text color="textInverted">Long text</Text></Glass>

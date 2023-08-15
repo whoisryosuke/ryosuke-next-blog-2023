@@ -8,7 +8,6 @@ import Box from "@components/dom/Box/Box";
 import GlassBordered from "@components/dom/Glass/GlassBordered";
 import Stack from "@components/dom/Stack/Stack";
 import Button from "@components/dom/Button/Button";
-import IconButton from "@components/dom/IconButton/IconButton";
 import {MdHomeFilled} from "react-icons/md"
 import { useAppStore } from "store/app";
 import { Theme } from "@theme/index";
@@ -81,8 +80,8 @@ export default function LabPage() {
                       </Glass>
                     <GlassBordered p={3} transparent>
                         <Stack>
-                            <IconButton color="textInverted"><MdHomeFilled /></IconButton>
-                            <IconButton color="textInverted"><MdHomeFilled /></IconButton>
+                            <Button icon iconSize={{width: '64px', height: '64px'}}><MdHomeFilled /></Button>
+                            <Button icon><MdHomeFilled /></Button>
                         </Stack>
                     </GlassBordered>
                     
