@@ -25,7 +25,7 @@ const AbstractScene = ({ customizations, ...props }: Props) => {
         {/* <spotLight position={[0,0,0]} penumbra={1} castShadow angle={0.2} /> */}
         <rectAreaLight position={[0, 0, 20]} width={40} height={40} intensity={5} color={"white"} lookAt={() => [0,0,0]} />
 
-        <Cubes />
+        <Cubes customizations={customizations} />
 
         {/* Floor */}
         {/* <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -(FLOOR_HEIGHT + .1), 0]}>

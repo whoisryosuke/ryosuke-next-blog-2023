@@ -11,6 +11,8 @@ const ColorShiftMaterial = shaderMaterial(
   {
     time: 0,
     offset: 0,
+    // A uniform to turn on/off animation if user doesn't want it
+    stop: 1,
     color: new THREE.Color(0.05, 0.2, 0.825),
   },
   vertex,
@@ -27,9 +29,10 @@ extend({ ColorShiftMaterial });
 type ShaderProps = Partial<MeshProps> & {
   size: number;
   offset: number;
+  shouldAnimate: boolean;
 };
 
-const AnimatedCube = ({size, offset, ...props}: ShaderProps) => {
+const AnimatedCube = ({size, offset, shouldAnimate, ...props}: ShaderProps) => {
   const meshRef = useRef(null);
   const [hovered, setHover] = useState(false);
 
@@ -53,7 +56,7 @@ const AnimatedCube = ({size, offset, ...props}: ShaderProps) => {
     >
       <boxGeometry args={[size, size, size]} />
       {/* @ts-ignore */}
-      <colorShiftMaterial key={ColorShiftMaterial.key} time={3} offset={offset} />
+      <colorShiftMaterial key={ColorShiftMaterial.key} time={3} offset={offset} stop={shouldAnimate ? 1 : 0} />
     </mesh>
   );
 };

@@ -1,8 +1,11 @@
 import { GroupProps, MeshProps } from "@react-three/fiber";
 import GlassCube from "../GlassCube";
 import AnimatedCube from "./ShaderExample/AnimatedCube";
+import { UserCustomizations } from "@store/app";
 
-type Props = Partial<GroupProps> & {};
+type Props = Partial<GroupProps> & {
+  customizations: UserCustomizations
+};
 
 const GRID_SIZE = 50;
 const CUBE_SIZE = 4;
@@ -12,7 +15,8 @@ const START = {
     y: -(GRID_SIZE / 2) * CUBE_SIZE,
 }
 
-type CubeProps = Partial<MeshProps> & {};
+type CubeProps = Partial<MeshProps> & {
+};
 
 const Cube = ({ ...props }: CubeProps) => {
   return (
@@ -23,7 +27,7 @@ const Cube = ({ ...props }: CubeProps) => {
   )
 }
 
-const Cubes = ({ ...props }: Props) => {
+const Cubes = ({ customizations, ...props }: Props) => {
   return (
       <group {...props}>
         {/* <GlassCube /> */}
@@ -31,7 +35,7 @@ const Cubes = ({ ...props }: Props) => {
             new Array(GRID_SIZE).fill(0).forEach((_, zIndex) => {
                 merge = [
                     ...merge,
-                    <AnimatedCube size={CUBE_SIZE} offset={xIndex * 10 + zIndex} position={[(xIndex * (CUBE_SIZE + GAP)) + START.x, -3, (zIndex * (CUBE_SIZE + GAP)) + START.y]} />
+                    <AnimatedCube size={CUBE_SIZE} offset={xIndex * 10 + zIndex} position={[(xIndex * (CUBE_SIZE + GAP)) + START.x, -3, (zIndex * (CUBE_SIZE + GAP)) + START.y]} shouldAnimate={customizations.animation.active} />
                 ]
             })
             return merge;
