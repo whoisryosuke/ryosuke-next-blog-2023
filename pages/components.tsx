@@ -10,6 +10,7 @@ import Stack from "@components/dom/Stack/Stack";
 import Button from "@components/dom/Button/Button";
 import IconButton from "@components/dom/IconButton/IconButton";
 import {MdHomeFilled, MdSearch} from "react-icons/md"
+import {BiHomeAlt,BiBook, BiLogoMastodon, BiGhost, BiHeadphone} from "react-icons/bi"
 import { useAppStore } from "store/app";
 import { Theme } from "@theme/index";
 import Slider from "@components/dom/Slider/Slider";
@@ -51,12 +52,16 @@ export default function ComponentsPage() {
                             <Button>About Me</Button>
                         </Stack></Glass>
                     <Glass p={3}>
+                        <Button solid icon iconSize={{width: '64px', height: '64px'}}><BiLogoMastodon /></Button>
+                    </Glass>
+                    <Glass p={3}>
                         <Stack alignItems="center">
-                            <Button solid icon iconSize={{width: '64px', height: '64px'}}><MdHomeFilled /></Button>
-                            <Button icon><MdHomeFilled /></Button>
-                            <Button icon><MdHomeFilled /></Button>
-                            <Button icon><MdHomeFilled /></Button>
-                            <Button icon><MdHomeFilled /></Button>
+                            <Button icon><BiHomeAlt /></Button>
+                            <Button icon><BiBook /></Button>
+                            <Button icon><BiGhost /></Button>
+                            <Button icon><BiHeadphone /></Button>
+                            {/* <Button icon><BiLogoGithub /></Button> */}
+                            {/* <Button icon><BiLogoMastodon /></Button> */}
                         </Stack>
                     </Glass>
                     <Glass p={5} blur={3}><Text color="textInverted">Long text</Text></Glass>
