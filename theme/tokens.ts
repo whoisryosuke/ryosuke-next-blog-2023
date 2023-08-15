@@ -78,9 +78,12 @@ export const COLUMN_PROPERTIES = {
 };
 
 export const RADIUS_PROPERTIES = {
-  0: "12px",
-  1: "16px",
-  2: "18px",
+  0: "6px",
+  1: "12px",
+  2: "16px",
+  3: "18px",
+  4: "21px",
+  5: "50px",
   default: "40px",
   round: '99em'
 }

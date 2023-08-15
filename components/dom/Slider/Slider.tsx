@@ -44,7 +44,7 @@ const StyledContainer = styled('div')`
         left: 0;
         z-index: -2;
         background: ${({theme}) => theme.colors.darkGlass.input};
-        border-radius: ${({theme}) => theme.radius[0]};
+        border-radius: ${({theme}) => theme.radius[1]};
 
         box-shadow: 0px -1px 4px rgba(0, 0, 0, 0.25), 1px 2px 1px rgba(255, 255, 255, 0.2), inset 4px 4px 4px rgba(0, 0, 0, 0.25);
 
@@ -63,7 +63,7 @@ const StyledProgressBar  = styled('div')<StyledProgressBarProps>`
     left: 3px;
     z-index: -1;
     background: ${({theme}) => theme.colors.darkGlass.focused};
-    border-radius: ${({theme}) => theme.radius[0]};
+    border-radius: ${({theme}) => theme.radius[1]};
     box-shadow: 0px -1px 4px rgba(0, 0, 0, 0.1), 1px 2px 1px rgba(255, 255, 255, 0.1), inset 3px 3px 3px rgba(0, 0, 0, 0.2);
 `
 
