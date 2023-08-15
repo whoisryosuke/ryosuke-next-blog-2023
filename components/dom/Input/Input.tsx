@@ -18,7 +18,7 @@ const StyledInput = styled('input')<Props>`
   width: 100%;
   height: ${INPUT_HEIGHT};
   border:0;
-  padding: ${({theme}) => `${theme.space[1]} ${theme.space[3]}`};
+  padding: ${({theme}) => `${theme.space[1]} ${theme.space[4]}`};
   padding-left: ${({theme, icon}) => icon && theme.space[7]};
 
   
@@ -31,13 +31,13 @@ const StyledInput = styled('input')<Props>`
 
 const StyledIcon = styled('div')`
     position: absolute;
-    top: ${({theme}) => theme.space[3]};
-    left: ${({theme}) => theme.space[3]};
+    top: 12px;
+    left: ${({theme}) => theme.space[4]};
     color: ${({theme}) => theme.colors.darkGlass.focused};
 
     & > svg {
-      width: 32px;
-      height: 32px;
+      width: 24px;
+      height: 24px;
     }
 `
 

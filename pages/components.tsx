@@ -65,6 +65,7 @@ export default function ComponentsPage() {
                       <Slider type="range" id="volume" name="volume" value={customizations.theme.fontWeights.regular} min="100" max="900" step="1" onChange={handleWeightChangeRegular} />
                       <Text color="textInverted" fontWeight="bold" fontSize={6} lineHeight={7}>Bold: {fontWeightProps.bold}</Text>
                       <Slider type="range" id="volume" name="volume" value={customizations.theme.fontWeights.bold} min="100" max="900" step="1" onChange={handleWeightChangeBold} />
+                      <Input />
                       <Input icon={<MdSearch />} />
                     </Glass>
                 </Stack>
