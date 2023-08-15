@@ -75,7 +75,8 @@ export default function LabPage() {
                     </GlassBordered>
                     <Glass p={3}>
                         <Stack>
-                            <IconButton color="textInverted"><MdHomeFilled /></IconButton>
+                            <Button icon iconSize={{width: '64px', height: '64px'}}><MdHomeFilled /></Button>
+                            <Button icon><MdHomeFilled /></Button>
                         </Stack>
                       </Glass>
                     <GlassBordered p={3} transparent>
