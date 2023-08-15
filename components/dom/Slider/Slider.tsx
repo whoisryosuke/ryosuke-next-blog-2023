@@ -70,7 +70,6 @@ const StyledProgressBar  = styled('div')<StyledProgressBarProps>`
 const Slider = ({style, value, min, max,  ...props}: Props) => {
     // @ts-ignore
     const percentComplete = ((value-min) /(max - min)) * 100;
-    console.log('percent', percentComplete, min, max, value)
 
   return (
     <StyledContainer style={style}>
