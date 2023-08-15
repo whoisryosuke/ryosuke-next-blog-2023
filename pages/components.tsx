@@ -37,7 +37,8 @@ export default function ComponentsPage() {
 
   return (
     <Page title="Components">
-        <Box backgroundImage="url(./images/room1.png)" backgroundSize="cover" backgroundPosition="bottom center" minHeight="100vh" width="100%" zIndex={-2} position={"absolute"} top={0} left={0} />
+        <Box backgroundImage="url(./images/room1.png)" backgroundSize="cover" backgroundPosition="bottom center" minHeight="100vh" width="100%" zIndex={-420} position={"absolute"} top={0} left={0} style={{filter: "blur(1.5rem)"}} />
+        <Box background="rgba(0,0,0,0.3)" minHeight="100vh" width="100%"  zIndex={-419} position={"absolute"} top={0} left={0} />
 
         <Box minHeight="100vh" width="100%">
             <Box width="800px" margin="auto" p={3}>
@@ -48,14 +49,14 @@ export default function ComponentsPage() {
                             <Button>About Me</Button>
                         </Stack></Glass>
                     <Glass p={3}>
-                        <Stack>
-                            <Button icon iconSize={{width: '64px', height: '64px'}}><MdHomeFilled /></Button>
+                        <Stack alignItems="center">
+                            <Button solid icon iconSize={{width: '64px', height: '64px'}}><MdHomeFilled /></Button>
                             <Button icon><MdHomeFilled /></Button>
                             <Button icon><MdHomeFilled /></Button>
                             <Button icon><MdHomeFilled /></Button>
                             <Button icon><MdHomeFilled /></Button>
                         </Stack>
-                      </Glass>
+                    </Glass>
                     <Glass p={5} blur={3}><Text color="textInverted">Long text</Text></Glass>
                     <Glass p={5} blur={3}>
                       <Text color="textInverted" fontSize={6} lineHeight={7}>Regular: {fontWeightProps.regular}</Text>
