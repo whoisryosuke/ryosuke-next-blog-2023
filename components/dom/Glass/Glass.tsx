@@ -1,18 +1,17 @@
 import React from 'react'
 import styled from 'styled-components'
-import Box from '../Box/Box'
+import Box, { BoxProps } from '../Box/Box'
 import { Theme } from '@theme/index';
 
-type GlassProps = {
+type GlassProps = BoxProps & {
     transparent?: boolean;
     blur?: keyof Theme['blur']['radius'];
+    borderRadius: keyof Theme['radius']
 }
 
 const Glass = styled(Box)<GlassProps>`
     position: relative;
-    border-radius: 30px;
-
-
+    border-radius: ${({theme, borderRadius}) => borderRadius in theme.radius && theme.radius[borderRadius]};
 
     /* Border gradient - also an inset for extra "gloss effect" */
     &:before {
@@ -25,8 +24,8 @@ const Glass = styled(Box)<GlassProps>`
         z-index: -2;
         background: ${({theme, transparent}) => !transparent && theme.colors.glass};
         backdrop-filter: blur(${({theme, blur}) => theme.blur.radius[blur]});
-        border-radius: 30px;
-        /* border: 0.0625em solid rgba( 255, 255, 255, 0.18 ); */
+        border-radius: inherit;
+        border: 0.0625em solid rgba( 255, 255, 255, 0.1 );
 
         /* box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 ); */
         box-shadow: 0 2px 16px 0 rgba( 10,10,14, 0.1 );
@@ -60,4 +59,5 @@ export default Glass
 
 Glass.defaultProps = {
     blur: 1,
+    borderRadius: 3,
 }

@@ -65,7 +65,7 @@ export default function ComponentsPage() {
                         </Stack>
                     </Glass>
                     <Glass p={5} blur={3}><Text color="textInverted">Long text</Text></Glass>
-                    <Glass p={5} blur={3}>
+                    <Glass p={5} blur={3} borderRadius={5}>
                       <Text color="textInverted" fontSize={6} lineHeight={7}>Regular: {fontWeightProps.regular}</Text>
                       <Slider type="range" id="volume" name="volume" value={customizations.theme.fontWeights.regular} min="100" max="900" step="1" onChange={handleWeightChangeRegular} />
                       <Text color="textInverted" fontWeight="bold" fontSize={6} lineHeight={7}>Bold: {fontWeightProps.bold}</Text>
