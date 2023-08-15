@@ -68,8 +68,8 @@ const Button = ({children, ...props}: PropsWithChildren<ButtonProps>) => {
 
 Button.defaultProps = {
   iconSize: {
-    width: '32px',
-    height: '32px',
+    width: '24px',
+    height: '24px',
   }
 }
 
