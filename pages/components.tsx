@@ -9,7 +9,7 @@ import GlassBordered from "@components/dom/Glass/GlassBordered";
 import Stack from "@components/dom/Stack/Stack";
 import Button from "@components/dom/Button/Button";
 import IconButton from "@components/dom/IconButton/IconButton";
-import {MdHomeFilled} from "react-icons/md"
+import {MdHomeFilled, MdSearch} from "react-icons/md"
 import { useAppStore } from "store/app";
 import { Theme } from "@theme/index";
 import Slider from "@components/dom/Slider/Slider";
@@ -65,7 +65,7 @@ export default function ComponentsPage() {
                       <Slider type="range" id="volume" name="volume" value={customizations.theme.fontWeights.regular} min="100" max="900" step="1" onChange={handleWeightChangeRegular} />
                       <Text color="textInverted" fontWeight="bold" fontSize={6} lineHeight={7}>Bold: {fontWeightProps.bold}</Text>
                       <Slider type="range" id="volume" name="volume" value={customizations.theme.fontWeights.bold} min="100" max="900" step="1" onChange={handleWeightChangeBold} />
-                      <Input value="Test" />
+                      <Input icon={<MdSearch />} />
                     </Glass>
                 </Stack>
             </Box>

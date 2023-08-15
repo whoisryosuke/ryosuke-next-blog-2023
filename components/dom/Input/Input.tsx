@@ -7,7 +7,8 @@ type Props =  DetailedHTMLProps<
       InputHTMLAttributes<HTMLInputElement>,
       HTMLInputElement
     > & {
-    style?: React.CSSProperties,
+    style?: React.CSSProperties;
+    icon?: React.ReactElement | boolean;
 }
 
 const StyledInput = styled('input')<Props>`
@@ -18,6 +19,7 @@ const StyledInput = styled('input')<Props>`
   height: ${INPUT_HEIGHT};
   border:0;
   padding: ${({theme}) => `${theme.space[1]} ${theme.space[3]}`};
+  padding-left: ${({theme, icon}) => icon && theme.space[7]};
 
   
   color: ${({theme}) => theme.colors.textInverted};
@@ -27,21 +29,35 @@ const StyledInput = styled('input')<Props>`
   font-family: ${({theme}) => theme.fonts.body};
 `
 
+const StyledIcon = styled('div')`
+    position: absolute;
+    top: ${({theme}) => theme.space[3]};
+    left: ${({theme}) => theme.space[3]};
+    color: ${({theme}) => theme.colors.darkGlass.focused};
+
+    & > svg {
+      width: 32px;
+      height: 32px;
+    }
+`
+
 const StyledContainer = styled('div')`
     width: 100%;
+    display: flex;
     position: relative;
     background: ${({theme}) => theme.colors.darkGlass.input};
-    border-radius: ${({theme}) => theme.radius[0]};
+    border-radius: ${({theme}) => theme.radius.round};
 
     box-shadow: 0px -1px 4px rgba(0, 0, 0, 0.25), 1px 2px 1px rgba(255, 255, 255, 0.2), inset 4px 4px 4px rgba(0, 0, 0, 0.25);
 
 `
 
-const Input = ({style, ...props}: Props) => {
+const Input = ({style, icon, ...props}: Props) => {
 
   return (
     <StyledContainer style={style}>
-        <StyledInput {...props} />
+        {icon && <StyledIcon>{icon}</StyledIcon>}
+        <StyledInput icon={icon ? true : false} {...props} />
     </StyledContainer>
   )
 }
