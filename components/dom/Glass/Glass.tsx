@@ -46,6 +46,7 @@ const Glass = styled(Box)<GlassProps>`
         border-radius: inherit;
         background: ${({theme}) => theme.colors.glass};
         box-shadow: inset 1px 1px 1px rgba(255,255,255,0.35);
+        pointer-events:none;
 
         /* --x: 77%;
         --offset: 50%;
