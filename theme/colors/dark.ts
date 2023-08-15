@@ -7,7 +7,10 @@ export const primaryColors = {
   background_level2: "rgba(200,200,200,1)",
   background_level3: "rgba(100,100,100,1)",
   glass: "rgba(40, 40, 40, 0.65)",
-  button: "rgba(242, 242, 242, 0.36)",
+  button: {
+    default: "rgba(242, 242, 242, 0.1)",
+    hovered: "rgba(242, 242, 242, 0.3)"
+  },
   primary: {
     default: "rgba(72,69,239,1)",
     hovered: "#7A77FD",

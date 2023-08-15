@@ -1,11 +1,12 @@
 import React, { ButtonHTMLAttributes, DetailedHTMLProps, PropsWithChildren } from 'react'
-import styled from 'styled-components'
+import styled, { css } from 'styled-components'
 import Text from '../Text/Text'
 
 type ButtonProps = DetailedHTMLProps<
       ButtonHTMLAttributes<HTMLButtonElement>,
       HTMLButtonElement
     > & {
+    focused?: boolean;
     solid?: boolean;
     icon?: boolean;
     iconSize?: {
@@ -14,26 +15,44 @@ type ButtonProps = DetailedHTMLProps<
     }
 }
 
+const borderStyles = () => css<ButtonProps>`
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: -1;
+  margin: -1px -1px 0 -1px;
+  border-radius: inherit;
+  background: ${({theme}) => theme.colors.glass};
+  box-shadow: inset 1px 1px 1px rgba(255,255,255,0.35);
+`
+
 const StyledButton = styled('button')<ButtonProps>`
-  background: ${({theme, solid}) => solid ? theme.colors.button : 'transparent'};
-  mix-blend-mode: screen;
-  border-radius: 32px;
+  position:relative;
+  background: ${({theme, solid}) => solid ? theme.colors.glass : 'transparent'};
+  border-radius: ${({icon}) => icon ? '99em' : '32px'};
   border:0;
-  padding: ${({theme, icon}) => icon ? theme.space[1] : `${theme.space[1]} ${theme.space[4]}`};
-  
+  padding: ${({theme, icon}) => icon ? theme.space[3] : `${theme.space[3]} ${theme.space[4]}`};
+
+  /* The "border" using a inset box shadow */
   &:after {
-      content: "";
-      position: absolute;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      left: 0;
-      z-index: -1;
-      margin: -1px -1px 0 -1px;
-      border-radius: inherit;
-      background: ${({theme}) => theme.colors.glass};
-      box-shadow: inset 1px 1px 1px rgba(255,255,255,0.35);
+    /* Only show border if it's solid button or focused */
+    ${({solid}) => solid && borderStyles}
   }
+
+  &:hover {
+    background: ${({theme}) => theme.colors.button.hovered};
+
+    &:after {
+      ${borderStyles}
+    }
+  }
+
+  ${({focused, theme}) => focused && `
+    background: ${theme.colors.glass};
+  `}
 
   /* Icon */
   & svg:first-child {
