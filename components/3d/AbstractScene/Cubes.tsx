@@ -4,12 +4,12 @@ import AnimatedCube from "./ShaderExample/AnimatedCube";
 
 type Props = Partial<GroupProps> & {};
 
-const GRID_SIZE = 100;
+const GRID_SIZE = 50;
 const CUBE_SIZE = 4;
 const GAP = 0.1;
 const START = {
-    x: -50 * CUBE_SIZE,
-    y: -50 * CUBE_SIZE,
+    x: -(GRID_SIZE / 2) * CUBE_SIZE,
+    y: -(GRID_SIZE / 2) * CUBE_SIZE,
 }
 
 type CubeProps = Partial<MeshProps> & {};
