@@ -13,6 +13,7 @@ import {MdHomeFilled} from "react-icons/md"
 import { useAppStore } from "store/app";
 import { Theme } from "@theme/index";
 import Slider from "@components/dom/Slider/Slider";
+import Input from "@components/dom/Input/Input";
 
 export default function ComponentsPage() {
   const { customizations, setUserTheme } = useAppStore();
@@ -63,7 +64,8 @@ export default function ComponentsPage() {
                       <Text color="textInverted" fontSize={6} lineHeight={7}>Regular: {fontWeightProps.regular}</Text>
                       <Slider type="range" id="volume" name="volume" value={customizations.theme.fontWeights.regular} min="100" max="900" step="1" onChange={handleWeightChangeRegular} />
                       <Text color="textInverted" fontWeight="bold" fontSize={6} lineHeight={7}>Bold: {fontWeightProps.bold}</Text>
-                      <input type="range" id="volume" name="volume" value={customizations.theme.fontWeights.bold} min="100" max="900" step="1" onChange={handleWeightChangeBold} />
+                      <Slider type="range" id="volume" name="volume" value={customizations.theme.fontWeights.bold} min="100" max="900" step="1" onChange={handleWeightChangeBold} />
+                      <Input value="Test" />
                     </Glass>
                 </Stack>
             </Box>
