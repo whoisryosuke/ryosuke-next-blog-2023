@@ -10,6 +10,7 @@ import Paper from '../Paper/Paper'
 import A11yCheck from '../A11yCheck'
 import { StyleSheetManager } from 'styled-components'
 import isPropValid from '@emotion/is-prop-valid'
+import MainNavbar from '../MainNavbar/MainNavbar'
 
 type Props = {
     title: string;
@@ -30,6 +31,7 @@ const Page = ({children, title, meta, transparent = false}: PropsWithChildren<Pr
                     style={{ flex: 1 }}
                 >
                     <main>
+                        <MainNavbar />
                         <Box as="header" position="absolute" bottom={1} left={1}>
                             <ThemeToggle />
                         </Box>

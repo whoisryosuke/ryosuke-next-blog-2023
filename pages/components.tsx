@@ -39,7 +39,7 @@ export default function ComponentsPage() {
   }
 
   return (
-    <Page title="Components">
+    <>
         <Box backgroundImage="url(./images/room1.png)" backgroundSize="cover" backgroundPosition="bottom center" minHeight="100vh" width="100%" zIndex={-420} position={"absolute"} top={0} left={0} style={{filter: "blur(1.5rem)"}} />
         <Box background="rgba(0,0,0,0.3)" minHeight="100vh" width="100%"  zIndex={-419} position={"absolute"} top={0} left={0} />
 
@@ -76,6 +76,6 @@ export default function ComponentsPage() {
                 </Stack>
             </Box>
         </Box>
-    </Page>
+    </>
   );
 }
