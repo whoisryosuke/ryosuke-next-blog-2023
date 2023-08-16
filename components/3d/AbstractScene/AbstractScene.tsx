@@ -45,7 +45,7 @@ const AbstractScene = ({ customizations, ...props }: Props) => {
           <meshPhysicalMaterial color={"white"} />
         </mesh> */}
 
-        <ContactShadows scale={500} position={[0, -FLOOR_HEIGHT, 0]} blur={1} far={100} opacity={0.3} />4
+        <ContactShadows scale={500} position={[0, -FLOOR_HEIGHT, 0]} blur={1} far={100} opacity={0.3} />
 
         {/* <OrbitControls autoRotate={customizations.animation.active} rotateSpeed={0.01} />     */}
 
