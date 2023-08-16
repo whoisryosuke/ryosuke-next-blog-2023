@@ -50,6 +50,8 @@ const AnimatedCube = ({size, offset, shouldAnimate, ...props}: ShaderProps) => {
     <mesh
       ref={meshRef}
       scale={hovered ? 1.1 : 1}
+      castShadow
+      receiveShadow
       onPointerOver={(e) => setHover(true)}
       onPointerOut={(e) => setHover(false)}
       {...props}

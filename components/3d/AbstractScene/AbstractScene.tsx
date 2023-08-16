@@ -1,11 +1,12 @@
-import { ContactShadows, Environment, Lightformer, MeshTransmissionMaterial, OrbitControls } from "@react-three/drei";
-import { GroupProps } from "@react-three/fiber";
-import { EffectComposer, N8AO, TiltShift2 } from "@react-three/postprocessing"
+import { ContactShadows, Environment, Lightformer, MeshTransmissionMaterial, OrbitControls, OrthographicCamera, PerspectiveCamera } from "@react-three/drei";
+import { GroupProps, useFrame, useThree } from "@react-three/fiber";
+import { DepthOfField, EffectComposer, N8AO, TiltShift2 } from "@react-three/postprocessing"
 import {UserCustomizations } from "@store/app"
 
-import { PropsWithChildren } from "react";
+import { PropsWithChildren, useEffect, useRef } from "react";
 import GlassCube from "../GlassCube";
 import Cubes from "./Cubes";
+import { Camera, Vector3, PerspectiveCamera as ThreePerspectiveCamera } from "three";
 
 type Props = Partial<GroupProps> & {
   customizations: UserCustomizations
@@ -14,6 +15,17 @@ type Props = Partial<GroupProps> & {
 const FLOOR_HEIGHT = 15
 
 const AbstractScene = ({ customizations, ...props }: Props) => {
+
+  const cameraRef = useRef<ThreePerspectiveCamera>();
+
+
+   useFrame((state) => {
+    // HERE, looking for a way to lerp camera lookAt in a way that can toggle.
+    cameraRef.current.lookAt(50, -50, 50);
+    cameraRef.current.updateProjectionMatrix();
+  });
+  
+
   return (
     <>
         {/* <Environment background files="./images/neon_photostudio_1k.hdr" {...props}> */}
@@ -33,9 +45,27 @@ const AbstractScene = ({ customizations, ...props }: Props) => {
           <meshPhysicalMaterial color={"white"} />
         </mesh> */}
 
-        {/* <ContactShadows scale={100} position={[0, -FLOOR_HEIGHT, 0]} blur={1} far={100} opacity={0.85} /> */}
+        <ContactShadows scale={500} position={[0, -FLOOR_HEIGHT, 0]} blur={1} far={100} opacity={0.3} />4
 
-        <OrbitControls autoRotate={customizations.animation.active} rotateSpeed={0.01} />    
+        {/* <OrbitControls autoRotate={customizations.animation.active} rotateSpeed={0.01} />     */}
+
+        
+        <PerspectiveCamera
+          ref={cameraRef}
+          makeDefault
+          zoom={1}
+          near={1}
+          far={2000}
+          fov={75}
+          position={[4, 20, 100]}
+        />
+
+        <EffectComposer disableNormalPass>
+        <DepthOfField
+          focusDistance={0} // where to focus
+          focalLength={0.05} // focal length
+          bokehScale={2} // bokeh size
+        /></EffectComposer>
 {/*         
         <EffectComposer disableNormalPass>
           <N8AO aoRadius={1} intensity={2} />
