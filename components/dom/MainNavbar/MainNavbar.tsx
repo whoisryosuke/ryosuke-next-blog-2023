@@ -3,7 +3,7 @@ import Glass from '../Glass/Glass'
 import Button from '../Button/Button'
 import Stack from '../Stack/Stack'
 import {BiHomeAlt,BiBook, BiGhost, BiHeadphone} from "react-icons/bi"
-import styled, { css } from "styled-components"
+import styled, { css, keyframes } from "styled-components"
 
 type MenuOrientations = 'left' | 'bottom';
 
@@ -11,16 +11,48 @@ type MenuProps = {
     orientation: MenuOrientations;
 }
 
+const leftHideAnimation = keyframes`
+  from {
+    opacity:0;
+    transform: translateX(-200%);
+  }
+
+  to {
+    opacity:1;
+    transform: translateX(0%);
+  }
+`;
+
+const bottomHideAnimation = keyframes`
+  from {
+    opacity:0;
+    transform: translateY(200%) translateX(-50%);
+  }
+
+  to {
+    opacity:1;
+    transform: translateY(0%) translateX(-50%);
+  }
+`;
+
+const ANIMATION_TIME = "710ms"
+const ANIMATION_CURVE = "cubic-bezier(.65,.36,.22,.89)"
+
 const MenuLeftStyles = () => css<MenuProps>`
     top: 20%;
     left: ${({theme}) => theme.space[5]};
+
+    animation: ${leftHideAnimation} ${ANIMATION_TIME} ${ANIMATION_CURVE};
 `
 
 const MenuBottomStyles = () => css<MenuProps>`
     left: 50%;
     bottom: ${({theme}) => theme.space[5]};
 
-    transform:translateX(${({orientation}) => orientation == 'left' ? '0' : '-50%'});
+
+    transform:  translateX(-50%);
+    animation: ${bottomHideAnimation} ${ANIMATION_TIME} ${ANIMATION_CURVE};
+    
 `
 
 const StyledMenu = styled(Glass)<MenuProps>`
