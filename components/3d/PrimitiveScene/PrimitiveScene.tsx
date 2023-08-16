@@ -13,6 +13,7 @@ type Props = Partial<GroupProps> & {
 
 const FLOOR_HEIGHT = 6
 const CUBE_SIZE = 4
+const CUBE_SUBDIVISIONS = 6
 
 const PrimitiveScene = ({ customizations, ...props }: Props) => {
 
@@ -28,34 +29,33 @@ const PrimitiveScene = ({ customizations, ...props }: Props) => {
 
   return (
     <>
-        <Environment files="./images/neon_photostudio_1k.hdr">
+        <Environment background blur={0.15} files="./images/neon_photostudio_1k.hdr">
           {/* Extra space lights if needed */}
           {/* <Lightformer intensity={4} position={[0, 7, 0]} scale={[10, 30, 1]} onUpdate={(self) => self.lookAt(0, 0, 0)} /> */}
         </Environment>
 
-        {/* <spotLight position={[0,0,0]} penumbra={1} castShadow angle={0.2} /> */}
-        <rectAreaLight position={[0, 0, 20]} width={40} height={40} intensity={5} color={"white"} lookAt={() => new Vector3(0,0,0)} />
+        {/* <spotLight position={[0,10,0]} penumbra={1} castShadow angle={0.2} color="blue" intensity={5} /> */}
+        {/* <rectAreaLight position={[0, 10, 0]} width={300} height={300} intensity={5} color={"blue"} castShadow /> */}
 
-        <mesh name="left-back-cube" position={[0, -(FLOOR_HEIGHT - CUBE_SIZE), CUBE_SIZE]} rotation={[0, Math.PI / 1.0, 0]} castShadow receiveShadow>
-          <boxGeometry args={[CUBE_SIZE,CUBE_SIZE,CUBE_SIZE]} />
+        <mesh name="left-back-cube" position={[CUBE_SIZE / 3, -(FLOOR_HEIGHT - CUBE_SIZE), CUBE_SIZE]} rotation={[0, Math.PI / 1.0, 0]} castShadow receiveShadow>
+          <boxGeometry args={[CUBE_SIZE,CUBE_SIZE,CUBE_SIZE, CUBE_SUBDIVISIONS]} />
           <meshPhysicalMaterial color={"#010101"} transmission={0.3} roughness={0.3} clearcoatRoughness={0.5} reflectivity={0.3}  />
         </mesh>
 
-        {/* Right Back Cube */}
         <mesh name="right-back-cube" position={[CUBE_SIZE + 0.1, -(FLOOR_HEIGHT - CUBE_SIZE), 0]} rotation={[0, Math.PI / 1.03, 0]} castShadow receiveShadow>
-          <boxGeometry args={[CUBE_SIZE,CUBE_SIZE,CUBE_SIZE]} />
+          <boxGeometry args={[CUBE_SIZE,CUBE_SIZE,CUBE_SIZE, CUBE_SUBDIVISIONS]} />
           <meshPhysicalMaterial color={"#010101"} transmission={0.3} roughness={0.3} clearcoatRoughness={0.5} reflectivity={0.3} />
         </mesh>
         
-        <mesh name="left-front-cube" position={[-CUBE_SIZE, -(FLOOR_HEIGHT - CUBE_SIZE), -CUBE_SIZE]} rotation={[0, -Math.PI / 1.02, 0]} castShadow receiveShadow>
-          <boxGeometry args={[CUBE_SIZE,CUBE_SIZE,CUBE_SIZE]} />
+        <mesh name="left-front-cube" position={[-CUBE_SIZE / 4, -(FLOOR_HEIGHT - CUBE_SIZE), -CUBE_SIZE / 4]} rotation={[0, -Math.PI / 1.02, 0]} castShadow receiveShadow>
+          <boxGeometry args={[CUBE_SIZE,CUBE_SIZE,CUBE_SIZE, CUBE_SUBDIVISIONS]} />
           <meshPhysicalMaterial color={"#010101"} transmission={0.3} roughness={0.3} clearcoatRoughness={0.5} reflectivity={0.3} />
         </mesh>
 
         <mesh name="sphere-inside" position={[CUBE_SIZE, -(FLOOR_HEIGHT - CUBE_SIZE * 2 - 2), 0]} castShadow receiveShadow>
           <sphereGeometry args={[CUBE_SIZE / 3,32,16]} />
-          {/* <meshPhysicalMaterial color={"#FFFFFF"} transmission={1} roughness={0} reflectivity={1} clearcoatRoughness={0.5}  /> */}
-          <MeshTransmissionMaterial backside backsideThickness={5} thickness={1.5} distortionScale={0} temporalDistortion={0} />
+          <meshPhysicalMaterial color={"#FFFFFF"} transmission={1} roughness={0.1} reflectivity={0.5} clearcoatRoughness={0.5}  />
+          {/* <MeshTransmissionMaterial backside backsideThickness={5} thickness={2} distortionScale={0} temporalDistortion={0} anisotropicBlur={0.3}  /> */}
         </mesh>
 
         <GlassCube shape="torus" position={[CUBE_SIZE, -(FLOOR_HEIGHT - 10), 0]} scale={0.75} />
