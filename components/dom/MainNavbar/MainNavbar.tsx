@@ -22,8 +22,8 @@ const StyledMenu = styled(Glass)<MenuProps>`
 
 const MainNavbar = ({orientation, ...props}: MenuProps) => {
   return (
-    <StyledMenu p={3} orientation={orientation} {...props}>
-        <Stack alignItems="center" vertical={orientation == 'left'}>
+    <StyledMenu px={6} py={3} orientation={orientation} borderRadius="round" {...props}>
+        <Stack gap="12px" alignItems="center" vertical={orientation == 'left'}>
             <Button icon><BiHomeAlt /></Button>
             <Button icon><BiBook /></Button>
             <Button icon><BiGhost /></Button>
