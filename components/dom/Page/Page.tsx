@@ -13,9 +13,8 @@ import { init } from '@noriginmedia/norigin-spatial-navigation';
 
 // Initialize the Focus Management library
 init({
-  // options
-  debug: true,
-  visualDebug: true,
+//   debug: true,
+//   visualDebug: true,
   shouldFocusDOMNode: true,
 });
 

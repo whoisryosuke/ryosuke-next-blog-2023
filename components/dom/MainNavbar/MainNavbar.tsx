@@ -43,7 +43,10 @@ const MenuLeftStyles = () => css<MenuProps>`
     top: 20%;
     left: ${({theme}) => theme.space[5]};
 
-    animation: ${leftHideAnimation} ${ANIMATION_TIME} ${ANIMATION_CURVE};
+    
+    @media (prefers-reduced-motion: no-preference) {
+        animation: ${leftHideAnimation} ${ANIMATION_TIME} ${ANIMATION_CURVE};
+    }
 `
 
 const MenuBottomStyles = () => css<MenuProps>`
@@ -52,7 +55,10 @@ const MenuBottomStyles = () => css<MenuProps>`
 
 
     transform:  translateX(-50%);
-    animation: ${bottomHideAnimation} ${ANIMATION_TIME} ${ANIMATION_CURVE};
+    
+    @media (prefers-reduced-motion: no-preference) {
+        animation: ${bottomHideAnimation} ${ANIMATION_TIME} ${ANIMATION_CURVE};
+    }
     
 `
 

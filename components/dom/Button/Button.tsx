@@ -51,6 +51,11 @@ const StyledButton = styled('button')<ButtonProps>`
     }
   }
 
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 3px 4px rgba(255,255,255, 0.3);
+  }
+
   ${({focused, theme}) => focused && `
     background: ${theme.colors.glass};
   `}
@@ -59,6 +64,12 @@ const StyledButton = styled('button')<ButtonProps>`
   & svg:first-child {
     width: ${({iconSize}) => iconSize.width};
     height: ${({iconSize}) => iconSize.height};
+  }
+
+  /* Animation */
+  @media (prefers-reduced-motion: no-preference) {
+    transition-property: box-shadow, color;
+    transition-duration: 420ms;
   }
 
 `
