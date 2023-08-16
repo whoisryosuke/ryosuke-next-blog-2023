@@ -8,6 +8,8 @@ import { MetaTagsProps } from '../MetaTags/MetaTags'
 import ThemeToggle from '../ThemeToggle/ThemeToggle'
 import Paper from '../Paper/Paper'
 import A11yCheck from '../A11yCheck'
+import { StyleSheetManager } from 'styled-components'
+import isPropValid from '@emotion/is-prop-valid'
 
 type Props = {
     title: string;
@@ -16,29 +18,31 @@ type Props = {
 }
 
 const Page = ({children, title, meta, transparent = false}: PropsWithChildren<Props>) => (
-    <ThemeProvider>
-        <Html title={title} meta={meta}>
-            <A11yCheck />
-            <Paper
-                // display="flex"
-                flexDirection="column"
-                justifyContent="space-between"
-                bg={transparent && "background"}
-                style={{ flex: 1 }}
-            >
-                <main>
-                    <Box as="header" position="absolute" bottom={1} left={1}>
-                        <ThemeToggle />
-                    </Box>
+    <StyleSheetManager enableVendorPrefixes shouldForwardProp={isPropValid}>
+        <ThemeProvider>
+            <Html title={title} meta={meta}>
+                <A11yCheck />
+                <Paper
+                    // display="flex"
+                    flexDirection="column"
+                    justifyContent="space-between"
+                    bg={transparent && "background"}
+                    style={{ flex: 1 }}
+                >
+                    <main>
+                        <Box as="header" position="absolute" bottom={1} left={1}>
+                            <ThemeToggle />
+                        </Box>
 
-                    {children}
-                </main>
-                <footer>
-                    {/* <Copyright /> */}
-                </footer>
-            </Paper>
-        </Html>
-    </ThemeProvider>
+                        {children}
+                    </main>
+                    <footer>
+                        {/* <Copyright /> */}
+                    </footer>
+                </Paper>
+            </Html>
+        </ThemeProvider>
+    </StyleSheetManager>
 )
 
 export default Page
