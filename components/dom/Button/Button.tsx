@@ -1,6 +1,7 @@
 import React, { ButtonHTMLAttributes, DetailedHTMLProps, PropsWithChildren } from 'react'
 import styled, { css } from 'styled-components'
 import Text from '../Text/Text'
+import { useFocusable } from '@noriginmedia/norigin-spatial-navigation';
 
 type ButtonProps = DetailedHTMLProps<
       ButtonHTMLAttributes<HTMLButtonElement>,
@@ -63,7 +64,8 @@ const StyledButton = styled('button')<ButtonProps>`
 `
 
 const Button = ({children, ...props}: PropsWithChildren<ButtonProps>) => {
-  return(<StyledButton {...props}><Text color="textInverted">{children}</Text></StyledButton>)
+  const { ref, focused } = useFocusable();
+  return(<StyledButton ref={ref} solid={focused} {...props}><Text color="textInverted">{children}</Text></StyledButton>)
 }
 
 Button.defaultProps = {

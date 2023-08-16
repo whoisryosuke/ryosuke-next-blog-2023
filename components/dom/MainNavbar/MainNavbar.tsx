@@ -1,9 +1,10 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import Glass from '../Glass/Glass'
 import Button from '../Button/Button'
 import Stack from '../Stack/Stack'
 import {BiHomeAlt,BiBook, BiGhost, BiHeadphone} from "react-icons/bi"
 import styled, { css, keyframes } from "styled-components"
+import { useFocusable, FocusContext } from '@noriginmedia/norigin-spatial-navigation';
 
 type MenuOrientations = 'left' | 'bottom';
 
@@ -62,15 +63,22 @@ const StyledMenu = styled(Glass)<MenuProps>`
 ` 
 
 const MainNavbar = ({orientation, ...props}: MenuProps) => {
+  const { ref, focusKey, focusSelf } = useFocusable();
+
+  useEffect(() => {
+    focusSelf();
+  }, [focusSelf]);
   return (
-    <StyledMenu px={orientation == 'left' ? 3 : 6} py={orientation == 'left' ? 6 : 3} orientation={orientation} borderRadius="round" {...props}>
-        <Stack gap="12px" alignItems="center" vertical={orientation == 'left'}>
-            <Button icon><BiHomeAlt /></Button>
-            <Button icon><BiBook /></Button>
-            <Button icon><BiGhost /></Button>
-            <Button icon><BiHeadphone /></Button>
-        </Stack>
-    </StyledMenu>
+    <FocusContext.Provider value={focusKey}>
+        <StyledMenu ref={ref} px={orientation == 'left' ? 3 : 6} py={orientation == 'left' ? 6 : 3} orientation={orientation} borderRadius="round" {...props}>
+            <Stack gap="12px" alignItems="center" vertical={orientation == 'left'}>
+                <Button icon><BiHomeAlt /></Button>
+                <Button icon><BiBook /></Button>
+                <Button icon><BiGhost /></Button>
+                <Button icon><BiHeadphone /></Button>
+            </Stack>
+        </StyledMenu>
+    </FocusContext.Provider>
   )
 }
 

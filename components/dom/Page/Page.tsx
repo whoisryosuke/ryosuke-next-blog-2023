@@ -1,10 +1,7 @@
 import React, { PropsWithChildren } from 'react'
-import Html from '../Html/Html'
 import Box from '../Box/Box'
-import Text from '../Text/Text'
 import ThemeProvider from '../ThemeProvider/ThemeProvider'
 import Copyright from '../Copyright/Copyright'
-import { MetaTagsProps } from '../MetaTags/MetaTags'
 import ThemeToggle from '../ThemeToggle/ThemeToggle'
 import Paper from '../Paper/Paper'
 import A11yCheck from '../A11yCheck'
@@ -12,6 +9,15 @@ import { StyleSheetManager } from 'styled-components'
 import isPropValid from '@emotion/is-prop-valid'
 import MainNavbar from '../MainNavbar/MainNavbar'
 import GlobalStyles from '../GlobalStyles/GlobalStyles'
+import { init } from '@noriginmedia/norigin-spatial-navigation';
+
+// Initialize the Focus Management library
+init({
+  // options
+  debug: true,
+  visualDebug: true,
+  shouldFocusDOMNode: true,
+});
 
 type Props = {
     transparent?: boolean;
