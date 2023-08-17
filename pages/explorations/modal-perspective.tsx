@@ -209,10 +209,10 @@ export default function LabPage() {
       >
         <Canvas
           shadows
-          camera={{ position: [0, 0, 30], fov: 50 }}
+          // camera={{ position: [0, 0, 30], fov: 50 }}
           style={{ height: "100vh" }}
         >
-          <PrimitiveScene customizations={customizations} rotate={focusedApp === 'app' ? 0 : -Math.PI / 4} />
+          <PrimitiveScene customizations={customizations} rotate={focusedApp === 'app' ? Math.PI / 12 : Math.PI / 8} />
         </Canvas>
       </Box>
       <Box>

@@ -22,20 +22,66 @@ import {
   Vector3,
   PerspectiveCamera as ThreePerspectiveCamera,
   MathUtils,
+  Quaternion,
 } from "three";
 import GlassCube from "../GlassCube";
+import { dampE } from "maath/easing";
 
 
 const useAnimatedCamera = (rotate: number) => {
-  useFrame(({camera}) => {
+  const ANIMATION_DURATION = 0.7;
+  const prevRotate = useRef(rotate);
+  const prevRotateTime = useRef(0);
+
+  useEffect(() => {
+    if(rotate !== prevRotate.current) {
+      prevRotateTime.current = 0;
+    }
+  }, [rotate])
+  
+
+  useFrame(({camera, clock}, delta) => {
     // HERE, looking for a way to lerp camera lookAt in a way that can toggle.
     // cameraRef.current.rotateY(rotate);
     // cameraRef.current.rotateY(
     //   MathUtils.lerp(cameraRef.current.rotation.y, rotate, 0.25)
     // );
 
-    camera.rotation.y = MathUtils.lerp(camera.rotation.y, rotate, 0.025);
-    camera.updateProjectionMatrix();
+    // camera.rotation.y = MathUtils.lerp(camera.rotation.y, rotate, 0.1);
+    // camera.rotation.y = MathUtils.lerp(camera.rotation.y, rotate, 0.1 * Math.max(delta, 1));
+    // camera.quaternion.slerp(new Quaternion(0, rotate, 0, 0), 0.01 * delta)
+    // camera.quaternion.slerp(new Quaternion(0, 0, 0, 0).setFromAxisAngle(new Vector3(0, 1, 0), rotate), Math.max(0.01 * delta, 1))
+    // camera.quaternion.slerp(new Quaternion(0, 0, 0, 0).setFromAxisAngle(new Vector3(0, 1, 0), rotate), 0.1)
+    // camera.updateProjectionMatrix();
+
+    // dampE(camera.rotation, [0, rotate, 0], 1, delta)
+    // camera.updateProjectionMatrix();
+
+    prevRotateTime.current += delta;
+
+      const duration = Math.min(prevRotateTime.current, ANIMATION_DURATION) / ANIMATION_DURATION
+      console.log('time', prevRotateTime.current, duration)
+      camera.rotation.y = MathUtils.lerp(camera.rotation.y, rotate, duration);
+      console.log('animating', camera.rotation.y, rotate)
+      // camera.rotateY(MathUtils.lerp(camera.rotation.y, rotate, duration));
+    if (prevRotateTime.current >= ANIMATION_DURATION) {
+      prevRotate.current = rotate;
+    }
+
+    // console.log('time', clock.getElapsedTime())
+    // const time = clock.getElapsedTime() - prevRotateTime.current;
+    // if (time >= ANIMATION_DURATION) {
+    //   prevRotate.current = rotate;
+    //   prevRotateTime.current = 0;
+    // }
+    // if(prevRotate.current !== rotate && time < ANIMATION_DURATION) {
+    //   console.log('animating', time, prevRotateTime.current)
+    //   if(prevRotateTime.current === 0) {
+    //     prevRotateTime.current = clock.getElapsedTime();
+    //   }
+    //   camera.rotation.y = MathUtils.lerp(camera.rotation.y, rotate, ANIMATION_DURATION / time);
+    //   camera.updateProjectionMatrix();
+    // }
   });
 }
 
@@ -51,6 +97,8 @@ const CUBE_SUBDIVISIONS = 6;
 const PrimitiveScene = ({ customizations, rotate, ...props }: Props) => {
   const cameraRef = useRef<ThreePerspectiveCamera>();
   useAnimatedCamera(rotate);
+
+  console.log('rotate', rotate)
 
   //    useFrame((state) => {
   //     // HERE, looking for a way to lerp camera lookAt in a way that can toggle.
