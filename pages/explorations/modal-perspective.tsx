@@ -2,7 +2,7 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 import Page from "@components/dom/Page/Page";
 import Text from "@components/dom/Text/Text";
-import React, { useEffect, useRef, useState } from "react";
+import React, { ButtonHTMLAttributes, DetailedHTMLProps, useEffect, useRef, useState } from "react";
 import Glass from "@components/dom/Glass/Glass";
 import Box from "@components/dom/Box/Box";
 import GlassBordered from "@components/dom/Glass/GlassBordered";
@@ -30,6 +30,33 @@ const Shader = dynamic(
   }
 );
 
+type NavigationProps = DetailedHTMLProps<
+      ButtonHTMLAttributes<HTMLButtonElement>,
+      HTMLButtonElement
+    > & {
+  right?: boolean;
+}
+
+// Navigation
+const Navigation = styled('button')<NavigationProps>`
+  position: absolute;
+  top:0;
+  ${({right}) => right ? `right: 0;` : `left:0;`}
+  z-index: 710;
+
+  width:100px;
+  height:100vh;
+
+  border:0;
+  background:transparent;
+
+  &:hover {
+    background: rgba(255,255,255,0.3);
+  }
+  
+`
+
+// Perspective Container
 type PerspectiveContainerProps = {
     tilt?: 'left' | 'right';
 }
@@ -74,10 +101,17 @@ export default function LabPage() {
     }))
   }
 
-  const handleNav = () => {
+  const handleNavModal = () => {
     containerRef.current.scrollTo({
       top: containerLocations.modal.top,
       left: containerLocations.modal.left,
+    })
+  }
+
+  const handleNavApp = () => {
+    containerRef.current.scrollTo({
+      top: containerLocations.app.top,
+      left: containerLocations.app.left,
     })
   }
 
@@ -91,26 +125,32 @@ export default function LabPage() {
             <PrimitiveScene customizations={customizations} />
           </Canvas>
         </Box>
-        <Box ref={containerRef} minHeight="100vh" width="100%" overflowX="hidden" style={{
-                scrollSnapType: 'x mandatory',
-                scrollBehavior: 'smooth',
-                WebkitOverflowScrolling: 'touch',
-            }}>
-            <Box width="200%" display="flex" flexDirection="row" justifyContent="flex-start" alignItems="flex-start" pl={11} pt={8}>
-                <PerspectiveContainer width="800px" p={3} id="app" syncLocation={syncLocation}>
-                    <Stack vertical>
-                        <Glass p={3}>
-                            <Stack>
-                                <Button onClick={handleNav}>Blog</Button>
-                                <Button onClick={handleNav}>About Me</Button>
-                            </Stack></Glass>
-                        <Glass p={5} blur={3} minHeight="30vh"><Text color="textInverted">Long text</Text></Glass>
-                    </Stack>
-                </PerspectiveContainer>
-                <PerspectiveContainer width="800px" p={3} tilt="left" id="modal" syncLocation={syncLocation}>
-                    <Glass p={5} blur={3}><Text color="textInverted">Long text</Text></Glass>
-                </PerspectiveContainer>
-            </Box>
+        <Box>
+          <Navigation onClick={handleNavApp} />
+
+          <Box ref={containerRef} minHeight="100vh" width="100%" overflowX="hidden" style={{
+                  scrollSnapType: 'x mandatory',
+                  scrollBehavior: 'smooth',
+                  WebkitOverflowScrolling: 'touch',
+              }}>
+              <Box width="200%" display="flex" flexDirection="row" justifyContent="flex-start" alignItems="flex-start" pl={11} pt={8}>
+                  <PerspectiveContainer width="800px" p={3} id="app" syncLocation={syncLocation}>
+                      <Stack vertical>
+                          <Glass p={3}>
+                              <Stack>
+                                  <Button onClick={handleNavApp}>Blog</Button>
+                                  <Button onClick={handleNavModal}>About Me</Button>
+                              </Stack></Glass>
+                          <Glass p={5} blur={3} minHeight="30vh"><Text color="textInverted">Long text</Text></Glass>
+                      </Stack>
+                  </PerspectiveContainer>
+                  <PerspectiveContainer width="800px" p={3} tilt="left" id="modal" syncLocation={syncLocation}>
+                      <Glass p={5} blur={3}><Text color="textInverted">Long text</Text></Glass>
+                  </PerspectiveContainer>
+              </Box>
+          </Box>
+
+          <Navigation right onClick={handleNavModal} />
         </Box>
     </>
   );
