@@ -21,19 +21,36 @@ import {
   Camera,
   Vector3,
   PerspectiveCamera as ThreePerspectiveCamera,
+  MathUtils,
 } from "three";
 import GlassCube from "../GlassCube";
 
+
+const useAnimatedCamera = (rotate: number) => {
+  useFrame(({camera}) => {
+    // HERE, looking for a way to lerp camera lookAt in a way that can toggle.
+    // cameraRef.current.rotateY(rotate);
+    // cameraRef.current.rotateY(
+    //   MathUtils.lerp(cameraRef.current.rotation.y, rotate, 0.25)
+    // );
+
+    camera.rotation.y = MathUtils.lerp(camera.rotation.y, rotate, 0.025);
+    camera.updateProjectionMatrix();
+  });
+}
+
 type Props = Partial<GroupProps> & {
   customizations: UserCustomizations;
+  rotate: number;
 };
 
 const FLOOR_HEIGHT = 6;
 const CUBE_SIZE = 4;
 const CUBE_SUBDIVISIONS = 6;
 
-const PrimitiveScene = ({ customizations, ...props }: Props) => {
+const PrimitiveScene = ({ customizations, rotate, ...props }: Props) => {
   const cameraRef = useRef<ThreePerspectiveCamera>();
+  useAnimatedCamera(rotate);
 
   //    useFrame((state) => {
   //     // HERE, looking for a way to lerp camera lookAt in a way that can toggle.

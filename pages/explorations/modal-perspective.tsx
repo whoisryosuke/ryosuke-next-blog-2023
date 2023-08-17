@@ -22,6 +22,10 @@ import {
   FocusContext,
   useFocusable,
 } from "@noriginmedia/norigin-spatial-navigation";
+import { MathUtils, PerspectiveCamera as ThreePerspectiveCamera,
+} from "three";
+import { PerspectiveCamera } from "@react-three/drei"
+import { useFrame } from "@react-three/fiber";
 
 // Prefer dynamic import for production builds
 // But if you have issues and need to debug in local development
@@ -127,6 +131,38 @@ const PerspectiveContainer = ({
   );
 };
 
+type AnimatedCameraProps = {
+  rotate: number;
+}
+
+const AnimatedCamera = ({rotate}: AnimatedCameraProps) => {
+  const cameraRef = useRef<ThreePerspectiveCamera>();
+  
+  console.log('rotation', rotate)
+
+  useFrame((state) => {
+    // HERE, looking for a way to lerp camera lookAt in a way that can toggle.
+    // cameraRef.current.rotateY(rotate);
+    // cameraRef.current.rotateY(
+    //   MathUtils.lerp(cameraRef.current.rotation.y, rotate, 0.25)
+    // );
+    cameraRef.current.rotation.y = MathUtils.lerp(cameraRef.current.rotation.y, rotate, 0.025);
+    cameraRef.current.updateProjectionMatrix();
+  });
+
+  return(
+      <PerspectiveCamera
+        ref={cameraRef}
+        makeDefault
+        zoom={1}
+        near={1}
+        far={2000}
+        fov={75}
+        position={[4, 2, 20]}
+      />
+  )
+}
+
 export default function LabPage() {
   const [focusedApp, setFocusedApp] = useState("app");
   const [containerLocations, setContainerLocations] = useState<
@@ -176,7 +212,7 @@ export default function LabPage() {
           camera={{ position: [0, 0, 30], fov: 50 }}
           style={{ height: "100vh" }}
         >
-          <PrimitiveScene customizations={customizations} />
+          <PrimitiveScene customizations={customizations} rotate={focusedApp === 'app' ? 0 : -Math.PI / 4} />
         </Canvas>
       </Box>
       <Box>
