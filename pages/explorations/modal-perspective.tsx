@@ -91,7 +91,7 @@ export default function LabPage() {
             <PrimitiveScene customizations={customizations} />
           </Canvas>
         </Box>
-        <Box ref={containerRef} minHeight="100vh" width="100%" overflowX="auto" style={{
+        <Box ref={containerRef} minHeight="100vh" width="100%" overflowX="hidden" style={{
                 scrollSnapType: 'x mandatory',
                 scrollBehavior: 'smooth',
                 WebkitOverflowScrolling: 'touch',
