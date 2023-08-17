@@ -3,7 +3,6 @@ import { useFrame, extend, MeshProps } from "@react-three/fiber";
 import { useRef, useState } from "react";
 import { shaderMaterial } from "@react-three/drei";
 
-
 import vertex from "./shaders/shader.vert";
 import fragment from "./shaders/shader.frag";
 
@@ -16,7 +15,7 @@ const ColorShiftMaterial = shaderMaterial(
     color: new THREE.Color(0.05, 0.2, 0.825),
   },
   vertex,
-  fragment
+  fragment,
 );
 
 // This is the 🔑 that HMR will renew if this file is edited
@@ -32,7 +31,12 @@ type ShaderProps = Partial<MeshProps> & {
   shouldAnimate: boolean;
 };
 
-const AnimatedCube = ({size, offset, shouldAnimate, ...props}: ShaderProps) => {
+const AnimatedCube = ({
+  size,
+  offset,
+  shouldAnimate,
+  ...props
+}: ShaderProps) => {
   const meshRef = useRef(null);
   const [hovered, setHover] = useState(false);
 
@@ -58,7 +62,12 @@ const AnimatedCube = ({size, offset, shouldAnimate, ...props}: ShaderProps) => {
     >
       <boxGeometry args={[size, size, size]} />
       {/* @ts-ignore */}
-      <colorShiftMaterial key={ColorShiftMaterial.key} time={3} offset={offset} stop={shouldAnimate ? 1 : 0} />
+      <colorShiftMaterial
+        key={ColorShiftMaterial.key}
+        time={3}
+        offset={offset}
+        stop={shouldAnimate ? 1 : 0}
+      />
     </mesh>
   );
 };

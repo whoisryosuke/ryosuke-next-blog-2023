@@ -12,7 +12,6 @@ const ThemeToggle = (props: Props) => {
   const colorMode = theme === "light" ? themes.light : themes.dark;
   const oldTheme = theme !== "light" ? themes.light : themes.dark;
 
-
   // Check the user's device setting and override with that
   useEffect(() => {
     const setDarkMode = () => setTheme("dark");

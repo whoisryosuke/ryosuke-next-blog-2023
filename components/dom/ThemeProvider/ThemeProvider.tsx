@@ -1,6 +1,6 @@
 import { useAppStore } from "store/app";
 import { base, themes } from "@theme/index";
-import { ThemeProvider as StyledThemeProvider } from 'styled-components'
+import { ThemeProvider as StyledThemeProvider } from "styled-components";
 
 /* eslint-disable-next-line */
 export interface ThemeProviderProps {}
@@ -15,8 +15,10 @@ export function ThemeProvider({
     ...base,
     ...customizations.theme,
     ...colorMode,
-  }
-  return <StyledThemeProvider theme={currentTheme}>{children}</StyledThemeProvider>;
+  };
+  return (
+    <StyledThemeProvider theme={currentTheme}>{children}</StyledThemeProvider>
+  );
 }
 
 export default ThemeProvider;

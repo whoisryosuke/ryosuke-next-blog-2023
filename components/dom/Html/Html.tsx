@@ -23,7 +23,6 @@ const Html = ({ title, meta, children }: PropsWithChildren<Props>) => {
         {/* Social Media Stuff */}
         <MetaTags {...meta} />
         <link rel="me" href="https://mastodon.gamedev.place/@whoisryosuke" />
-
       </Head>
       <div>{children}</div>
     </>

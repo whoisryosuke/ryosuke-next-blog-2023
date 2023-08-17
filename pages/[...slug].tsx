@@ -48,7 +48,7 @@ export default function PostPage({ source, frontMatter, slug }) {
     title: frontMatter.title,
     image: frontMatter.cover_image,
     url: slug,
-  }
+  };
   return (
     <Page title={frontMatter.title} meta={meta}>
       <header>

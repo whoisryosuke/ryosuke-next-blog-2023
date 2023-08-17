@@ -8,7 +8,7 @@ import Box from "@components/dom/Box/Box";
 import GlassBordered from "@components/dom/Glass/GlassBordered";
 import Stack from "@components/dom/Stack/Stack";
 import Button from "@components/dom/Button/Button";
-import {MdHomeFilled} from "react-icons/md"
+import { MdHomeFilled } from "react-icons/md";
 import { useAppStore } from "store/app";
 import { Theme } from "@theme/index";
 
@@ -19,14 +19,17 @@ import { Theme } from "@theme/index";
 const Canvas = dynamic(() => import("@components/3d/Canvas"), {
   ssr: false,
 });
-const PrimitiveScene = dynamic(() => import("@components/3d/PrimitiveScene/PrimitiveScene"), {
-  ssr: false,
-});
+const PrimitiveScene = dynamic(
+  () => import("@components/3d/PrimitiveScene/PrimitiveScene"),
+  {
+    ssr: false,
+  },
+);
 const Shader = dynamic(
   () => import("@components/3d/ShaderExample/ShaderExample"),
   {
     ssr: false,
-  }
+  },
 );
 
 export default function LabPage() {
@@ -35,67 +38,119 @@ export default function LabPage() {
   const fontWeightProps = customizations.theme.fontWeights;
 
   const handleWeightChangeRegular = (e: React.FormEvent<HTMLInputElement>) => {
-    handleWeightChange(e, 'regular');
-  }
+    handleWeightChange(e, "regular");
+  };
 
   const handleWeightChangeBold = (e: React.FormEvent<HTMLInputElement>) => {
-    handleWeightChange(e, 'bold');
-  }
+    handleWeightChange(e, "bold");
+  };
 
-  const handleWeightChange = (e: React.FormEvent<HTMLInputElement>, type: keyof Theme['fontWeights']) => {
+  const handleWeightChange = (
+    e: React.FormEvent<HTMLInputElement>,
+    type: keyof Theme["fontWeights"],
+  ) => {
     setUserTheme({
       fontWeights: {
         ...customizations.theme.fontWeights,
         [type]: e.currentTarget.value,
-      }
-    })
-  }
+      },
+    });
+  };
 
   return (
     <>
-        {/* <Box backgroundImage="url(./images/room1.png)" backgroundSize="cover" backgroundPosition="bottom center" minHeight="100vh" width="100%" zIndex={-2} position={"absolute"} top={0} left={0} /> */}
-        <Box minHeight="100vh" width="100%" position="absolute" top="0" left="0" zIndex={-420}>
-          <Canvas shadows camera={{ position: [0, 0, 30], fov: 50 }} style={{height: "100vh"}}>
-            <PrimitiveScene customizations={customizations} />
-          </Canvas>
+      {/* <Box backgroundImage="url(./images/room1.png)" backgroundSize="cover" backgroundPosition="bottom center" minHeight="100vh" width="100%" zIndex={-2} position={"absolute"} top={0} left={0} /> */}
+      <Box
+        minHeight="100vh"
+        width="100%"
+        position="absolute"
+        top="0"
+        left="0"
+        zIndex={-420}
+      >
+        <Canvas
+          shadows
+          camera={{ position: [0, 0, 30], fov: 50 }}
+          style={{ height: "100vh" }}
+        >
+          <PrimitiveScene customizations={customizations} />
+        </Canvas>
+      </Box>
+      <Box minHeight="100vh" width="100%">
+        <Box width="800px" margin="auto" p={3}>
+          <Stack vertical>
+            <Glass p={3}>
+              <Stack>
+                <Button>Blog</Button>
+                <Button>About Me</Button>
+              </Stack>
+            </Glass>
+            <GlassBordered p={"12px"}>
+              <Stack>
+                <Button>Blog</Button>
+                <Button>About Me</Button>
+              </Stack>
+            </GlassBordered>
+            <Glass p={3}>
+              <Stack>
+                <Button icon iconSize={{ width: "64px", height: "64px" }}>
+                  <MdHomeFilled />
+                </Button>
+                <Button icon>
+                  <MdHomeFilled />
+                </Button>
+              </Stack>
+            </Glass>
+            <GlassBordered p={3} transparent>
+              <Stack>
+                <Button icon iconSize={{ width: "64px", height: "64px" }}>
+                  <MdHomeFilled />
+                </Button>
+                <Button icon>
+                  <MdHomeFilled />
+                </Button>
+              </Stack>
+            </GlassBordered>
+
+            <Glass p={5} blur={3}>
+              <Text color="textInverted">Long text</Text>
+            </Glass>
+            <Glass p={5} blur={3}>
+              <Text color="textInverted" fontSize={6} lineHeight={7}>
+                Regular: {fontWeightProps.regular}
+              </Text>
+              <input
+                type="range"
+                id="volume"
+                name="volume"
+                value={customizations.theme.fontWeights.regular}
+                min="100"
+                max="900"
+                step="1"
+                onChange={handleWeightChangeRegular}
+              />
+              <Text
+                color="textInverted"
+                fontWeight="bold"
+                fontSize={6}
+                lineHeight={7}
+              >
+                Bold: {fontWeightProps.bold}
+              </Text>
+              <input
+                type="range"
+                id="volume"
+                name="volume"
+                value={customizations.theme.fontWeights.bold}
+                min="100"
+                max="900"
+                step="1"
+                onChange={handleWeightChangeBold}
+              />
+            </Glass>
+          </Stack>
         </Box>
-        <Box minHeight="100vh" width="100%">
-            <Box width="800px" margin="auto" p={3}>
-                <Stack vertical>
-                    <Glass p={3}>
-                        <Stack>
-                            <Button>Blog</Button>
-                            <Button>About Me</Button>
-                        </Stack></Glass>
-                    <GlassBordered p={'12px'}>
-                        <Stack>
-                            <Button>Blog</Button>
-                            <Button>About Me</Button>
-                        </Stack>
-                    </GlassBordered>
-                    <Glass p={3}>
-                        <Stack>
-                            <Button icon iconSize={{width: '64px', height: '64px'}}><MdHomeFilled /></Button>
-                            <Button icon><MdHomeFilled /></Button>
-                        </Stack>
-                      </Glass>
-                    <GlassBordered p={3} transparent>
-                        <Stack>
-                            <Button icon iconSize={{width: '64px', height: '64px'}}><MdHomeFilled /></Button>
-                            <Button icon><MdHomeFilled /></Button>
-                        </Stack>
-                    </GlassBordered>
-                    
-                    <Glass p={5} blur={3}><Text color="textInverted">Long text</Text></Glass>
-                    <Glass p={5} blur={3}>
-                      <Text color="textInverted" fontSize={6} lineHeight={7}>Regular: {fontWeightProps.regular}</Text>
-                      <input type="range" id="volume" name="volume" value={customizations.theme.fontWeights.regular} min="100" max="900" step="1" onChange={handleWeightChangeRegular} />
-                      <Text color="textInverted" fontWeight="bold" fontSize={6} lineHeight={7}>Bold: {fontWeightProps.bold}</Text>
-                      <input type="range" id="volume" name="volume" value={customizations.theme.fontWeights.bold} min="100" max="900" step="1" onChange={handleWeightChangeBold} />
-                    </Glass>
-                </Stack>
-            </Box>
-        </Box>
+      </Box>
     </>
   );
 }

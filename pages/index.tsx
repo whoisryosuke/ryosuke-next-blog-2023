@@ -18,7 +18,7 @@ const Shader = dynamic(
   () => import("@components/3d/ShaderExample/ShaderExample"),
   {
     ssr: false,
-  }
+  },
 );
 
 export default function Index({ posts }) {

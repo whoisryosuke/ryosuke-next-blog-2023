@@ -1,15 +1,14 @@
-import Head from 'next/head';
-import { PropsWithChildren } from 'react';
+import Head from "next/head";
+import { PropsWithChildren } from "react";
 
 type Props = {
   blog?: boolean;
-}
+};
 
 const Layout = ({ children, blog = false }: PropsWithChildren<Props>) => {
   return (
     <>
-      <Head>
-      </Head>
+      <Head></Head>
       <div className="wrapper">{children}</div>
       <style jsx>{`
         .wrapper {
@@ -50,11 +49,11 @@ const Layout = ({ children, blog = false }: PropsWithChildren<Props>) => {
         }
 
         code {
-          font-family: 'Menlo';
+          font-family: "Menlo";
         }
       `}</style>
     </>
-  )
-}
+  );
+};
 
-export default Layout
+export default Layout;

@@ -1,13 +1,33 @@
-import styled from 'styled-components'
-import { space, layout, flexbox, color, background, border, position, ColorProps, SpaceProps, LayoutProps, FlexProps, BackgroundProps, BorderProps, PositionProps, FlexboxProps } from 'styled-system'
+import styled from "styled-components";
+import {
+  space,
+  layout,
+  flexbox,
+  color,
+  background,
+  border,
+  position,
+  ColorProps,
+  SpaceProps,
+  LayoutProps,
+  FlexProps,
+  BackgroundProps,
+  BorderProps,
+  PositionProps,
+  FlexboxProps,
+} from "styled-system";
 
-export type BoxProps = SpaceProps & LayoutProps & FlexboxProps & PositionProps & ColorProps & BackgroundProps & BorderProps & {
-  
-}
+export type BoxProps = SpaceProps &
+  LayoutProps &
+  FlexboxProps &
+  PositionProps &
+  ColorProps &
+  BackgroundProps &
+  BorderProps & {};
 // example using object syntax
-const Box = styled('div')<BoxProps>(
+const Box = styled("div")<BoxProps>(
   {
-    boxSizing: 'border-box',
+    boxSizing: "border-box",
   },
   space,
   position,
@@ -15,7 +35,7 @@ const Box = styled('div')<BoxProps>(
   flexbox,
   color,
   background,
-  border
-)
+  border,
+);
 
-export default Box
+export default Box;

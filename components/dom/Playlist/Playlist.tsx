@@ -26,7 +26,7 @@ const Playlist = (props: Props) => {
       ? PLAYLIST_DATA
       : PLAYLIST_DATA.filter(
           (playlist) =>
-            playlist.category === PLAYLIST_CATEGORIES[currentCategory]
+            playlist.category === PLAYLIST_CATEGORIES[currentCategory],
         );
   return (
     <>
@@ -64,7 +64,7 @@ const Playlist = (props: Props) => {
                   {value}
                 </Text>
               </button>
-            )
+            ),
           )}
         </Stack>
       </Box>
