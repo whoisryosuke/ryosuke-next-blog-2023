@@ -29,7 +29,7 @@ const PrimitiveScene = ({ customizations, ...props }: Props) => {
 
   return (
     <>
-        <Environment background blur={0.15} files="./images/neon_photostudio_1k.hdr">
+        <Environment background blur={0.15} files="/images/neon_photostudio_1k.hdr">
           {/* Extra space lights if needed */}
           {/* <Lightformer intensity={4} position={[0, 7, 0]} scale={[10, 30, 1]} onUpdate={(self) => self.lookAt(0, 0, 0)} /> */}
         </Environment>
