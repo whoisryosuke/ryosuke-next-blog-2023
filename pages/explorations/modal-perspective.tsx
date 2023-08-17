@@ -39,7 +39,7 @@ const TILT_LEFT = "translateZ(100px) rotateX(1.4175deg) rotateY(-17.97deg)"
 
 const StyledPerspectiveContainer = styled(Box)<PerspectiveContainerProps>`
     transform: ${({tilt}) => tilt == 'left' ? TILT_LEFT : TILT_RIGHT};
-    scroll-snap-align: start;
+    scroll-snap-align: center;
 `
 
 StyledPerspectiveContainer.defaultProps = {
