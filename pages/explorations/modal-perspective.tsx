@@ -12,6 +12,7 @@ import {MdHomeFilled} from "react-icons/md"
 import { useAppStore } from "store/app";
 import { Theme } from "@theme/index";
 import { styled } from "styled-components";
+import { FocusContext, useFocusable } from "@noriginmedia/norigin-spatial-navigation";
 
 // Prefer dynamic import for production builds
 // But if you have issues and need to debug in local development
@@ -73,18 +74,31 @@ StyledPerspectiveContainer.defaultProps = {
     tilt: 'right' 
 }
 
-const PerspectiveContainer = ({children, id, syncLocation, ...props}) => {
-  const ref = useRef<HTMLDivElement>();
+const PerspectiveContainer = ({children, id, syncLocation, focusScroll, ...props}) => {
+  // const ref = useRef<HTMLDivElement>();
+  const { ref, focusKey, focusSelf, hasFocusedChild, focused } = useFocusable({trackChildren: true});
 
   useEffect(() => {
     const location = ref.current.getBoundingClientRect();
     console.log('container location', location)
     syncLocation(id, location);
   }, [ref.current])
+
+
+  useEffect(() => {
+    if(hasFocusedChild) {
+      console.log('has a focused child, scrolling to')
+      focusScroll()
+    }
+  }, [hasFocusedChild])
+
+  console.log('focused child?', focused, hasFocusedChild)
   
 
   return(
-    <StyledPerspectiveContainer ref={ref} {...props}>{children}</StyledPerspectiveContainer>
+    <FocusContext.Provider value={focusKey}>
+      <StyledPerspectiveContainer ref={ref} {...props}>{children}</StyledPerspectiveContainer>
+    </FocusContext.Provider>
   )
 }
 
@@ -134,18 +148,27 @@ export default function LabPage() {
                   WebkitOverflowScrolling: 'touch',
               }}>
               <Box width="200%" display="flex" flexDirection="row" justifyContent="flex-start" alignItems="flex-start" pl={11} pt={8}>
-                  <PerspectiveContainer width="800px" p={3} id="app" syncLocation={syncLocation}>
+                  <PerspectiveContainer width="800px" p={3} id="app" syncLocation={syncLocation} focusScroll={handleNavApp}>
                       <Stack vertical>
                           <Glass p={3}>
-                              <Stack>
-                                  <Button onClick={handleNavApp}>Blog</Button>
-                                  <Button onClick={handleNavModal}>About Me</Button>
-                              </Stack></Glass>
+                            <Stack>
+                                <Button onClick={handleNavApp}>Blog</Button>
+                                <Button onClick={handleNavModal}>About Me</Button>
+                            </Stack>
+                          </Glass>
                           <Glass p={5} blur={3} minHeight="30vh"><Text color="textInverted">Long text</Text></Glass>
                       </Stack>
                   </PerspectiveContainer>
-                  <PerspectiveContainer width="800px" p={3} tilt="left" id="modal" syncLocation={syncLocation}>
-                      <Glass p={5} blur={3}><Text color="textInverted">Long text</Text></Glass>
+                  <PerspectiveContainer width="800px" p={3} tilt="left" id="modal" syncLocation={syncLocation} focusScroll={handleNavModal}>
+                      <Stack vertical>
+                          <Glass p={3}>
+                            <Stack>
+                                <Button onClick={handleNavApp}>Blog</Button>
+                                <Button onClick={handleNavModal}>About Me</Button>
+                            </Stack>
+                          </Glass>
+                        <Glass p={5} blur={3}><Text color="textInverted">Long text</Text></Glass>
+                      </Stack>
                   </PerspectiveContainer>
               </Box>
           </Box>
