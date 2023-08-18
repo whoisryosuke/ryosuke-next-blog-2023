@@ -4,6 +4,7 @@ import React, { useEffect, useRef } from 'react'
 import styled from 'styled-components';
 import MotionGlass from '../Glass/MotionGlass';
 import Glass from '../Glass/MotionGlass';
+import Stack from '../Stack/Stack';
 
 type Props = {}
 
@@ -38,20 +39,23 @@ const ToastManager = (props: Props) => {
     
 
   return (
-    <AnimatePresence>
-        {toastMap.map(toast => (
-            <motion.div
-                key={toast.time}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}>
-
-                <Glass>
-                    <h3>{toast.content.title} - {toast.time}</h3>
-                </Glass>
-            </motion.div>
-        ))}
-    </AnimatePresence>
+    <Stack vertical gap="2px">
+      <AnimatePresence>
+            {toastMap.map(toast => (
+                <motion.div
+                    key={toast.time}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.7 }}
+                    >
+                    <Glass>
+                        <h3>{toast.content.title} - {toast.time}</h3>
+                    </Glass>
+                </motion.div>
+            ))}
+      </AnimatePresence>
+    </Stack>
   )
 }
 
