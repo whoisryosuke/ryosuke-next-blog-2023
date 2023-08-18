@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import Box, { BoxProps } from "../Box/Box";
 import { Theme } from "@theme/index";
+import { motion } from "framer-motion";
 
 type GlassProps = BoxProps & {
   transparent?: boolean;
@@ -60,9 +61,10 @@ const Glass = styled(Box)<GlassProps>`
   }
 `;
 
-export default Glass;
-
 Glass.defaultProps = {
   blur: 1,
   borderRadius: 3,
 };
+
+
+export default Glass;
