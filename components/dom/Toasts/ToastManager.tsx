@@ -14,11 +14,13 @@ const ToastManager = (props: Props) => {
     const { toasts, removeToast, updateToast } = useToastStore();
     const removeQueue = useRef({})
 
+    const toastMap = Object.values(toasts);
+
     console.log('toasts vs queue', toasts, removeQueue.current)
 
     useEffect(() => {
         console.log('checking ALL toasts')
-      toasts.forEach((toast, index) => {
+      toastMap.forEach((toast) => {
         console.log('checking toast', toast.time, removeQueue.current)
         // New toast? Set a timer to hide it.
         if(!(toast.time in removeQueue.current)) {
@@ -26,7 +28,8 @@ const ToastManager = (props: Props) => {
 
             // Mark for deletion
             removeQueue.current[toast.time] = setTimeout(() => {
-                removeToast(index)
+                console.log('REMOVING!')
+                removeToast(toast.time)
                 delete removeQueue.current[toast.time]; 
             }, TOAST_DURATION)
         }
@@ -36,7 +39,7 @@ const ToastManager = (props: Props) => {
 
   return (
     <AnimatePresence>
-        {toasts.map(toast => (
+        {toastMap.map(toast => (
             <motion.div
                 key={toast.time}
                 initial={{ opacity: 0 }}

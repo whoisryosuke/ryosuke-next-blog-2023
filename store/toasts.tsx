@@ -14,16 +14,23 @@ export type Toast = {
 }
 
 interface ToastState {
-    toasts: Toast[]
+    toasts: Record<number, Toast>
     addToast: (toast: Toast) => void
     removeToast: (toastId: number) => void
     updateToast: (toastId: number, data: Partial<Toast>) => void
 }
 
 export const useToastStore = create<ToastState>()((set) => ({
-    toasts: [],
-    addToast: (toast) => set((state) => ({ toasts: [ ...state.toasts, toast ] })),
-    removeToast: (toastId) => set((state) => ({ toasts: state.toasts.filter((_, index) => index !== toastId) })),
+    toasts: {},
+    addToast: (toast) => set((state) => ({ toasts: { ...state.toasts, [toast.time]: toast } })),
+    removeToast: (toastId) => set((state) => {
+        const newToasts = {...state.toasts};
+        delete newToasts[toastId];
+        return {
+            ...state,
+            toasts: newToasts,
+        }
+    }),
     updateToast: (toastId, data) => set((state) => {
         state.toasts[toastId] = {
             ...state.toasts[toastId],
