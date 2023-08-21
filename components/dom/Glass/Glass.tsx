@@ -16,6 +16,14 @@ const Glass = styled(Box)<GlassProps>`
   border-radius: ${({ theme, borderRadius }) =>
     borderRadius in theme.radius && theme.radius[borderRadius]};
 
+  transform: translateZ(${({theme}) => theme.modal ? '-10px' : '0'});
+    
+  /* Animation */
+  @media (prefers-reduced-motion: no-preference) {
+    transition-property: transform;
+    transition-duration: 710ms;
+  }
+
   /* Border gradient - also an inset for extra "gloss effect" */
   &:before {
     content: "";

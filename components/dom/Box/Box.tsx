@@ -28,6 +28,7 @@ export type BoxProps = SpaceProps &
 const Box = styled("div")<BoxProps>(
   {
     boxSizing: "border-box",
+    perspective: "500px",
   },
   space,
   position,
