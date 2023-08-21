@@ -28,6 +28,7 @@ const Page = ({ children, transparent = false }: PropsWithChildren<Props>) => (
       <A11yCheck />
       <GlobalStyles />
       <Paper
+        id="root-content"
         // display="flex"
         flexDirection="column"
         justifyContent="space-between"

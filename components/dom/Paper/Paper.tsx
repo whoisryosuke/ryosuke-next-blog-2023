@@ -1,7 +1,7 @@
-import React, { PropsWithChildren } from "react";
+import React, { HTMLProps, PropsWithChildren } from "react";
 import Box, { BoxProps } from "../Box/Box";
 
-type Props = BoxProps & {};
+type Props = BoxProps & HTMLProps<HTMLDivElement> & {};
 
 const Paper = ({ children, ...props }: PropsWithChildren<Props>) => {
   return (
