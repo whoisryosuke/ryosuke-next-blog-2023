@@ -1,6 +1,7 @@
 import React, { PropsWithChildren } from 'react'
 import styled from 'styled-components'
 import DialogClose from './DialogClose'
+import { motion } from 'framer-motion'
 
 const StyledDialog = styled('dialog')`
     position:absolute;
@@ -20,12 +21,25 @@ type Props = {
     onClose: () => void;
 }
 
+const ANIMATION_INITAL = { scale: 1.1, opacity: 0, translateY: '50px', translateZ: '100px', rotateX: '10.4175deg', rotateY: '-17.97deg', transformOrigin: 'bottom center' };
+const ANIMATION_EXIT = { scale: 1.1, opacity: 0, translateY: '-50px' };
+
 const Dialog = ({children, onClose, ...props}: PropsWithChildren<Props>) => {
   return (
-    <StyledDialog {...props}>
-        <DialogClose onClose={onClose} />
-        <DialogContent>{children}</DialogContent>
-    </StyledDialog>
+    <motion.div
+      initial={ANIMATION_INITAL}
+      animate={{ scale: 1, opacity: 1, translateY: '0px', translateZ: '100px', rotateX: '0deg', rotateY: '0deg', transformOrigin: 'bottom center' }}
+      exit={ANIMATION_INITAL}
+      transition={{
+        duration: 0.42,
+        ease: "easeInOut",
+      }}
+    >
+        <StyledDialog {...props}>
+            <DialogClose onClose={onClose} />
+            <DialogContent>{children}</DialogContent>
+        </StyledDialog>
+    </motion.div>
   )
 }
 

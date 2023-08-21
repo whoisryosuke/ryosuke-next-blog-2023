@@ -58,7 +58,7 @@ export default function ComponentsPage() {
                 <Button onClick={handleModal}>Open Modal</Button>
                 <Button>About Me</Button>
                 <Modal isOpen={customizations.theme.modal} onClose={onClose}>
-                    <Glass width="400px" p={5} modal>
+                    <Glass width="400px" p={5} modal blur={3}>
                         <Text color="textInverted">Modal Open</Text>
                     </Glass>
                 </Modal>

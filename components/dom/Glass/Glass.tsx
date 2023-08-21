@@ -37,11 +37,18 @@ const Glass = styled(Box)<GlassProps>`
     /* box-shadow: 0 8px 32px 0 rgba( 31, 38, 135, 0.37 ); */
     box-shadow: 0 2px 16px 0 rgba(10, 10, 14, 0.1);
 
-    -webkit-mask-image: linear-gradient(
+    -webkit-mask-image: ${({ theme, blur, modal }) => `linear-gradient(
       270deg,
       rgba(0, 0, 0, 1),
-      rgba(0, 0, 0, ${({ theme, blur }) => theme.blur.mask[blur]}) 100%
-    );
+      rgba(0, 0, 0, ${theme.modal ? theme.blur.mask[2] : theme.blur.mask[blur]}) 100%
+    )`};
+
+    
+    /* Animation */
+    @media (prefers-reduced-motion: no-preference) {
+      transition-property: background;
+      transition-duration: 710ms;
+    }
   }
 
   &:after {
@@ -64,11 +71,6 @@ const Glass = styled(Box)<GlassProps>`
          */
   }
 
-  /* Animation */
-  @media (prefers-reduced-motion: no-preference) {
-    transition-property: background-color;
-    transition-duration: 420ms;
-  }
 `;
 
 Glass.defaultProps = {

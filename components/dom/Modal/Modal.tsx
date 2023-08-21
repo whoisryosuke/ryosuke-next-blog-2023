@@ -37,7 +37,7 @@ const Modal = ({children, isOpen, onClose, ...props}: PropsWithChildren<Props>) 
     
   
   return (
-    isOpen && rootRef.current ? createPortal(<ModalContainer {...props}><Dialog onClose={onClose}>{children}</Dialog></ModalContainer>, rootRef.current) : null
+    rootRef.current ? createPortal(<ModalContainer isOpen={isOpen} {...props}><Dialog onClose={onClose}>{children}</Dialog></ModalContainer>, rootRef.current) : null
   )
 }
 

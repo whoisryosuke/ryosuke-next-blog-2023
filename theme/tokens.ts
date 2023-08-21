@@ -94,6 +94,7 @@ export const BLUR_PROPERTIES = {
     1: '4px',
     2: '12px',
     3: '36px',
+    4: '48px',
   },
   mask: {
     0: '0.1',
