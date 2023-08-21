@@ -1,15 +1,9 @@
-import Link from "next/link";
-import dynamic from "next/dynamic";
-import Page from "@components/dom/Page/Page";
 import Text from "@components/dom/Text/Text";
 import React, { useState } from "react";
 import Glass from "@components/dom/Glass/Glass";
 import Box from "@components/dom/Box/Box";
-import GlassBordered from "@components/dom/Glass/GlassBordered";
 import Stack from "@components/dom/Stack/Stack";
 import Button from "@components/dom/Button/Button";
-import IconButton from "@components/dom/IconButton/IconButton";
-import { MdHomeFilled, MdSearch } from "react-icons/md";
 import {
   BiHomeAlt,
   BiBook,
@@ -18,23 +12,18 @@ import {
   BiHeadphone,
 } from "react-icons/bi";
 import { useAppStore } from "store/app";
-import { Theme } from "@theme/index";
-import Slider from "@components/dom/Slider/Slider";
-import Input from "@components/dom/Input/Input";
-import { useToastStore } from "@store/toasts";
 import ToastManager from "@components/dom/Toasts/ToastManager";
 import Modal from "@components/dom/Modal/Modal";
 
 export default function ComponentsPage() {
-  const { customizations, setUserTheme } = useAppStore();
-    const [modalOpen, setModalOpen] = useState(true)
+  const { customizations, setUserTheme, toggleModal } = useAppStore();
 
   const handleModal = () => {
-    setModalOpen(true);
+    toggleModal(true);
   }
 
   const onClose = () => {
-    setModalOpen(false);
+    toggleModal(false);
   }
 
   return (
@@ -62,14 +51,14 @@ export default function ComponentsPage() {
       />
 
       <Box minHeight="100vh" width="100%">
-        <Box width="800px" margin="auto" p={3}>
+        <Box width="800px" margin="auto" py={8}>
           <Stack vertical>
             <Glass p={3}>
               <Stack>
                 <Button onClick={handleModal}>Open Modal</Button>
                 <Button>About Me</Button>
-                <Modal isOpen={modalOpen} onClose={onClose}>
-                    <Glass p={5}>
+                <Modal isOpen={customizations.theme.modal} onClose={onClose}>
+                    <Glass width="400px" p={5} modal>
                         <Text color="textInverted">Modal Open</Text>
                     </Glass>
                 </Modal>

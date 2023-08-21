@@ -8,6 +8,7 @@ type GlassProps = BoxProps & {
   transparent?: boolean;
   blur?: keyof Theme["blur"]["radius"];
   borderRadius?: keyof Theme["radius"];
+  modal: boolean;
 };
 
 const Glass = styled(Box)<GlassProps>`
@@ -24,8 +25,11 @@ const Glass = styled(Box)<GlassProps>`
     bottom: 0;
     left: 0;
     z-index: -2;
-    background: ${({ theme, transparent }) =>
-      !transparent && theme.colors.glass};
+    background: ${({ theme, transparent, modal }) => {
+      let bgColor = !transparent && theme.colors.glass;
+      if(theme.modal && !modal) bgColor = theme.colors.glassOverlay;
+      return bgColor;
+    }};
     backdrop-filter: blur(${({ theme, blur }) => theme.blur.radius[blur]});
     border-radius: inherit;
     border: 0.0625em solid rgba(255, 255, 255, 0.1);
@@ -58,6 +62,12 @@ const Glass = styled(Box)<GlassProps>`
         --offset: 50%;
         -webkit-mask-image: linear-gradient(to right,transparent calc(var(--x) - var(--offset)),#000 calc(var(--x) - var(--offset) / 2),#000 calc(var(--x) + var(--offset) / 2),transparent calc(var(--x) + var(--offset))),linear-gradient(to bottom,transparent 40px,#000 44px,#000 100%,transparent 100%),linear-gradient(to right,transparent 40px,#000 44px,#000 100%,transparent 100%);
          */
+  }
+
+  /* Animation */
+  @media (prefers-reduced-motion: no-preference) {
+    transition-property: background-color;
+    transition-duration: 420ms;
   }
 `;
 

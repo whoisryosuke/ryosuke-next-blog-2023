@@ -9,6 +9,7 @@ export type UserCustomizations = {
   animation: UserAnimationSettings
   theme: {
     fontWeights: Theme['fontWeights'];
+    modal: boolean;
   }
 }
 
@@ -22,6 +23,7 @@ interface AppState {
   customizations: UserCustomizations
   setUserTheme: (theme: Partial<UserCustomizations['theme']>) => void
   setUserAnimation: (settings: UserAnimationSettings) => void
+  toggleModal: (modal?: boolean) => void
 }
 
 export const useAppStore = create<AppState>()((set) => ({
@@ -38,8 +40,10 @@ export const useAppStore = create<AppState>()((set) => ({
     },
     theme: {
       fontWeights: base.fontWeights,
+      modal: false,
     }
   },
   setUserTheme: (theme) => set((state) => ({ customizations: { ...state.customizations, theme: { ...state.customizations.theme, ...theme} } })),
   setUserAnimation: (settings) => set((state) => ({ customizations: { ...state.customizations, animation: { ...state.customizations.animation, ...settings} } })),
+  toggleModal: (modal) => set((state) => ({ customizations: { ...state.customizations, theme: { ...state.customizations.theme, modal: modal ?? !state.customizations.theme.modal } } })),
 }))

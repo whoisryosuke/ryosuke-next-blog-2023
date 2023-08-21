@@ -8,7 +8,7 @@ const StyledModalContainer = styled('div')`
     width: 100%;
     height: 100vh;
     
-    background: rgba(0,0,0,0.3);
+    /* background: rgba(0,0,0,0.3); */
 `
 
 type Props = {}
