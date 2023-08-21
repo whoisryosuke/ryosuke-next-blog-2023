@@ -21,14 +21,14 @@ type Props = {
     onClose: () => void;
 }
 
-const ANIMATION_INITAL = { scale: 1.1, opacity: 0, translateY: '50px', translateZ: '100px', rotateX: '10.4175deg', rotateY: '-17.97deg', transformOrigin: 'bottom center' };
+const ANIMATION_INITAL = { scale: 1, opacity: 0, translateY: '50px', translateZ: '50px', transformOrigin: 'bottom center' };
 const ANIMATION_EXIT = { scale: 1.1, opacity: 0, translateY: '-50px' };
 
 const Dialog = ({children, onClose, ...props}: PropsWithChildren<Props>) => {
   return (
     <motion.div
       initial={ANIMATION_INITAL}
-      animate={{ scale: 1, opacity: 1, translateY: '0px', translateZ: '100px', rotateX: '0deg', rotateY: '0deg', transformOrigin: 'bottom center' }}
+      animate={{ scale: 1, opacity: 1, translateY: '0px', translateZ: '0', transformOrigin: 'bottom center' }}
       exit={ANIMATION_INITAL}
       transition={{
         duration: 0.42,

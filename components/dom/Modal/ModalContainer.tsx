@@ -9,6 +9,8 @@ const StyledModalContainer = styled('div')`
     width: 100%;
     height: 100vh;
     overflow: hidden;
+    
+    perspective: 500px;
 
     z-index: 999;
     
