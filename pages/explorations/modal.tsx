@@ -66,11 +66,11 @@ export default function ComponentsPage() {
           <Stack vertical>
             <Glass p={3}>
               <Stack>
-                <Button onClick={handleModal}>Create toast</Button>
+                <Button onClick={handleModal}>Open Modal</Button>
                 <Button>About Me</Button>
                 <Modal isOpen={modalOpen} onClose={onClose}>
-                    <Glass p={3}>
-                        <Text>Modal Open</Text>
+                    <Glass p={5}>
+                        <Text color="textInverted">Modal Open</Text>
                     </Glass>
                 </Modal>
               </Stack>
