@@ -1,5 +1,6 @@
+import { getKeyboardFocusableElements } from '@utils/focus'
 import { AnimatePresence } from 'framer-motion'
-import React, { PropsWithChildren } from 'react'
+import React, { PropsWithChildren, useEffect, useRef } from 'react'
 import styled from 'styled-components'
 
 const StyledModalContainer = styled('div')`
@@ -22,9 +23,26 @@ type Props = {
 }
 
 const ModalContainer = ({children, isOpen, ...props}: PropsWithChildren<Props>) => {
+  const modalRef = useRef<HTMLDivElement | null>(null)
+
+  useEffect(() => {
+    if(isOpen && modalRef.current) {
+      // Find a focusable element
+      const focusableElements = getKeyboardFocusableElements(modalRef.current)
+      console.log('focus this!', focusableElements)
+
+      // focusableElement.focus?.();
+      if(focusableElements.length > 1) {
+        focusableElements[1].focus();
+      }
+    }
+  
+  }, [isOpen])
+  
+
   return (
     <AnimatePresence>
-        {isOpen && <StyledModalContainer {...props}>{children}</StyledModalContainer>}
+        {isOpen && <StyledModalContainer ref={modalRef} {...props}>{children}</StyledModalContainer>}
     </AnimatePresence>
   )
 }
