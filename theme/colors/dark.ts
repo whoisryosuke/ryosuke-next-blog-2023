@@ -1,5 +1,6 @@
 export const primaryColors = {
   text: "rgba(234,234,241,1)",
+  textOverlay: "rgba(6,6,19,0.7)",
   textInverted: "rgba(6,6,19,1)",
   reading: "rgba(221,221,228,1)",
   background: "rgba(10,10,14,1)",

@@ -1,12 +1,15 @@
-import { useAppStore } from "store/app";
-import { base, themes } from "@theme/index";
+import { UserCustomizations, useAppStore } from "store/app";
+import { Theme, base, themes } from "@theme/index";
 import { ThemeProvider as StyledThemeProvider } from "styled-components";
 
 /* eslint-disable-next-line */
-export interface ThemeProviderProps {}
+export interface ThemeProviderProps {
+  theme: Partial<Theme> & Partial<UserCustomizations['theme']>
+}
 
 export function ThemeProvider({
   children,
+  theme: themeOverrides,
 }: React.PropsWithChildren<ThemeProviderProps>) {
   const { theme, customizations } = useAppStore();
 
@@ -15,6 +18,7 @@ export function ThemeProvider({
     ...base,
     ...customizations.theme,
     ...colorMode,
+    ...themeOverrides,
   };
   return (
     <StyledThemeProvider theme={currentTheme}>{children}</StyledThemeProvider>

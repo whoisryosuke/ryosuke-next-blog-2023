@@ -16,6 +16,9 @@ const Text = styled("p")<TextProps>(
   },
   color,
   typography,
+  {
+    "color": ({ theme }) => theme.modal && theme.colors.textOverlay,
+  }
 );
 
 Text.defaultProps = {

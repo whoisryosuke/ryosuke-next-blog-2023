@@ -8,7 +8,7 @@ type GlassProps = BoxProps & {
   transparent?: boolean;
   blur?: keyof Theme["blur"]["radius"];
   borderRadius?: keyof Theme["radius"];
-  modal: boolean;
+  modal?: boolean;
 };
 
 const Glass = styled(Box)<GlassProps>`
@@ -16,7 +16,8 @@ const Glass = styled(Box)<GlassProps>`
   border-radius: ${({ theme, borderRadius }) =>
     borderRadius in theme.radius && theme.radius[borderRadius]};
 
-  transform: translateZ(${({theme}) => theme.modal ? '-10px' : '0'});
+  /* Modal support - pushes content "back"  */
+  transform: translateZ(${({theme}) => theme.modal ? '-30px' : '0'});
     
   /* Animation */
   @media (prefers-reduced-motion: no-preference) {
@@ -38,7 +39,7 @@ const Glass = styled(Box)<GlassProps>`
       if(theme.modal && !modal) bgColor = theme.colors.glassOverlay;
       return bgColor;
     }};
-    backdrop-filter: blur(${({ theme, blur }) => theme.blur.radius[blur]});
+    backdrop-filter: blur(${({ theme, blur }) => theme.modal ? theme.blur.radius[4] : theme.blur.radius[blur]});
     border-radius: inherit;
     border: 0.0625em solid rgba(255, 255, 255, 0.1);
 

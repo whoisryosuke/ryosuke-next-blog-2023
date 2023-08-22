@@ -4,6 +4,11 @@ import { createPortal } from 'react-dom'
 import ModalContainer from './ModalContainer'
 import Dialog from './Dialog'
 import ModalCurtain from './ModalCurtain'
+import ThemeProvider from '../ThemeProvider/ThemeProvider'
+
+const MODAL_THEME = {
+  modal: false,
+}
 
 type Props = {
     isOpen: boolean;
@@ -38,10 +43,10 @@ const Modal = ({children, isOpen, onClose, ...props}: PropsWithChildren<Props>) 
     
   
   return (
-    rootRef.current ? createPortal(<ModalContainer isOpen={isOpen} {...props}>
+    rootRef.current ? createPortal(<ThemeProvider theme={MODAL_THEME}><ModalContainer isOpen={isOpen} {...props}>
       <ModalCurtain onClose={onClose} />
       <Dialog onClose={onClose}>{children}</Dialog>
-    </ModalContainer>, rootRef.current) : null
+    </ModalContainer></ThemeProvider>, rootRef.current) : null
   )
 }
 
