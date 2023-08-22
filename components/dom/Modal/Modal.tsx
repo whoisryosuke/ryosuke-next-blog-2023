@@ -3,6 +3,7 @@ import React, { PropsWithChildren, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import ModalContainer from './ModalContainer'
 import Dialog from './Dialog'
+import ModalCurtain from './ModalCurtain'
 
 type Props = {
     isOpen: boolean;
@@ -37,7 +38,10 @@ const Modal = ({children, isOpen, onClose, ...props}: PropsWithChildren<Props>) 
     
   
   return (
-    rootRef.current ? createPortal(<ModalContainer isOpen={isOpen} {...props}><Dialog onClose={onClose}>{children}</Dialog></ModalContainer>, rootRef.current) : null
+    rootRef.current ? createPortal(<ModalContainer isOpen={isOpen} {...props}>
+      <ModalCurtain onClose={onClose} />
+      <Dialog onClose={onClose}>{children}</Dialog>
+    </ModalContainer>, rootRef.current) : null
   )
 }
 

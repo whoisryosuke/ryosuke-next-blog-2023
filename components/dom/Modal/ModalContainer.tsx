@@ -33,6 +33,7 @@ const ModalContainer = ({children, isOpen, ...props}: PropsWithChildren<Props>) 
 
       // focusableElement.focus?.();
       if(focusableElements.length > 1) {
+        // The first element is usually the close button so we skip it
         focusableElements[1].focus();
       }
     }
