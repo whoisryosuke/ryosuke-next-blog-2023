@@ -45,7 +45,7 @@ const MusicCard = ({...props}) => {
     <Box {...props}>
       <Image src="/playlist/baby-gravy.jpg" alt="Baby Gravy" mb={1} />
       <Text fontSize={1} fontWeight="bold" mb={1}>Baby Gravy</Text>
-      <Text fontSize={0}>Yung Gravy & Bbno$ </Text>
+      <Text fontSize={0} color="textOverlay">Yung Gravy & Bbno$ </Text>
     </Box>
   )
 }

@@ -8,6 +8,7 @@ import Text from "../Text/Text";
 import { useFocusable } from "@noriginmedia/norigin-spatial-navigation";
 import { BorderRadiusProps, FlexProps, FlexboxProps, borderRadius, flex, flexbox } from "styled-system";
 import { Theme } from "@theme/index";
+import { borderShineEffect } from "@theme/styles/glass";
 
 type ButtonProps = DetailedHTMLProps<
   ButtonHTMLAttributes<HTMLButtonElement>,
@@ -23,20 +24,6 @@ type ButtonProps = DetailedHTMLProps<
   };
   borderRadius?: keyof Theme['radius'];
 };
-
-const borderStyles = () => css<ButtonProps>`
-  content: "";
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  z-index: -1;
-  margin: -1px -1px 0 -1px;
-  border-radius: inherit;
-  background: ${({ theme }) => theme.colors.glass};
-  box-shadow: inset 1px 1px 1px rgba(255, 255, 255, 0.35);
-`;
 
 const StyledButton = styled("button")<ButtonProps>`
   position: relative;
@@ -60,14 +47,14 @@ const StyledButton = styled("button")<ButtonProps>`
   /* The "border" using a inset box shadow */
   &:after {
     /* Only show border if it's solid button or focused */
-    ${({ solid }) => solid && borderStyles}
+    ${({ solid }) => solid && borderShineEffect}
   }
 
   &:hover {
     background: ${({ theme }) => theme.colors.button.hovered};
 
     &:after {
-      ${borderStyles}
+      ${borderShineEffect}
     }
   }
 

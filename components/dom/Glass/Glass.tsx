@@ -1,8 +1,9 @@
 import React from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import Box, { BoxProps } from "../Box/Box";
 import { Theme } from "@theme/index";
 import { motion } from "framer-motion";
+import { borderShineEffect } from "@theme/styles/glass";
 
 type GlassProps = BoxProps & {
   transparent?: boolean;
@@ -58,26 +59,6 @@ const Glass = styled(Box)<GlassProps>`
       transition-property: background;
       transition-duration: 710ms;
     }
-  }
-
-  &:after {
-    content: "";
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    z-index: -1;
-    margin: -1px -1px 0 -1px;
-    border-radius: inherit;
-    background: ${({ theme }) => theme.colors.glass};
-    box-shadow: inset 1px 1px 1px rgba(255, 255, 255, 0.35);
-    pointer-events: none;
-
-    /* --x: 77%;
-        --offset: 50%;
-        -webkit-mask-image: linear-gradient(to right,transparent calc(var(--x) - var(--offset)),#000 calc(var(--x) - var(--offset) / 2),#000 calc(var(--x) + var(--offset) / 2),transparent calc(var(--x) + var(--offset))),linear-gradient(to bottom,transparent 40px,#000 44px,#000 100%,transparent 100%),linear-gradient(to right,transparent 40px,#000 44px,#000 100%,transparent 100%);
-         */
   }
 
 `;
