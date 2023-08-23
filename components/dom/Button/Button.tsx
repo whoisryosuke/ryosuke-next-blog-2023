@@ -6,18 +6,22 @@ import React, {
 import styled, { css } from "styled-components";
 import Text from "../Text/Text";
 import { useFocusable } from "@noriginmedia/norigin-spatial-navigation";
+import { BorderRadiusProps, FlexProps, FlexboxProps, borderRadius, flex, flexbox } from "styled-system";
+import { Theme } from "@theme/index";
 
 type ButtonProps = DetailedHTMLProps<
   ButtonHTMLAttributes<HTMLButtonElement>,
   HTMLButtonElement
-> & {
+> & FlexboxProps & {
   focused?: boolean;
   solid?: boolean;
-  icon?: boolean;
+  icon?: React.ReactElement;
+  onlyIcon?: boolean;
   iconSize?: {
     width: React.CSSProperties["width"];
     height: React.CSSProperties["height"];
   };
+  borderRadius?: keyof Theme['radius'];
 };
 
 const borderStyles = () => css<ButtonProps>`
@@ -36,13 +40,22 @@ const borderStyles = () => css<ButtonProps>`
 
 const StyledButton = styled("button")<ButtonProps>`
   position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
   background: ${({ theme, solid }) =>
     solid ? theme.colors.glass : "transparent"};
-  border-radius: ${({ icon, theme }) =>
-    icon ? theme.radius.round : theme.radius.default};
+  border-radius: ${({ onlyIcon, theme, borderRadius }) => {
+    let radius = onlyIcon ? theme.radius.round : theme.radius.default;
+    if(borderRadius) radius = theme.radius[borderRadius];
+    return radius
+  }};
   border: 0;
-  padding: ${({ theme, icon }) =>
-    icon ? theme.space[3] : `${theme.space[3]} ${theme.space[4]}`};
+  padding: ${({ theme, onlyIcon }) =>
+    onlyIcon ? theme.space[3] : `${theme.space[3]} ${theme.space[4]}`};
+
+  color: ${({ theme }) => theme.colors.text};
 
   /* The "border" using a inset box shadow */
   &:after {
@@ -56,6 +69,11 @@ const StyledButton = styled("button")<ButtonProps>`
     &:after {
       ${borderStyles}
     }
+  }
+
+  &:active {
+    background: ${({ theme }) => theme.colors.button.pressed};
+    color: ${({ theme }) => theme.colors.button.pressedText};
   }
 
   &:focus {
@@ -80,13 +98,16 @@ const StyledButton = styled("button")<ButtonProps>`
     transition-property: box-shadow, color;
     transition-duration: 420ms;
   }
+
+  ${flexbox}
 `;
 
-const Button = ({ children, ...props }: PropsWithChildren<ButtonProps>) => {
+const Button = ({ children, icon, onlyIcon, ...props }: PropsWithChildren<ButtonProps>) => {
   const { ref, focused } = useFocusable();
   return (
-    <StyledButton ref={ref} solid={focused} {...props}>
-      <Text color="textInverted">{children}</Text>
+    <StyledButton ref={ref} solid={focused} onlyIcon={onlyIcon} {...props}>
+      {icon && <Text color={onlyIcon ? "inherit" : "textOverlay"} mr={onlyIcon ? 0 : 3}>{icon}</Text>}
+      <Text color="inherit">{children}</Text>
     </StyledButton>
   );
 };

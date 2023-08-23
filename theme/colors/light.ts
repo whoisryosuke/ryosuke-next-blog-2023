@@ -1,5 +1,5 @@
 export const primaryColors = {
-  text: "rgba(6,6,19,1)",
+  text: "rgba(234,234,241,1)",
   textOverlay: "rgba(234,234,241,0.7)",
   textInverted: "rgba(234,234,241,1)",
   reading: "rgba(16,15,40,1)",
@@ -16,7 +16,9 @@ export const primaryColors = {
   },
   button: {
     default: "rgba(242, 242, 242, 0.1)",
-    hovered: "rgba(242, 242, 242, 0.3)"
+    hovered: "rgba(242, 242, 242, 0.3)",
+    pressed: "rgba(0, 0, 0, 1.0)",
+    pressedText: "rgba(242,242,242,0.1)",
   },
   primary: {
     default: "rgba(31,27,216,1)",

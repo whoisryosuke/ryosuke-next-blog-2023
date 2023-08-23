@@ -1,9 +1,9 @@
 import { Theme } from "@theme/index";
 import styled from "styled-components";
-import { ColorProps, TypographyProps, color, typography } from "styled-system";
+import { ColorProps, MarginProps, TypographyProps, color, typography, margin } from "styled-system";
 
-type TextProps = ColorProps &
-  TypographyProps & {
+export type TextProps = ColorProps &
+  TypographyProps & MarginProps & {
     fontWeight?: keyof Theme["fontWeights"];
   };
 
@@ -16,6 +16,7 @@ const Text = styled("p")<TextProps>(
   },
   color,
   typography,
+  margin,
   {
     "color": ({ theme }) => theme.modal && theme.colors.textOverlay,
   }

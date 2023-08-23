@@ -36,7 +36,7 @@ const Page = ({ children, transparent = false }: PropsWithChildren<Props>) => (
         style={{ flex: 1 }}
       >
         <main>
-          <MainNavbar />
+          <MainNavbar orientation="left" />
           <Box as="header" position="absolute" bottom={1} left={1}>
             <ThemeToggle />
           </Box>

@@ -85,18 +85,10 @@ const MainNavbar = ({ orientation, ...props }: MenuProps) => {
         {...props}
       >
         <Stack gap="12px" alignItems="center" vertical={orientation == "left"}>
-          <Button icon>
-            <BiHomeAlt />
-          </Button>
-          <Button icon>
-            <BiBook />
-          </Button>
-          <Button icon>
-            <BiGhost />
-          </Button>
-          <Button icon>
-            <BiHeadphone />
-          </Button>
+          <Button icon={<BiHomeAlt />} onlyIcon />
+          <Button icon={<BiBook />} onlyIcon />
+          <Button icon={<BiGhost />} onlyIcon />
+          <Button icon={<BiHeadphone />} onlyIcon />
         </Stack>
       </StyledMenu>
     </FocusContext.Provider>

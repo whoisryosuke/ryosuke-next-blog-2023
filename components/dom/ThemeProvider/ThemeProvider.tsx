@@ -4,7 +4,7 @@ import { ThemeProvider as StyledThemeProvider } from "styled-components";
 
 /* eslint-disable-next-line */
 export interface ThemeProviderProps {
-  theme: Partial<Theme> & Partial<UserCustomizations['theme']>
+  theme?: Partial<Theme> & Partial<UserCustomizations['theme']>
 }
 
 export function ThemeProvider({
