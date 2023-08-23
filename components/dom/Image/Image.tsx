@@ -1,30 +1,27 @@
-import clsx from "clsx";
-import React, { AnchorHTMLAttributes } from "react";
-import Box from "../Box/Box";
-import Text from "../Text/Text";
-import {
-  imageStyles,
-  imageContainerStyles,
-  captionContainerStyles,
-} from "./Image.css";
+import React, { HTMLProps } from "react";
+import { MarginProps, margin } from "styled-system";
+import styled from "styled-components";
+import NextImage from 'next/image'
+import { Theme } from "@theme/index";
 
-export type ImageProps = AnchorHTMLAttributes<HTMLImageElement> & {
-  children: React.ReactNode;
-  alt: string;
+export type ImageProps = HTMLProps<HTMLImageElement> & MarginProps & {
+  borderRadius?: keyof Theme["radius"];
 };
 
-const Image = ({ className, alt, ...props }: ImageProps) => {
+const StyledImage = styled('img')<ImageProps>`
+
+  width: auto;
+  margin: auto;
+  max-width: 100%;
+
+  border-radius: ${({theme, borderRadius}) => borderRadius ? theme.radius[borderRadius] : theme.radius[1]};
+
+  ${margin}
+`
+
+const Image = ({ ...props }: ImageProps) => {
   return (
-    <Box className={imageContainerStyles}>
-      <img className={clsx(imageStyles, className)} alt={alt} {...props} />
-      {alt && (
-        <Box>
-          <Box className={captionContainerStyles} aria-hidden>
-            <Text>{alt}</Text>
-          </Box>
-        </Box>
-      )}
-    </Box>
+    <StyledImage {...props} />
   );
 };
 

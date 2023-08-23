@@ -20,11 +20,16 @@ const StyledInput = styled("input")<Props>`
   padding: ${({ theme }) => `${theme.space[1]} ${theme.space[4]}`};
   padding-left: ${({ theme, icon }) => icon && theme.space[7]};
 
-  color: ${({ theme }) => theme.colors.textInverted};
+  color: ${({ theme }) => theme.colors.text};
   font-size: ${({ theme }) => theme.fontSizes[2]};
   font-weight: ${({ theme }) => theme.fontWeights.regular};
   line-height: ${({ theme }) => theme.lineHeights[2]};
   font-family: ${({ theme }) => theme.fonts.body};
+
+  &::placeholder { 
+    color: ${({ theme }) => theme.colors.textOverlay};
+    opacity: 0.8; /* Firefox */
+  }
 `;
 
 const StyledIcon = styled("div")`

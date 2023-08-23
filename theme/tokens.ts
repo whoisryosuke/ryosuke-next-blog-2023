@@ -27,8 +27,8 @@ export const FONTS = {
 };
 
 export const FONT_WEIGHTS = {
-  regular: 500,
-  bold: 700,
+  regular: 420,
+  bold: 710,
 };
 
 export const FONT_SIZE_PROPERTIES = {
