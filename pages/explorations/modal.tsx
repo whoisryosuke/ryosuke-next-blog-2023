@@ -66,9 +66,7 @@ export default function ComponentsPage() {
               </Stack>
             </Glass>
             <Glass p={3}>
-              <Button solid icon iconSize={{ width: "64px", height: "64px" }}>
-                <BiLogoMastodon />
-              </Button>
+              <Button solid icon={<BiLogoMastodon />} onlyIcon iconSize={{ width: "64px", height: "64px" }} />
             </Glass>
             <Glass p={3}>
               <Stack alignItems="center">

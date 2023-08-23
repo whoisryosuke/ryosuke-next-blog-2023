@@ -29,7 +29,7 @@ type Props = {
 
 const DialogClose = ({onClose, ...props}: Props) => {
   return (
-    <StyledDialogClose {...props}><Button icon onClick={onClose}><BiXCircle /></Button></StyledDialogClose>
+    <StyledDialogClose {...props}><Button icon={<BiXCircle />} onlyIcon onClick={onClose} /></StyledDialogClose>
   )
 }
 
