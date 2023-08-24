@@ -13,6 +13,10 @@ import {
   BiDotsHorizontal,
   BiMusic,
   BiMicrophone,
+  BiTime,
+  BiFolder,
+  BiBong,
+  BiUser,
 } from "react-icons/bi";
 import { useAppStore } from "store/app";
 import ToastManager from "@components/dom/Toasts/ToastManager";
@@ -20,6 +24,7 @@ import Modal from "@components/dom/Modal/Modal";
 import Headline from "@components/dom/Headline/Headline";
 import Input from "@components/dom/Input/Input";
 import Image from "@components/dom/Image/Image";
+import Grid from "@components/dom/Grid/Grid";
 
 type WindowHeaderProps = {
   title: string;
@@ -40,12 +45,12 @@ const WindowHeader = ({title, subtitle, icon, sidebar}: WindowHeaderProps) => {
   )
 }
 
-const MusicCard = ({...props}) => {
+const MusicCard = ({src = "/playlist/baby-gravy.jpg", title, subtitle, ...props}) => {
   return (
     <Box {...props}>
-      <Image src="/playlist/baby-gravy.jpg" alt="Baby Gravy" mb={1} />
-      <Text fontSize={1} fontWeight="bold" mb={1}>Baby Gravy</Text>
-      <Text fontSize={0} color="textOverlay">Yung Gravy & Bbno$ </Text>
+      <Image src={src} alt="Baby Gravy" mb={1} />
+      <Text fontSize={1} fontWeight="bold" mb={1}>{title}</Text>
+      <Text fontSize={0} color="textOverlay">{subtitle}</Text>
     </Box>
   )
 }
@@ -93,27 +98,30 @@ export default function ComponentsPage() {
                         <WindowHeader title="Library" subtitle="All Music" icon={<BiDotsHorizontal />} sidebar />
 
                         <Stack vertical>
-                            <Button icon={<BiMusic />} justifyContent="flex-start" borderRadius={1}>Recently Added</Button>
-                            <Button icon={<BiMusic />} justifyContent="flex-start" borderRadius={1}>Recently Added</Button>
-                            <Button icon={<BiMusic />} justifyContent="flex-start" borderRadius={1}>Recently Added</Button>
-                            <Button icon={<BiMusic />} justifyContent="flex-start" borderRadius={1}>Recently Added</Button>
-                            <Button icon={<BiMusic />} justifyContent="flex-start" borderRadius={1}>Recently Added</Button>
+                            <Button icon={<BiTime />} justifyContent="flex-start" borderRadius={1}>Recently Added</Button>
+                            <Button icon={<BiBong />} justifyContent="flex-start" borderRadius={1}>Artists</Button>
+                            <Button icon={<BiFolder />} justifyContent="flex-start" borderRadius={1}>Albums</Button>
+                            <Button icon={<BiMusic />} justifyContent="flex-start" borderRadius={1}>Songs</Button>
+                            <Button icon={<BiUser />} justifyContent="flex-start" borderRadius={1}>Made For You</Button>
                         </Stack>
                     </Box>
-                    <Box id="content" p={5} flex={1}>
+                    <Box id="content" py={4} px={5} flex={1}>
                         <WindowHeader title="Playlists" subtitle="420 songs" icon={<BiDotsHorizontal />} />
 
                         <Box mb={5}>
                           <Input icon={<BiMicrophone />} placeholder="Search for songs" />
                         </Box>
 
-                        <Stack vertical>
-                          <Stack>
-                            <MusicCard />
-                            <MusicCard />
-                            <MusicCard />
-                          </Stack>
-                        </Stack>
+                        <Grid>
+                          <MusicCard title="Baby Gravy" subtitle="Yung Gravy & Bbno$" />
+                          <MusicCard title="Bag or Die" subtitle="Bbno$" src="/playlist/bbno-bag-or-die.jpg" />
+                          <MusicCard title="Eat Ya Veggies" subtitle="Bbno$" src="/playlist/bbno-eat-ya-veggies.jpg" />
+                          <MusicCard title="Baby Gravy" subtitle="Yung Gravy & Bbno$" />
+                          <MusicCard title="Bag or Die" subtitle="Bbno$" src="/playlist/bbno-bag-or-die.jpg" />
+                          <MusicCard title="Eat Ya Veggies" subtitle="Bbno$" src="/playlist/bbno-eat-ya-veggies.jpg" />
+                          <MusicCard title="Baby Gravy" subtitle="Yung Gravy & Bbno$" />
+                          <MusicCard title="Bag or Die" subtitle="Bbno$" src="/playlist/bbno-bag-or-die.jpg" />
+                        </Grid>
                     </Box>
                 </Stack>
             </Glass>
