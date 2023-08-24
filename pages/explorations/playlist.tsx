@@ -93,7 +93,7 @@ export default function ComponentsPage() {
 
       <Box minHeight="100vh" width="100%">
         <Box width="80%" maxWidth="1200px" margin="auto" py={8}>
-            <Glass id="playlist"blur={3}>
+            <Glass id="playlist" blur={3} overflow="hidden">
                 <Stack>
                     <Box id="sidebar" width="250px" bg="rgba(0,0,0,0.2)" p={4}>
                         <WindowHeader title="Library" subtitle="All Music" icon={<BiDotsHorizontal />} sidebar />
