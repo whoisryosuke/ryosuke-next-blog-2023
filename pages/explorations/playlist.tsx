@@ -25,6 +25,7 @@ import Headline from "@components/dom/Headline/Headline";
 import Input from "@components/dom/Input/Input";
 import Image from "@components/dom/Image/Image";
 import Grid from "@components/dom/Grid/Grid";
+import ScrollBox from "@components/dom/ScrollBox/ScrollBox";
 
 type WindowHeaderProps = {
   title: string;
@@ -91,8 +92,8 @@ export default function ComponentsPage() {
       />
 
       <Box minHeight="100vh" width="100%">
-        <Box width="800px" margin="auto" py={8}>
-            <Glass id="playlist" overflow="hidden">
+        <Box width="80%" maxWidth="1200px" margin="auto" py={8}>
+            <Glass id="playlist"blur={3}>
                 <Stack>
                     <Box id="sidebar" width="250px" bg="rgba(0,0,0,0.2)" p={4}>
                         <WindowHeader title="Library" subtitle="All Music" icon={<BiDotsHorizontal />} sidebar />
@@ -111,17 +112,40 @@ export default function ComponentsPage() {
                         <Box mb={5}>
                           <Input icon={<BiMicrophone />} placeholder="Search for songs" />
                         </Box>
+                        
+                        <ScrollBox height="400px">
+                          <Grid>
+                            <MusicCard title="Baby Gravy" subtitle="Yung Gravy & Bbno$" />
+                            <MusicCard title="Bag or Die" subtitle="Bbno$" src="/playlist/bbno-bag-or-die.jpg" />
+                            <MusicCard title="Eat Ya Veggies" subtitle="Bbno$" src="/playlist/bbno-eat-ya-veggies.jpg" />
+                            <MusicCard title="Baby Gravy" subtitle="Yung Gravy & Bbno$" />
+                            <MusicCard title="Bag or Die" subtitle="Bbno$" src="/playlist/bbno-bag-or-die.jpg" />
+                            <MusicCard title="Eat Ya Veggies" subtitle="Bbno$" src="/playlist/bbno-eat-ya-veggies.jpg" />
+                            <MusicCard title="Baby Gravy" subtitle="Yung Gravy & Bbno$" />
+                            <MusicCard title="Bag or Die" subtitle="Bbno$" src="/playlist/bbno-bag-or-die.jpg" />
 
-                        <Grid>
-                          <MusicCard title="Baby Gravy" subtitle="Yung Gravy & Bbno$" />
-                          <MusicCard title="Bag or Die" subtitle="Bbno$" src="/playlist/bbno-bag-or-die.jpg" />
-                          <MusicCard title="Eat Ya Veggies" subtitle="Bbno$" src="/playlist/bbno-eat-ya-veggies.jpg" />
-                          <MusicCard title="Baby Gravy" subtitle="Yung Gravy & Bbno$" />
-                          <MusicCard title="Bag or Die" subtitle="Bbno$" src="/playlist/bbno-bag-or-die.jpg" />
-                          <MusicCard title="Eat Ya Veggies" subtitle="Bbno$" src="/playlist/bbno-eat-ya-veggies.jpg" />
-                          <MusicCard title="Baby Gravy" subtitle="Yung Gravy & Bbno$" />
-                          <MusicCard title="Bag or Die" subtitle="Bbno$" src="/playlist/bbno-bag-or-die.jpg" />
-                        </Grid>
+
+                            
+                            <MusicCard title="Baby Gravy" subtitle="Yung Gravy & Bbno$" />
+                            <MusicCard title="Bag or Die" subtitle="Bbno$" src="/playlist/bbno-bag-or-die.jpg" />
+                            <MusicCard title="Eat Ya Veggies" subtitle="Bbno$" src="/playlist/bbno-eat-ya-veggies.jpg" />
+                            <MusicCard title="Baby Gravy" subtitle="Yung Gravy & Bbno$" />
+                            <MusicCard title="Bag or Die" subtitle="Bbno$" src="/playlist/bbno-bag-or-die.jpg" />
+                            <MusicCard title="Eat Ya Veggies" subtitle="Bbno$" src="/playlist/bbno-eat-ya-veggies.jpg" />
+                            <MusicCard title="Baby Gravy" subtitle="Yung Gravy & Bbno$" />
+                            <MusicCard title="Bag or Die" subtitle="Bbno$" src="/playlist/bbno-bag-or-die.jpg" />
+
+                            
+                            <MusicCard title="Baby Gravy" subtitle="Yung Gravy & Bbno$" />
+                            <MusicCard title="Bag or Die" subtitle="Bbno$" src="/playlist/bbno-bag-or-die.jpg" />
+                            <MusicCard title="Eat Ya Veggies" subtitle="Bbno$" src="/playlist/bbno-eat-ya-veggies.jpg" />
+                            <MusicCard title="Baby Gravy" subtitle="Yung Gravy & Bbno$" />
+                            <MusicCard title="Bag or Die" subtitle="Bbno$" src="/playlist/bbno-bag-or-die.jpg" />
+                            <MusicCard title="Eat Ya Veggies" subtitle="Bbno$" src="/playlist/bbno-eat-ya-veggies.jpg" />
+                            <MusicCard title="Baby Gravy" subtitle="Yung Gravy & Bbno$" />
+                            <MusicCard title="Bag or Die" subtitle="Bbno$" src="/playlist/bbno-bag-or-die.jpg" />
+                          </Grid>
+                        </ScrollBox>
                     </Box>
                 </Stack>
             </Glass>
