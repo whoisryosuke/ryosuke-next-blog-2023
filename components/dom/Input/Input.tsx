@@ -1,3 +1,4 @@
+import { Theme } from "@theme/index";
 import React, { DetailedHTMLProps, InputHTMLAttributes } from "react";
 import styled from "styled-components";
 
@@ -9,6 +10,7 @@ type Props = DetailedHTMLProps<
 > & {
   style?: React.CSSProperties;
   icon?: React.ReactElement | boolean;
+  borderRadius?: keyof Theme['radius'];
 };
 
 const StyledInput = styled("input")<Props>`
@@ -30,6 +32,12 @@ const StyledInput = styled("input")<Props>`
     color: ${({ theme }) => theme.colors.textOverlay};
     opacity: 0.8; /* Firefox */
   }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 3px 4px rgba(255, 255, 255, 0.3);
+    border-radius: ${({ theme, borderRadius }) => borderRadius ? theme.radius[borderRadius] : theme.radius.round};
+  }
 `;
 
 const StyledIcon = styled("div")`
@@ -44,12 +52,12 @@ const StyledIcon = styled("div")`
   }
 `;
 
-const StyledContainer = styled("div")`
+const StyledContainer = styled("div")<Props>`
   width: 100%;
   display: flex;
   position: relative;
   background: ${({ theme }) => theme.colors.darkGlass.input};
-  border-radius: ${({ theme }) => theme.radius.round};
+  border-radius: ${({ theme, borderRadius }) => borderRadius ? theme.radius[borderRadius] : theme.radius.round};
 
   box-shadow:
     0px -1px 4px rgba(0, 0, 0, 0.25),
@@ -57,11 +65,11 @@ const StyledContainer = styled("div")`
     inset 4px 4px 4px rgba(0, 0, 0, 0.25);
 `;
 
-const Input = ({ style, icon, ...props }: Props) => {
+const Input = ({ style, icon, borderRadius, ...props }: Props) => {
   return (
-    <StyledContainer style={style}>
+    <StyledContainer style={style} borderRadius={borderRadius}>
       {icon && <StyledIcon>{icon}</StyledIcon>}
-      <StyledInput icon={icon ? true : false} {...props} />
+      <StyledInput borderRadius={borderRadius} icon={icon ? true : false} {...props} />
     </StyledContainer>
   );
 };

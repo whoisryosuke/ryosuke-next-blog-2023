@@ -64,6 +64,7 @@ const MenuBottomStyles = () => css<MenuProps>`
 
 const StyledMenu = styled(Glass)<MenuProps>`
   position: absolute;
+  z-index:710;
   ${({ orientation }) =>
     orientation == "left" ? MenuLeftStyles : MenuBottomStyles};
 `;
