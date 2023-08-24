@@ -3,9 +3,9 @@ import React, { PropsWithChildren } from 'react'
 import styled from 'styled-components'
 
 type GridProps = {
-    columnGap: keyof Theme['space'];
-    rowGap: keyof Theme['space'];
-    cols: number;
+    columnGap?: keyof Theme['space'];
+    rowGap?: keyof Theme['space'];
+    cols?: number;
 }
 
 const StyledGrid = styled('div')<GridProps>`
