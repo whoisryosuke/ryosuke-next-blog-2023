@@ -6,24 +6,32 @@ import React, {
 import styled, { css } from "styled-components";
 import Text from "../Text/Text";
 import { useFocusable } from "@noriginmedia/norigin-spatial-navigation";
-import { BorderRadiusProps, FlexProps, FlexboxProps, borderRadius, flex, flexbox } from "styled-system";
+import {
+  BorderRadiusProps,
+  FlexProps,
+  FlexboxProps,
+  borderRadius,
+  flex,
+  flexbox,
+} from "styled-system";
 import { Theme } from "@theme/index";
 import { borderShineEffect } from "@theme/styles/glass";
 
 type ButtonProps = DetailedHTMLProps<
   ButtonHTMLAttributes<HTMLButtonElement>,
   HTMLButtonElement
-> & FlexboxProps & {
-  focused?: boolean;
-  solid?: boolean;
-  icon?: React.ReactElement;
-  onlyIcon?: boolean;
-  iconSize?: {
-    width: React.CSSProperties["width"];
-    height: React.CSSProperties["height"];
+> &
+  FlexboxProps & {
+    focused?: boolean;
+    solid?: boolean;
+    icon?: React.ReactElement;
+    onlyIcon?: boolean;
+    iconSize?: {
+      width: React.CSSProperties["width"];
+      height: React.CSSProperties["height"];
+    };
+    borderRadius?: keyof Theme["radius"];
   };
-  borderRadius?: keyof Theme['radius'];
-};
 
 const StyledButton = styled("button")<ButtonProps>`
   position: relative;
@@ -35,8 +43,8 @@ const StyledButton = styled("button")<ButtonProps>`
     solid ? theme.colors.glass : "transparent"};
   border-radius: ${({ onlyIcon, theme, borderRadius }) => {
     let radius = onlyIcon ? theme.radius.round : theme.radius.default;
-    if(borderRadius) radius = theme.radius[borderRadius];
-    return radius
+    if (borderRadius) radius = theme.radius[borderRadius];
+    return radius;
   }};
   border: 0;
   padding: ${({ theme, onlyIcon }) =>
@@ -89,11 +97,20 @@ const StyledButton = styled("button")<ButtonProps>`
   ${flexbox}
 `;
 
-const Button = ({ children, icon, onlyIcon, ...props }: PropsWithChildren<ButtonProps>) => {
+const Button = ({
+  children,
+  icon,
+  onlyIcon,
+  ...props
+}: PropsWithChildren<ButtonProps>) => {
   const { ref, focused } = useFocusable();
   return (
     <StyledButton ref={ref} solid={focused} onlyIcon={onlyIcon} {...props}>
-      {icon && <Text color={onlyIcon ? "inherit" : "textOverlay"} mr={onlyIcon ? 0 : 3}>{icon}</Text>}
+      {icon && (
+        <Text color={"inherit"} mr={onlyIcon ? 0 : 3}>
+          {icon}
+        </Text>
+      )}
       <Text color="inherit">{children}</Text>
     </StyledButton>
   );
