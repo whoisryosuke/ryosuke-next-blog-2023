@@ -95,7 +95,7 @@ export default function ComponentsPage() {
         <Box width="80%" maxWidth="1200px" margin="auto" py={8}>
             <Glass id="playlist" blur={3} overflow="hidden">
                 <Stack>
-                    <Box id="sidebar" width="250px" bg="rgba(0,0,0,0.2)" p={4}>
+                    <Box id="sidebar" width="250px" bg="rgba(0,0,0,0.2)" p={4} m={"1px"} borderTopLeftRadius={18} borderBottomLeftRadius={18}>
                         <WindowHeader title="Library" subtitle="All Music" icon={<BiDotsHorizontal />} sidebar />
 
                         <Stack vertical>

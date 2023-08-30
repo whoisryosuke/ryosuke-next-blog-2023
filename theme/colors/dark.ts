@@ -17,8 +17,8 @@ export const primaryColors = {
   button: {
     default: "rgba(242, 242, 242, 0.1)",
     hovered: "rgba(242, 242, 242, 0.3)",
-    pressed: "rgba(0, 0, 0, 1.0)",
-    pressedText: "rgba(242,242,242,1.0)",
+    pressed: "rgba(255, 255, 255, 1.0)",
+    pressedText: "rgba(0,0,0,1.0)",
   },
   primary: {
     default: "rgba(72,69,239,1)",
