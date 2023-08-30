@@ -52,6 +52,9 @@ const StyledButton = styled("button")<ButtonProps>`
 
   color: ${({ theme }) => theme.colors.text};
 
+  /* For button links - button provides focus behavior */
+  text-decoration: none;
+
   /* The "border" using a inset box shadow */
   &:after {
     /* Only show border if it's solid button or focused */
