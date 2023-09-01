@@ -10,6 +10,7 @@ import isPropValid from "@emotion/is-prop-valid";
 import MainNavbar from "../MainNavbar/MainNavbar";
 import GlobalStyles from "../GlobalStyles/GlobalStyles";
 import { init } from "@noriginmedia/norigin-spatial-navigation";
+import GlobalModals from "../GlobalModals/GlobalModals";
 
 // Initialize the Focus Management library
 init({
@@ -45,6 +46,7 @@ const Page = ({ children, transparent = false }: PropsWithChildren<Props>) => (
         </main>
         <footer>{/* <Copyright /> */}</footer>
       </Paper>
+      <GlobalModals />
     </ThemeProvider>
   </StyleSheetManager>
 );
