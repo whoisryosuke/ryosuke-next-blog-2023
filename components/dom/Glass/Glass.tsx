@@ -12,15 +12,25 @@ type GlassProps = BoxProps & {
   modal?: boolean;
 };
 
+const MODAL_OPEN_TRANSFORM = `
+    translateX(-80vw)
+    translateZ(-100px)
+    rotateX(1.11deg) 
+    rotateY(3.94deg)`;
+const MODAL_CLOSED_TRANSFORM = `
+    translateX(0)
+    translateZ(0)
+    rotateX(0) 
+    rotateY(0)`;
+
 const Glass = styled(Box)<GlassProps>`
   position: relative;
   border-radius: ${({ theme, borderRadius }) =>
     borderRadius in theme.radius && theme.radius[borderRadius]};
 
   /* Modal support - pushes content "back"  */
-  transform: translateZ(
-    ${({ theme, modal }) => (theme.modal && !modal ? "-30px" : "0")}
-  );
+  transform: ${({ theme, modal }) =>
+    theme.modal && !modal ? MODAL_OPEN_TRANSFORM : MODAL_CLOSED_TRANSFORM};
 
   /* Animation */
   @media (prefers-reduced-motion: no-preference) {
