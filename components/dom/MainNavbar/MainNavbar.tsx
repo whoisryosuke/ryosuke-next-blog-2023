@@ -2,12 +2,21 @@ import React, { useEffect } from "react";
 import Glass from "../Glass/Glass";
 import Button from "../Button/Button";
 import Stack from "../Stack/Stack";
-import { BiHomeAlt, BiBook, BiGhost, BiHeadphone } from "react-icons/bi";
+import {
+  BiHomeAlt,
+  BiBook,
+  BiGhost,
+  BiHeadphone,
+  BiColor,
+  BiPaint,
+  BiPalette,
+} from "react-icons/bi";
 import styled, { css, keyframes } from "styled-components";
 import {
   useFocusable,
   FocusContext,
 } from "@noriginmedia/norigin-spatial-navigation";
+import { useAppStore } from "@store/app";
 
 type MenuOrientations = "left" | "bottom";
 
@@ -64,13 +73,18 @@ const MenuBottomStyles = () => css<MenuProps>`
 
 const StyledMenu = styled(Glass)<MenuProps>`
   position: absolute;
-  z-index:710;
+  z-index: 710;
   ${({ orientation }) =>
     orientation == "left" ? MenuLeftStyles : MenuBottomStyles};
 `;
 
 const MainNavbar = ({ orientation, ...props }: MenuProps) => {
   const { ref, focusKey, focusSelf } = useFocusable();
+  const { openModal } = useAppStore();
+
+  const handleCustomizationModal = () => {
+    openModal("customization");
+  };
 
   useEffect(() => {
     focusSelf();
@@ -83,6 +97,7 @@ const MainNavbar = ({ orientation, ...props }: MenuProps) => {
         py={orientation == "left" ? 6 : 3}
         orientation={orientation}
         borderRadius="round"
+        modal
         {...props}
       >
         <Stack gap="12px" alignItems="center" vertical={orientation == "left"}>
@@ -90,6 +105,11 @@ const MainNavbar = ({ orientation, ...props }: MenuProps) => {
           <Button icon={<BiBook />} onlyIcon />
           <Button icon={<BiGhost />} onlyIcon />
           <Button icon={<BiHeadphone />} onlyIcon />
+          <Button
+            icon={<BiPalette />}
+            onlyIcon
+            onClick={handleCustomizationModal}
+          />
         </Stack>
       </StyledMenu>
     </FocusContext.Provider>

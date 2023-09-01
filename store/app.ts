@@ -1,33 +1,39 @@
-import { Theme, ThemeOptions, base } from '@theme/index'
-import { create } from 'zustand'
+import { Theme, ThemeOptions, base } from "@theme/index";
+import { create } from "zustand";
+
+type ModalNames = "customization";
 
 type UserAnimationSettings = {
   active: boolean;
-}
+};
 
 export type UserCustomizations = {
-  animation: UserAnimationSettings
+  animation: UserAnimationSettings;
   theme: {
-    fontWeights: Theme['fontWeights'];
+    fontWeights: Theme["fontWeights"];
     modal: boolean;
-  }
-}
+  };
+};
 
 interface AppState {
   // Theming
-  theme: ThemeOptions
-  setTheme: (theme: ThemeOptions) => void
+  theme: ThemeOptions;
+  setTheme: (theme: ThemeOptions) => void;
   toggleTheme: () => void;
 
   // User Customizations
-  customizations: UserCustomizations
-  setUserTheme: (theme: Partial<UserCustomizations['theme']>) => void
-  setUserAnimation: (settings: UserAnimationSettings) => void
-  toggleModal: (modal?: boolean) => void
+  customizations: UserCustomizations;
+  setUserTheme: (theme: Partial<UserCustomizations["theme"]>) => void;
+  setUserAnimation: (settings: UserAnimationSettings) => void;
+
+  // Modal
+  modalName: ModalNames;
+  openModal: (modalName: ModalNames) => void;
+  toggleModal: (modal?: boolean) => void;
 }
 
 export const useAppStore = create<AppState>()((set) => ({
-  theme: 'light',
+  theme: "light",
   setTheme: (theme) => set((state) => ({ theme })),
   toggleTheme: () =>
     set((state) => ({
@@ -41,9 +47,43 @@ export const useAppStore = create<AppState>()((set) => ({
     theme: {
       fontWeights: base.fontWeights,
       modal: false,
-    }
+    },
   },
-  setUserTheme: (theme) => set((state) => ({ customizations: { ...state.customizations, theme: { ...state.customizations.theme, ...theme} } })),
-  setUserAnimation: (settings) => set((state) => ({ customizations: { ...state.customizations, animation: { ...state.customizations.animation, ...settings} } })),
-  toggleModal: (modal) => set((state) => ({ customizations: { ...state.customizations, theme: { ...state.customizations.theme, modal: modal ?? !state.customizations.theme.modal } } })),
-}))
+  setUserTheme: (theme) =>
+    set((state) => ({
+      customizations: {
+        ...state.customizations,
+        theme: { ...state.customizations.theme, ...theme },
+      },
+    })),
+  setUserAnimation: (settings) =>
+    set((state) => ({
+      customizations: {
+        ...state.customizations,
+        animation: { ...state.customizations.animation, ...settings },
+      },
+    })),
+
+  modalName: "customization",
+  openModal: (modalName) =>
+    set((state) => ({
+      modalName,
+      customizations: {
+        ...state.customizations,
+        theme: {
+          ...state.customizations.theme,
+          modal: !state.customizations.theme.modal,
+        },
+      },
+    })),
+  toggleModal: (modal) =>
+    set((state) => ({
+      customizations: {
+        ...state.customizations,
+        theme: {
+          ...state.customizations.theme,
+          modal: modal ?? !state.customizations.theme.modal,
+        },
+      },
+    })),
+}));
