@@ -18,8 +18,10 @@ const Glass = styled(Box)<GlassProps>`
     borderRadius in theme.radius && theme.radius[borderRadius]};
 
   /* Modal support - pushes content "back"  */
-  transform: translateZ(${({theme}) => theme.modal ? '-30px' : '0'});
-    
+  transform: translateZ(
+    ${({ theme, modal }) => (theme.modal && !modal ? "-30px" : "0")}
+  );
+
   /* Animation */
   @media (prefers-reduced-motion: no-preference) {
     transition-property: transform;
@@ -37,10 +39,13 @@ const Glass = styled(Box)<GlassProps>`
     z-index: -2;
     background: ${({ theme, transparent, modal }) => {
       let bgColor = !transparent && theme.colors.glass;
-      if(theme.modal && !modal) bgColor = theme.colors.glassOverlay;
+      if (theme.modal && !modal) bgColor = theme.colors.glassOverlay;
       return bgColor;
     }};
-    backdrop-filter: blur(${({ theme, blur }) => theme.modal ? theme.blur.radius[4] : theme.blur.radius[blur]});
+    backdrop-filter: blur(
+      ${({ theme, blur }) =>
+        theme.modal ? theme.blur.radius[4] : theme.blur.radius[blur]}
+    );
     border-radius: inherit;
     border: 0.0625em solid rgba(255, 255, 255, 0.1);
 
@@ -50,23 +55,22 @@ const Glass = styled(Box)<GlassProps>`
     -webkit-mask-image: ${({ theme, blur, modal }) => `linear-gradient(
       270deg,
       rgba(0, 0, 0, 1),
-      rgba(0, 0, 0, ${theme.modal ? theme.blur.mask[2] : theme.blur.mask[blur]}) 100%
+      rgba(0, 0, 0, ${
+        theme.modal && !modal ? theme.blur.mask[2] : theme.blur.mask[blur]
+      }) 100%
     )`};
 
-    
     /* Animation */
     @media (prefers-reduced-motion: no-preference) {
       transition-property: background;
       transition-duration: 710ms;
     }
   }
-
 `;
 
 Glass.defaultProps = {
   blur: 1,
   borderRadius: 3,
 };
-
 
 export default Glass;
