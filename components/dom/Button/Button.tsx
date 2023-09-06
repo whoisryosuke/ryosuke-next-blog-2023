@@ -48,7 +48,9 @@ const StyledButton = styled("button")<ButtonProps>`
   }};
   border: 0;
   padding: ${({ theme, onlyIcon }) =>
-    onlyIcon ? theme.space[3] : `${theme.space[3]} ${theme.space[4]}`};
+    onlyIcon
+      ? `calc(${theme.space[3]} + 2px)`
+      : `${theme.space[3]} ${theme.space[4]}`};
 
   color: ${({ theme }) => theme.colors.text};
 
@@ -129,8 +131,8 @@ const Button = ({
 
 Button.defaultProps = {
   iconSize: {
-    width: "28px",
-    height: "28px",
+    width: "24px",
+    height: "24px",
   },
 };
 
