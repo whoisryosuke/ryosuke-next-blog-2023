@@ -25,13 +25,14 @@ const BlogPage = ({ children, ...props }: PropsWithChildren<Props>) => {
         style={{ filter: "blur(1.5rem)" }}
       />
       <Box
-        background="rgba(0,0,0,0.3)"
+        background="radial-gradient(circle, rgba(13,12,12,0.6) 0%, rgba(45,40,40,0.6) 35%, rgba(13,12,12,0.6) 100%)"
         minHeight="100vh"
         width="100%"
         zIndex={-419}
         position={"absolute"}
         top={0}
         left={0}
+        style={{ mixBlendMode: "multiply" }}
       />
       <Box minHeight="100vh" width="100%">
         <Box
@@ -43,12 +44,13 @@ const BlogPage = ({ children, ...props }: PropsWithChildren<Props>) => {
           flex={1}
         >
           <Stack gap={"32px"}>
-            <Glass id="blog" blur={4} borderRadius={3} overflow="hidden" p={5}>
+            <Glass id="blog" blur={4} borderRadius={3} overflow="hidden">
               <ScrollBox
                 overflowY="auto"
                 flex={1}
                 height="80vh"
                 borderRadius={10}
+                p={8}
               >
                 {children}
               </ScrollBox>

@@ -9,6 +9,9 @@ const StyledImage = styled("img")`
   margin: auto;
   display: block;
   margin-bottom: ${({ theme }) => theme.space[4]};
+  border-radius: ${({ theme, borderRadius }) =>
+    borderRadius ? theme.radius[borderRadius] : theme.radius[1]};
+  box-shadow: 0 2px 16px 0 rgba(10, 10, 14, 0.1);
 `;
 
 export type ImageProps = AnchorHTMLAttributes<HTMLImageElement> & {
@@ -17,23 +20,23 @@ export type ImageProps = AnchorHTMLAttributes<HTMLImageElement> & {
 
 const Image = ({ className, alt, ...props }: ImageProps) => {
   return (
-    <Box as="span" style={{ textAlign: "center" }}>
+    <Box as="span" display="block" style={{ textAlign: "center" }}>
       <StyledImage alt={alt} {...props} />
       {alt && (
         <Box
           as="span"
-          display="block"
-          mx={2}
-          py={2}
+          display="inline-block"
+          mx="auto"
+          py={3}
           px={5}
           backgroundColor="glassOverlay"
-          borderRadius={7}
+          borderRadius={12}
         >
           <Text
             as="span"
             aria-hidden
             textAlign="center"
-            display="block"
+            display="inline-block"
             fontSize={0}
           >
             {alt}
