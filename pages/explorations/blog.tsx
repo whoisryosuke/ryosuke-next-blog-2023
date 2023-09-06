@@ -89,6 +89,7 @@ export default function ComponentsPage() {
                       value="The Blog Post"
                       icon={<BiBook />}
                       style={{ textAlign: "center" }}
+                      disabled
                     />
                   </Box>
                   <Button solid onlyIcon icon={<BiShare />} />
@@ -106,17 +107,30 @@ export default function ComponentsPage() {
                   overflowY="auto"
                   flex={1}
                   height="70vh"
-                  borderRadius={10}
+                  borderRadius={3}
                   p={8}
                 >
+                  <Headline id="test" color="black">
+                    Blog title
+                  </Headline>
                   {new Array(40).fill(0).map((_, index) => (
-                    <Paragraph key={index} color="black">
-                      I made two identical apps, one with CSS in JS and one with
-                      Webpack loading CSS files. I built both and compare bundle
-                      size and load times around the app.
-                    </Paragraph>
+                    <>
+                      <Headline color="black">Blog title</Headline>
+                      <Paragraph key={index} color="black">
+                        I made two identical apps, one with CSS in JS and one
+                        with Webpack loading CSS files. I built both and compare
+                        bundle size and load times around the app.
+                      </Paragraph>
+                      <Paragraph key={index} color="black">
+                        I made two identical apps, one with CSS in JS and one
+                        with Webpack loading CSS files. I built both and compare
+                        bundle size and load times around the app.
+                      </Paragraph>
+                    </>
                   ))}
-                  <Headline id="test">Blog title</Headline>
+                  <Headline id="test" color="black">
+                    Blog title
+                  </Headline>
                 </ScrollBox>
               </Box>
             </Box>
