@@ -22,7 +22,11 @@ const WindowHeader = ({
     <Stack mb={4} p={3} alignItems="flex-start">
       <Box flex={1}>
         <Headline>{title}</Headline>
-        {subtitle && <Text color={sidebar && "textOverlay"}>{subtitle}</Text>}
+        {subtitle && (
+          <Text color={sidebar && "textOverlay"} display="block">
+            {subtitle}
+          </Text>
+        )}
       </Box>
       {icon && <Button icon={icon} onlyIcon solid />}
     </Stack>

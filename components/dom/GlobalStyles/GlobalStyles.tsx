@@ -1,6 +1,10 @@
 import { createGlobalStyle } from "styled-components";
 
 const GlobalStyles = createGlobalStyle`
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
     margin:0;
     overflow-y: hidden;

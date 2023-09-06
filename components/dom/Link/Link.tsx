@@ -1,27 +1,49 @@
-import {
-  linkColorPrimaryStyles,
-  linkInlineStyles,
-  linkStyles,
-  linkPlainStyles,
-} from "./Link.css";
-import clsx from "clsx";
-import { AnchorHTMLAttributes } from "react";
+import { PropsWithChildren } from "react";
 import Text, { TextProps } from "../Text/Text";
-import { Box } from "../Box/Box";
+import styled from "styled-components";
 
-export type LinkProps = AnchorHTMLAttributes<HTMLAnchorElement> &
-  TextProps<"a"> & {
-    children: React.ReactNode;
-    textClass?: string;
-    ghost?: boolean;
-    underline?: boolean;
-    color?: "primary";
-  };
+const StyledLink = styled("a")`
+  display: inline-block;
+  position:relative;
+  color: ${({ theme }) => theme.colors.primary.pressed};
+  text-decoration: none;
+  transition: "color 400ms linear",
+
+  margin-left: ${({ theme }) => theme.space[1]};
+  margin-right: ${({ theme }) => theme.space[1]};
+
+  &:hover {
+    color: ${({ theme }) => theme.colors.primary.default};
+  }
+
+  &:after {
+    content: "";
+    width: 100%;
+    height: 3px;
+    display: block;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    background: ${({ theme }) => theme.gradients.blue.default};
+    transition: background 400ms linear, transform 400ms linear;
+    transform: translateY(-4px);
+  }
+  
+  &:hover:after {
+    background: ${({ theme }) => theme.gradients.blue.hover};
+    transform: translateY(-6px);
+  }
+
+`;
+
+export type LinkProps = TextProps & {
+  ghost?: boolean;
+  underline?: boolean;
+  color?: "primary";
+};
 
 export function Link({
   children,
-  className,
-  textClass,
   fontFamily,
   fontSize,
   fontWeight,
@@ -30,27 +52,21 @@ export function Link({
   underline = true,
   color,
   ...props
-}: LinkProps) {
-  const ghostStyles = ghost && linkInlineStyles;
-  const colorStyles = color === "primary" && linkColorPrimaryStyles;
-  const underlineStyles = !underline && linkPlainStyles;
+}: PropsWithChildren<LinkProps>) {
   return (
-    <a
-      className={clsx(linkStyles, className, ghostStyles, underlineStyles)}
-      {...props}
-    >
+    <StyledLink {...props}>
       <Text
         as="span"
-        className={clsx(textClass, colorStyles)}
         style={{ marginBottom: 0 }}
+        color="inherit"
         fontFamily={fontFamily}
         fontSize={fontSize}
-        fontWeight={fontWeight}
+        fontWeight={fontWeight ?? "bold"}
         lineHeight={lineHeight}
       >
         {children}
       </Text>
-    </a>
+    </StyledLink>
   );
 }
 

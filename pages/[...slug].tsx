@@ -15,6 +15,7 @@ import "prismjs/themes/prism-tomorrow.css";
 import React from "react";
 import BlogPage from "@components/dom/BlogPage/BlogPage";
 import { components } from "@components/dom/MDXComponents/MDXComponents";
+import WindowHeader from "@components/dom/WindowHeader/WindowHeader";
 
 // Adds the blog post slug to the image URL
 // We do this because NextJS pages don't include the blog post slug
@@ -41,6 +42,7 @@ export default function PostPage({ source, frontMatter, slug }) {
   return (
     <>
       <BlogPage>
+        <WindowHeader title={frontMatter.title} />
         <MDXRemote {...source} components={components} />
       </BlogPage>
     </>
