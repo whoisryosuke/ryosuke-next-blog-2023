@@ -9,9 +9,10 @@ import {
   margin,
 } from "styled-system";
 
-export type TextProps = ColorProps &
+export type TextProps<ElementType = HTMLParagraphElement> = ColorProps &
   TypographyProps &
-  MarginProps & {
+  MarginProps &
+  React.HTMLAttributes<ElementType> & {
     fontWeight?: keyof Theme["fontWeights"];
     display?: React.CSSProperties["display"];
   };

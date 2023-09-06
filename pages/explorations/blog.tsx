@@ -17,6 +17,12 @@ import {
   BiFolder,
   BiBong,
   BiUser,
+  BiSidebar,
+  BiArrowBack,
+  BiArrowToRight,
+  BiShare,
+  BiFont,
+  BiArrowToLeft,
 } from "react-icons/bi";
 import { useAppStore } from "store/app";
 import ToastManager from "@components/dom/Toasts/ToastManager";
@@ -72,24 +78,48 @@ export default function ComponentsPage() {
           flex={1}
         >
           <Stack gap={"32px"}>
-            <Glass id="blog" blur={4} borderRadius={3} overflow="hidden" p={5}>
-              <ScrollBox
-                overflowY="auto"
-                flex={1}
-                height="80vh"
-                borderRadius={10}
+            <Box>
+              <Glass p={4} borderRadius={"round"} mb={4}>
+                <Stack gap="16px">
+                  <Button solid onlyIcon icon={<BiSidebar />} />
+                  <Button solid onlyIcon icon={<BiArrowToLeft />} disabled />
+                  <Button solid onlyIcon icon={<BiArrowToRight />} disabled />
+                  <Box flex={1} mr={3}>
+                    <Input
+                      value="The Blog Post"
+                      icon={<BiBook />}
+                      style={{ textAlign: "center" }}
+                    />
+                  </Box>
+                  <Button solid onlyIcon icon={<BiShare />} />
+                  <Button solid onlyIcon icon={<BiFont />} />
+                  <Button solid onlyIcon icon={<BiFolder />} />
+                </Stack>
+              </Glass>
+              <Box
+                id="blog"
+                background="white"
+                borderRadius={3}
+                overflow="hidden"
               >
-                <Headline>Blog title</Headline>
-                {new Array(40).fill(0).map((_, index) => (
-                  <Paragraph key={index}>
-                    I made two identical apps, one with CSS in JS and one with
-                    Webpack loading CSS files. I built both and compare bundle
-                    size and load times around the app.
-                  </Paragraph>
-                ))}
-                <Headline id="test">Blog title</Headline>
-              </ScrollBox>
-            </Glass>
+                <ScrollBox
+                  overflowY="auto"
+                  flex={1}
+                  height="70vh"
+                  borderRadius={10}
+                  p={8}
+                >
+                  {new Array(40).fill(0).map((_, index) => (
+                    <Paragraph key={index} color="black">
+                      I made two identical apps, one with CSS in JS and one with
+                      Webpack loading CSS files. I built both and compare bundle
+                      size and load times around the app.
+                    </Paragraph>
+                  ))}
+                  <Headline id="test">Blog title</Headline>
+                </ScrollBox>
+              </Box>
+            </Box>
             <Box width={{ mobile: "100%", tablet: "400px" }}>
               <Glass id="toc" blur={3} overflow="hidden" p={4}>
                 <Button

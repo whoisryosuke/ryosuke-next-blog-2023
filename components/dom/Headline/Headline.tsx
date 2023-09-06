@@ -1,7 +1,7 @@
 import React, { PropsWithChildren } from "react";
 import Text, { TextProps } from "../Text/Text";
 
-type Props = TextProps & {};
+type Props = TextProps<HTMLHeadingElement> & {};
 
 const Headline = ({ children, ...props }: PropsWithChildren<Props>) => {
   return (

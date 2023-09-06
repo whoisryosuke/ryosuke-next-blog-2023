@@ -61,7 +61,7 @@ const StyledButton = styled("button")<ButtonProps>`
     ${({ solid }) => solid && borderShineEffect}
   }
 
-  &:hover {
+  &:hover:enabled {
     background: ${({ theme }) => theme.colors.button.hovered};
 
     &:after {
@@ -69,7 +69,7 @@ const StyledButton = styled("button")<ButtonProps>`
     }
   }
 
-  &:active {
+  &:active:enabled {
     background: ${({ theme }) => theme.colors.button.pressed};
     color: ${({ theme }) => theme.colors.button.pressedText};
   }
@@ -77,6 +77,10 @@ const StyledButton = styled("button")<ButtonProps>`
   &:focus {
     outline: none;
     box-shadow: 0 0 3px 4px rgba(255, 255, 255, 0.3);
+  }
+
+  &:disabled {
+    color: ${({ theme }) => theme.colors.button.disabledText};
   }
 
   ${({ focused, theme }) =>
@@ -125,8 +129,8 @@ const Button = ({
 
 Button.defaultProps = {
   iconSize: {
-    width: "24px",
-    height: "24px",
+    width: "28px",
+    height: "28px",
   },
 };
 

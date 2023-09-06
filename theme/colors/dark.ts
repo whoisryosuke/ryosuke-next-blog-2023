@@ -12,13 +12,14 @@ export const primaryColors = {
   darkGlass: {
     panel: "rgba(31,31,31,0.6)",
     input: "rgba(0,0,0,0.25)",
-    focused: "rgba(200,196,193,0.1)"
+    focused: "rgba(200,196,193,0.1)",
   },
   button: {
     default: "rgba(242, 242, 242, 0.1)",
     hovered: "rgba(242, 242, 242, 0.3)",
     pressed: "rgba(255, 255, 255, 1.0)",
     pressedText: "rgba(0,0,0,1.0)",
+    disabledText: "rgba(0,0,0,0.2)",
   },
   primary: {
     default: "rgba(72,69,239,1)",
@@ -42,11 +43,12 @@ export const colors = {
 export const gradients = {
   // subtle: `linear-gradient(180deg, ${colors.blue['500']} 0%, ${colors.secondary} 100%)`,
   // purple: `linear-gradient(180deg, ${colors.primary} 0%, #A000C4 100%)`,
-  none: 'none',
+  none: "none",
   background:
     "radial-gradient(73.75% 106.2% at 5.07% 34.92%, #090909 0%, #141416 100%)",
   glass: {
-    border: "radial-gradient(253.85% 474.76% at 50% -83.65%, rgba(255, 255, 255, 0.13) 0%, rgba(255, 255, 255, 0.0) 33%, rgba(255, 255, 255, 0.16) 100%)",
+    border:
+      "radial-gradient(253.85% 474.76% at 50% -83.65%, rgba(255, 255, 255, 0.13) 0%, rgba(255, 255, 255, 0.0) 33%, rgba(255, 255, 255, 0.16) 100%)",
   },
   blue: {
     default: `linear-gradient(90deg, #1F1BD8 0%, #4845EF 36.1%)`,
@@ -71,6 +73,6 @@ export const gradients = {
 const dark = {
   colors,
   gradients,
-}
+};
 
-export default dark
+export default dark;

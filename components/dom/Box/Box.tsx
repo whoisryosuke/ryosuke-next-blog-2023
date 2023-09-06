@@ -1,3 +1,4 @@
+import { Theme } from "@theme/index";
 import styled from "styled-components";
 import {
   space,
@@ -23,7 +24,9 @@ export type BoxProps = SpaceProps &
   PositionProps &
   ColorProps &
   BackgroundProps &
-  BorderProps & {};
+  BorderProps & {
+    borderRadius?: keyof Theme["radius"];
+  };
 // example using object syntax
 const Box = styled("div")<BoxProps>(
   {
@@ -37,6 +40,10 @@ const Box = styled("div")<BoxProps>(
   color,
   background,
   border,
+  {
+    borderRadius: ({ theme, borderRadius }) =>
+      borderRadius in theme.radius && theme.radius[borderRadius],
+  }
 );
 
 export default Box;

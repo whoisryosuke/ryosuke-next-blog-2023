@@ -5,7 +5,7 @@ type Props = TextProps & {};
 
 const Paragraph = ({ children, ...props }: PropsWithChildren<Props>) => {
   return (
-    <Text marginBottom={4} {...props}>
+    <Text marginBottom={4} display="block" {...props}>
       {children}
     </Text>
   );
