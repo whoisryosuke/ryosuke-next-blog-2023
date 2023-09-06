@@ -13,6 +13,8 @@ import { visit } from "unist-util-visit";
 import remarkPrism from "remark-prism";
 import "prismjs/themes/prism-tomorrow.css";
 import React from "react";
+import BlogPage from "@components/dom/BlogPage/BlogPage";
+import { components } from "@components/dom/MDXComponents/MDXComponents";
 
 // Adds the blog post slug to the image URL
 // We do this because NextJS pages don't include the blog post slug
@@ -30,19 +32,6 @@ function transformImgSrc({ slug }) {
   };
 }
 
-// Custom components/renderers to pass to MDX.
-// Since the MDX files aren't loaded by webpack, they have no knowledge of how
-// to handle import statements. Instead, you must include components in scope
-// here.
-const components = {
-  a: CustomLink,
-  // It also works with dynamically-imported components, which is especially
-  // useful for conditionally loading components for certain routes.
-  // See the notes in README.md for more details.
-  TestComponent: dynamic(() => import("../components/TestComponent")),
-  Head,
-};
-
 export default function PostPage({ source, frontMatter, slug }) {
   const meta: MetaDataProps = {
     title: frontMatter.title,
@@ -50,24 +39,11 @@ export default function PostPage({ source, frontMatter, slug }) {
     url: slug,
   };
   return (
-    <Page title={frontMatter.title} meta={meta}>
-      <header>
-        <nav>
-          <Link href="/" legacyBehavior>
-            <a>👈 Go back home</a>
-          </Link>
-        </nav>
-      </header>
-      <div className="post-header">
-        <h1>{frontMatter.title}</h1>
-        {frontMatter.description && (
-          <p className="description">{frontMatter.description}</p>
-        )}
-      </div>
-      <main>
+    <>
+      <BlogPage>
         <MDXRemote {...source} components={components} />
-      </main>
-    </Page>
+      </BlogPage>
+    </>
   );
 }
 

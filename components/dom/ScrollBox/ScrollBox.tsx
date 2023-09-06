@@ -4,7 +4,7 @@ import Box, { BoxProps } from "../Box/Box";
 import { Theme } from "@theme/index";
 
 type Props = BoxProps & {
-  borderRadius: keyof Theme["radius"];
+  borderRadius?: keyof Theme["radius"];
 };
 
 const StyledScrollBox = styled(Box)<Props>`

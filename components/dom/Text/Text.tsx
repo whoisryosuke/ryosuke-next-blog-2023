@@ -13,6 +13,7 @@ export type TextProps = ColorProps &
   TypographyProps &
   MarginProps & {
     fontWeight?: keyof Theme["fontWeights"];
+    display?: React.CSSProperties["display"];
   };
 
 const Text = styled("p")<TextProps>(
@@ -22,6 +23,7 @@ const Text = styled("p")<TextProps>(
     "--wght": ({ fontWeight, theme }) => theme.fontWeights[fontWeight],
     fontVariationSettings: `"wght" var(--wght)`,
     // textShadow: "-1px 1px 4px rgba(0, 0, 0, 0.5)",
+    display: ({ display }) => display,
   },
   color,
   typography,
@@ -37,6 +39,7 @@ Text.defaultProps = {
   fontWeight: "regular",
   lineHeight: 4,
   fontFamily: "body",
+  display: "initial",
 };
 
 export default Text;

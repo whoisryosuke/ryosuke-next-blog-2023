@@ -1,22 +1,16 @@
 import React, { PropsWithChildren } from "react";
-import { Box } from "../Box/Box";
-import { Text, TextProps } from "../Text/Text";
-import { listItemStyles } from "./ListItem.css";
+import Box from "../Box/Box";
+import Text, { TextProps } from "../Text/Text";
 
-type Props = TextProps<"p"> & {};
+type Props = {};
 
-const ListItem = ({
-  children,
-  fontSize,
-  lineHeight,
-  ...props
-}: PropsWithChildren<Props>) => {
+const ListItem = ({ children, ...props }: PropsWithChildren<Props>) => {
   return (
-    <li className={listItemStyles}>
+    <Box as="li" mb={4} {...props}>
       <Text as="p" fontSize={3} lineHeight={6}>
         {children}
       </Text>
-    </li>
+    </Box>
   );
 };
 

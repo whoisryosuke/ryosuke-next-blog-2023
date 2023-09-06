@@ -110,7 +110,11 @@ const Button = ({
   return (
     <StyledButton ref={ref} solid={focused} onlyIcon={onlyIcon} {...props}>
       {icon && (
-        <Text color={"inherit"} mr={onlyIcon ? 0 : 3}>
+        <Text
+          color={"inherit"}
+          mr={onlyIcon ? 0 : 3}
+          lineHeight={onlyIcon && 0}
+        >
           {icon}
         </Text>
       )}

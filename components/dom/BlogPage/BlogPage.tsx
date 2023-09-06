@@ -1,44 +1,15 @@
-import Text from "@components/dom/Text/Text";
-import React, { useState } from "react";
+import React, { PropsWithChildren } from "react";
 import Glass from "@components/dom/Glass/Glass";
 import Box from "@components/dom/Box/Box";
 import Stack from "@components/dom/Stack/Stack";
 import Button from "@components/dom/Button/Button";
-import {
-  BiHomeAlt,
-  BiBook,
-  BiLogoMastodon,
-  BiGhost,
-  BiHeadphone,
-  BiDotsHorizontal,
-  BiMusic,
-  BiMicrophone,
-  BiTime,
-  BiFolder,
-  BiBong,
-  BiUser,
-} from "react-icons/bi";
-import { useAppStore } from "store/app";
-import ToastManager from "@components/dom/Toasts/ToastManager";
-import Modal from "@components/dom/Modal/Modal";
 import Headline from "@components/dom/Headline/Headline";
-import Input from "@components/dom/Input/Input";
-import Image from "@components/dom/Image/Image";
-import Grid from "@components/dom/Grid/Grid";
 import ScrollBox from "@components/dom/ScrollBox/ScrollBox";
 import Paragraph from "@components/Paragraph/Paragraph";
 
-export default function ComponentsPage() {
-  const { customizations, setUserTheme, toggleModal } = useAppStore();
+type Props = {};
 
-  const handleModal = () => {
-    toggleModal(true);
-  };
-
-  const onClose = () => {
-    toggleModal(false);
-  };
-
+const BlogPage = ({ children, ...props }: PropsWithChildren<Props>) => {
   return (
     <>
       <Box
@@ -79,15 +50,7 @@ export default function ComponentsPage() {
                 height="80vh"
                 borderRadius={10}
               >
-                <Headline>Blog title</Headline>
-                {new Array(40).fill(0).map((_, index) => (
-                  <Paragraph key={index}>
-                    I made two identical apps, one with CSS in JS and one with
-                    Webpack loading CSS files. I built both and compare bundle
-                    size and load times around the app.
-                  </Paragraph>
-                ))}
-                <Headline id="test">Blog title</Headline>
+                {children}
               </ScrollBox>
             </Glass>
             <Box width={{ mobile: "100%", tablet: "400px" }}>
@@ -115,4 +78,6 @@ export default function ComponentsPage() {
       </Box>
     </>
   );
-}
+};
+
+export default BlogPage;

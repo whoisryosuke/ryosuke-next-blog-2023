@@ -1,24 +1,29 @@
-import { blockquoteStyles } from "./Blockquote.css";
-import clsx from "clsx";
-import { DetailedHTMLProps, BlockquoteHTMLAttributes } from "react";
+import { PropsWithChildren } from "react";
+import styled from "styled-components";
+import Text from "@components/dom/Text/Text";
+
+const StyledBlockquote = styled("blockquote")`
+  background-color: ${({ theme }) => theme.colors.glassOverlay};
+  border-radius: ${({ theme }) => theme.radius[3]};
+  padding: ${({ theme }) => theme.space[3]};
+  padding-left: ${({ theme }) => theme.space[5]};
+  padding-right: ${({ theme }) => theme.space[5]};
+  border: 0;
+  margin: 0;
+  margin-bottom: ${({ theme }) => theme.space[4]};
+`;
 
 /* eslint-disable-next-line */
-export interface BlockquoteProps
-  extends Omit<
-    DetailedHTMLProps<
-      BlockquoteHTMLAttributes<HTMLQuoteElement>,
-      HTMLQuoteElement
-    >,
-    "size"
-  > {
-  children: React.ReactNode;
-}
+type BlockquoteProps = {};
 
-export function Blockquote({ children, ...props }: BlockquoteProps) {
+export function Blockquote({
+  children,
+  ...props
+}: PropsWithChildren<BlockquoteProps>) {
   return (
-    <blockquote className={clsx(blockquoteStyles)} {...props}>
-      {children}
-    </blockquote>
+    <StyledBlockquote {...props}>
+      <Text>{children}</Text>
+    </StyledBlockquote>
   );
 }
 
