@@ -4,6 +4,10 @@ import Box, { BoxProps } from "../Box/Box";
 import { Theme } from "@theme/index";
 import { motion } from "framer-motion";
 import { borderShineEffect } from "@theme/styles/glass";
+import {
+  MODAL_CLOSED_TRANSFORM,
+  MODAL_OPEN_TRANSFORM,
+} from "@theme/styles/modal";
 
 type GlassProps = BoxProps & {
   transparent?: boolean;
@@ -11,17 +15,6 @@ type GlassProps = BoxProps & {
   borderRadius?: keyof Theme["radius"];
   modal?: boolean;
 };
-
-const MODAL_OPEN_TRANSFORM = `
-    translateX(-80vw)
-    translateZ(-100px)
-    rotateX(1.11deg) 
-    rotateY(3.94deg)`;
-const MODAL_CLOSED_TRANSFORM = `
-    translateX(0)
-    translateZ(0)
-    rotateX(0) 
-    rotateY(0)`;
 
 const Glass = styled(Box)<GlassProps>`
   position: relative;

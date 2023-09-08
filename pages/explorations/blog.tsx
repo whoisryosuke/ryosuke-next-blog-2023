@@ -33,6 +33,7 @@ import Image from "@components/dom/Image/Image";
 import Grid from "@components/dom/Grid/Grid";
 import ScrollBox from "@components/dom/ScrollBox/ScrollBox";
 import Paragraph from "@components/Paragraph/Paragraph";
+import Container from "@components/dom/Container/Container";
 
 export default function ComponentsPage() {
   const { customizations, setUserTheme, toggleModal } = useAppStore();
@@ -49,15 +50,20 @@ export default function ComponentsPage() {
     <>
       <Box
         backgroundImage="url(/images/room1.png)"
-        backgroundSize="cover"
-        backgroundPosition="bottom center"
+        backgroundSize="repeat-x"
+        backgroundPosition={`${
+          customizations.theme.modal ? "100%" : "0%"
+        } 100%`}
         minHeight="100vh"
         width="100%"
         zIndex={-420}
         position={"absolute"}
         top={0}
         left={0}
-        style={{ filter: "blur(1.5rem)" }}
+        style={{
+          filter: "blur(1.5rem)",
+          transition: "background-position 400ms ease-in",
+        }}
       />
       <Box
         background="rgba(0,0,0,0.3)"
@@ -97,7 +103,7 @@ export default function ComponentsPage() {
                   <Button solid onlyIcon icon={<BiFolder />} />
                 </Stack>
               </Glass>
-              <Box
+              <Container
                 id="blog"
                 background="white"
                 borderRadius={3}
@@ -132,15 +138,19 @@ export default function ComponentsPage() {
                     Blog title
                   </Headline>
                 </ScrollBox>
-              </Box>
+              </Container>
             </Box>
             <Box width={{ mobile: "100%", tablet: "400px" }}>
-              <Glass id="toc" blur={3} overflow="hidden" p={4}>
+              <Glass id="toc" blur={3} overflow="hidden" p={5}>
+                <Headline id="test" fontSize={2}>
+                  Table of Contents
+                </Headline>
                 <Button
                   as="a"
                   href="#test"
                   // icon={<BiTime />}
                   justifyContent="flex-start"
+                  style={{ paddingLeft: "8px" }}
                 >
                   Heading 1
                 </Button>
@@ -149,6 +159,7 @@ export default function ComponentsPage() {
                   href="#test"
                   // icon={<BiTime />}
                   justifyContent="flex-start"
+                  style={{ paddingLeft: "8px" }}
                 >
                   Heading 2
                 </Button>
