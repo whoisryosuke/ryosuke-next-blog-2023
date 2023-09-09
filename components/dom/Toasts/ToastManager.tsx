@@ -38,6 +38,7 @@ const ToastManager = (props: Props) => {
       width={"250px"}
       role="region"
       aria-live="polite"
+      style={{ perspective: "500px" }}
     >
       <AnimatePresence>
         {toastMap.map((toast, index) => (
@@ -45,15 +46,21 @@ const ToastManager = (props: Props) => {
             key={toast.time}
             initial={{
               opacity: 0,
-              transform: "translateY(0px) translateX(250px)",
+              filter: "blur(20px)",
+              transform:
+                "translateY(-100px) translateX(125px) translateZ(200px)",
             }}
             animate={{
               opacity: 1,
-              transform: `translateY(${index * 90}px) translateX(0px)`,
+              filter: "blur(0)",
+              transform: `translateY(${
+                index * 90
+              }px) translateX(0px) translateZ(0px)`,
             }}
             exit={{
+              filter: "blur(20px)",
               opacity: 0,
-              transform: "translateX(250px)",
+              transform: "translateX(125px) translateZ(-200px)",
               transformOrigin: "top center",
             }}
             transition={{ duration: 0.7 }}
