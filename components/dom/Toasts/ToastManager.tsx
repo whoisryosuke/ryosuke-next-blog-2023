@@ -43,6 +43,8 @@ const ToastManager = (props: Props) => {
       top={3}
       right={3}
       width={"250px"}
+      role="region"
+      aria-live="polite"
     >
       <AnimatePresence>
         {toastMap.map((toast, index) => (
