@@ -15,19 +15,12 @@ const ToastManager = (props: Props) => {
 
   const toastMap = Object.values(toasts);
 
-  console.log("toasts vs queue", toasts, removeQueue.current);
-
   useEffect(() => {
-    console.log("checking ALL toasts");
     toastMap.forEach((toast) => {
-      console.log("checking toast", toast.time, removeQueue.current);
       // New toast? Set a timer to hide it.
       if (!(toast.time in removeQueue.current)) {
-        console.log("removing toast", toast.time);
-
         // Mark for deletion
         removeQueue.current[toast.time] = setTimeout(() => {
-          console.log("REMOVING!");
           removeToast(toast.time);
           delete removeQueue.current[toast.time];
         }, TOAST_DURATION);
