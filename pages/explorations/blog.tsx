@@ -106,7 +106,7 @@ export default function ComponentsPage() {
               <Container
                 id="blog"
                 background="white"
-                borderRadius={3}
+                borderRadius={4}
                 overflow="hidden"
               >
                 <ScrollBox

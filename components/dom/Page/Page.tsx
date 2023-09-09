@@ -11,6 +11,7 @@ import MainNavbar from "../MainNavbar/MainNavbar";
 import GlobalStyles from "../GlobalStyles/GlobalStyles";
 import { init } from "@noriginmedia/norigin-spatial-navigation";
 import GlobalModals from "../GlobalModals/GlobalModals";
+import ToastManager from "../Toasts/ToastManager";
 
 // Initialize the Focus Management library
 init({
@@ -43,6 +44,8 @@ const Page = ({ children, transparent = false }: PropsWithChildren<Props>) => (
           </Box>
 
           {children}
+
+          <ToastManager />
         </main>
         <footer>{/* <Copyright /> */}</footer>
       </Paper>

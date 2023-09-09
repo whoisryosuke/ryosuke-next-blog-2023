@@ -101,11 +101,12 @@ const MainNavbar = ({ orientation, ...props }: MenuProps) => {
         {...props}
       >
         <Stack gap="12px" alignItems="center" vertical={orientation == "left"}>
-          <Button icon={<BiHomeAlt />} onlyIcon />
-          <Button icon={<BiBook />} onlyIcon />
-          <Button icon={<BiGhost />} onlyIcon />
-          <Button icon={<BiHeadphone />} onlyIcon />
+          <Button title="Home" icon={<BiHomeAlt />} onlyIcon />
+          <Button title="Blog" icon={<BiBook />} onlyIcon />
+          <Button title="Work" icon={<BiGhost />} onlyIcon />
+          <Button title="Playlist" icon={<BiHeadphone />} onlyIcon />
           <Button
+            title="Customize"
             icon={<BiPalette />}
             onlyIcon
             onClick={handleCustomizationModal}

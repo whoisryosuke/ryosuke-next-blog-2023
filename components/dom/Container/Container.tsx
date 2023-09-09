@@ -1,12 +1,12 @@
 import React, { PropsWithChildren } from "react";
-import Box from "../Box/Box";
+import Box, { BoxProps } from "../Box/Box";
 import styled from "styled-components";
 import {
   MODAL_OPEN_TRANSFORM,
   MODAL_CLOSED_TRANSFORM,
 } from "@theme/styles/modal";
 
-type Props = {
+type Props = BoxProps & {
   modal: boolean;
 };
 

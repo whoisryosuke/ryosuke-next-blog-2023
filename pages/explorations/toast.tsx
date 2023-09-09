@@ -27,16 +27,17 @@ import ToastManager from "@components/dom/Toasts/ToastManager";
 export default function ComponentsPage() {
   const { customizations, setUserTheme } = useAppStore();
   const { addToast } = useToastStore();
-  
+
   const handleToast = () => {
     addToast({
-        content: {
-            title: "Test", 
-            message: "420 blaze it"
-        },
-        time: new Date().getTime(),
-    })
-  }
+      content: {
+        title: "Test",
+        message: "420 blaze it",
+        icon: "BONG",
+      },
+      time: new Date().getTime(),
+    });
+  };
 
   return (
     <>
@@ -97,9 +98,7 @@ export default function ComponentsPage() {
             <Glass p={5} blur={3}>
               <Text color="textInverted">Long text</Text>
             </Glass>
-            <Glass p={5} blur={3}>
-              <ToastManager />
-            </Glass>
+            {/* <ToastManager /> */}
           </Stack>
         </Box>
       </Box>

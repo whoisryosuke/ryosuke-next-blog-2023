@@ -9,16 +9,15 @@ import ListItem from "../List/ListItem";
 import Blockquote from "../Blockquote/Blockquote";
 import Stack from "../Stack/Stack";
 import Headline from "../Headline/Headline";
+import { H1, H2, H3, H4, H5, H6 } from "../Headline/Headers";
 
 export const components = {
-  h1: (props) => <Headline fontSize={5} mt={8} mb={5} {...props} />,
-  h2: (props) => <Headline as="h2" fontSize={4} mt={8} mb={5} {...props} />,
-  h3: (props) => <Headline as="h3" fontSize={3} mt={8} mb={5} {...props} />,
-  h4: (props) => <Headline as="h4" fontSize={2} mt={8} mb={5} {...props} />,
-  h5: (props) => <Headline as="h5" fontSize={1} mt={8} mb={5} {...props} />,
-  h6: (props) => (
-    <Headline as="h6" fontFamily="heading" mt={8} mb={5} {...props} />
-  ),
+  h1: (props) => <H1 {...props} />,
+  h2: (props) => <H2 {...props} />,
+  h3: (props) => <H3 {...props} />,
+  h4: (props) => <H4 {...props} />,
+  h5: (props) => <H5 {...props} />,
+  h6: (props) => <H6 {...props} />,
   p: (props) => (
     <Text
       as="p"
