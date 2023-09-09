@@ -6,7 +6,7 @@ import Toast from "./Toast";
 
 type Props = {};
 
-const TOAST_DURATION = 2000;
+const TOAST_DURATION = 3000;
 const TOAST_EXIT_DURATION = 1000;
 
 const ToastManager = (props: Props) => {
