@@ -23,6 +23,7 @@ import Slider from "@components/dom/Slider/Slider";
 import Input from "@components/dom/Input/Input";
 import { useToastStore } from "@store/toasts";
 import ToastManager from "@components/dom/Toasts/ToastManager";
+import PageWrapper from "@components/dom/PageWrapper/PageWrapper";
 
 export default function ComponentsPage() {
   const { customizations, setUserTheme } = useAppStore();
@@ -40,68 +41,44 @@ export default function ComponentsPage() {
   };
 
   return (
-    <>
-      <Box
-        backgroundImage="url(/images/room1.png)"
-        backgroundSize="cover"
-        backgroundPosition="bottom center"
-        minHeight="100vh"
-        width="100%"
-        zIndex={-420}
-        position={"absolute"}
-        top={0}
-        left={0}
-        style={{ filter: "blur(1.5rem)" }}
-      />
-      <Box
-        background="rgba(0,0,0,0.3)"
-        minHeight="100vh"
-        width="100%"
-        zIndex={-419}
-        position={"absolute"}
-        top={0}
-        left={0}
-      />
-
-      <Box minHeight="100vh" width="100%">
-        <Box width="800px" margin="auto" p={3}>
-          <Stack vertical>
-            <Glass p={3}>
-              <Stack>
-                <Button onClick={handleToast}>Create toast</Button>
-                <Button>About Me</Button>
-              </Stack>
-            </Glass>
-            <Glass p={3}>
-              <Button solid icon iconSize={{ width: "64px", height: "64px" }}>
-                <BiLogoMastodon />
+    <PageWrapper>
+      <Box width="800px" margin="auto" p={3}>
+        <Stack vertical>
+          <Glass p={3}>
+            <Stack>
+              <Button onClick={handleToast}>Create toast</Button>
+              <Button>About Me</Button>
+            </Stack>
+          </Glass>
+          <Glass p={3}>
+            <Button solid icon iconSize={{ width: "64px", height: "64px" }}>
+              <BiLogoMastodon />
+            </Button>
+          </Glass>
+          <Glass p={3}>
+            <Stack alignItems="center">
+              <Button icon>
+                <BiHomeAlt />
               </Button>
-            </Glass>
-            <Glass p={3}>
-              <Stack alignItems="center">
-                <Button icon>
-                  <BiHomeAlt />
-                </Button>
-                <Button icon>
-                  <BiBook />
-                </Button>
-                <Button icon>
-                  <BiGhost />
-                </Button>
-                <Button icon>
-                  <BiHeadphone />
-                </Button>
-                {/* <Button icon><BiLogoGithub /></Button> */}
-                {/* <Button icon><BiLogoMastodon /></Button> */}
-              </Stack>
-            </Glass>
-            <Glass p={5} blur={3}>
-              <Text color="textInverted">Long text</Text>
-            </Glass>
-            {/* <ToastManager /> */}
-          </Stack>
-        </Box>
+              <Button icon>
+                <BiBook />
+              </Button>
+              <Button icon>
+                <BiGhost />
+              </Button>
+              <Button icon>
+                <BiHeadphone />
+              </Button>
+              {/* <Button icon><BiLogoGithub /></Button> */}
+              {/* <Button icon><BiLogoMastodon /></Button> */}
+            </Stack>
+          </Glass>
+          <Glass p={5} blur={3}>
+            <Text color="textInverted">Long text</Text>
+          </Glass>
+          {/* <ToastManager /> */}
+        </Stack>
       </Box>
-    </>
+    </PageWrapper>
   );
 }

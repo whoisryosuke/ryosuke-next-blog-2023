@@ -17,6 +17,7 @@ import {
   FocusContext,
 } from "@noriginmedia/norigin-spatial-navigation";
 import { useAppStore } from "@store/app";
+import Link from "next/link";
 
 type MenuOrientations = "left" | "bottom";
 
@@ -101,10 +102,28 @@ const MainNavbar = ({ orientation, ...props }: MenuProps) => {
         {...props}
       >
         <Stack gap="12px" alignItems="center" vertical={orientation == "left"}>
-          <Button title="Home" icon={<BiHomeAlt />} onlyIcon />
-          <Button title="Blog" icon={<BiBook />} onlyIcon />
-          <Button title="Work" icon={<BiGhost />} onlyIcon />
-          <Button title="Playlist" icon={<BiHeadphone />} onlyIcon />
+          <Button as="a" href="/" title="Home" icon={<BiHomeAlt />} onlyIcon />
+          <Button
+            as={Link}
+            href="/explorations/blog"
+            title="Blog"
+            icon={<BiBook />}
+            onlyIcon
+          />
+          <Button
+            as={Link}
+            href="/explorations/toast"
+            title="Work"
+            icon={<BiGhost />}
+            onlyIcon
+          />
+          <Button
+            as={Link}
+            href="/explorations/playlist"
+            title="Playlist"
+            icon={<BiHeadphone />}
+            onlyIcon
+          />
           <Button
             title="Customize"
             icon={<BiPalette />}

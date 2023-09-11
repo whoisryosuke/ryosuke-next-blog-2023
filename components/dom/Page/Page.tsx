@@ -12,6 +12,7 @@ import GlobalStyles from "../GlobalStyles/GlobalStyles";
 import { init } from "@noriginmedia/norigin-spatial-navigation";
 import GlobalModals from "../GlobalModals/GlobalModals";
 import ToastManager from "../Toasts/ToastManager";
+import { useAppStore } from "@store/app";
 
 // Initialize the Focus Management library
 init({
@@ -24,34 +25,66 @@ type Props = {
   transparent?: boolean;
 };
 
-const Page = ({ children, transparent = false }: PropsWithChildren<Props>) => (
-  <StyleSheetManager enableVendorPrefixes shouldForwardProp={isPropValid}>
-    <ThemeProvider>
-      <A11yCheck />
-      <GlobalStyles />
-      <Paper
-        id="root-content"
-        // display="flex"
-        flexDirection="column"
-        justifyContent="space-between"
-        bg={transparent && "background"}
-        style={{ flex: 1 }}
-      >
-        <main>
-          <MainNavbar orientation="left" />
-          <Box as="header" position="absolute" bottom={1} left={1}>
-            <ThemeToggle />
-          </Box>
+const Page = ({ children, transparent = false }: PropsWithChildren<Props>) => {
+  const { customizations } = useAppStore();
 
-          {children}
+  return (
+    <StyleSheetManager enableVendorPrefixes shouldForwardProp={isPropValid}>
+      <ThemeProvider>
+        <A11yCheck />
+        <GlobalStyles />
+        <Paper
+          id="root-content"
+          // display="flex"
+          flexDirection="column"
+          justifyContent="space-between"
+          bg={transparent && "background"}
+          style={{ flex: 1 }}
+        >
+          <main>
+            <MainNavbar orientation="left" />
+            <Box as="header" position="absolute" bottom={1} left={1}>
+              <ThemeToggle />
+            </Box>
 
-          <ToastManager />
-        </main>
-        <footer>{/* <Copyright /> */}</footer>
-      </Paper>
-      <GlobalModals />
-    </ThemeProvider>
-  </StyleSheetManager>
-);
+            <Box minHeight="100vh" width="100%" position="relative">
+              <Box
+                backgroundImage="url(/images/room1.png)"
+                backgroundSize="repeat-x"
+                backgroundPosition={`${
+                  customizations.theme.modal ? "100%" : "0%"
+                } 100%`}
+                minHeight="100vh"
+                width="100%"
+                zIndex={-420}
+                position={"absolute"}
+                top={0}
+                left={0}
+                style={{
+                  filter: "blur(1.5rem)",
+                  transition: "background-position 400ms ease-in",
+                }}
+              />
+              <Box
+                background="rgba(0,0,0,0.3)"
+                minHeight="100vh"
+                width="100%"
+                zIndex={-419}
+                position={"absolute"}
+                top={0}
+                left={0}
+              />
+              {children}
+            </Box>
+
+            <ToastManager />
+          </main>
+          <footer>{/* <Copyright /> */}</footer>
+        </Paper>
+        <GlobalModals />
+      </ThemeProvider>
+    </StyleSheetManager>
+  );
+};
 
 export default Page;
