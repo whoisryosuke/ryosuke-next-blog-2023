@@ -112,7 +112,7 @@ const MainNavbar = ({ orientation, ...props }: MenuProps) => {
           />
           <Button
             as={Link}
-            href="/explorations/toast"
+            href="/explorations/work"
             title="Work"
             icon={<BiGhost />}
             onlyIcon
