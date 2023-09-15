@@ -3,13 +3,30 @@ export const ANIMATION = {
   fast: "300ms ease-in",
 };
 
-export const BREAKPOINTS = {
-  mobile: "320px",
-  tablet: "600px",
-  computer: "992px",
-  desktop: "1200px",
-  widescreen: "1920px",
+export const BREAKPOINTS_RAW = {
+  mobile: 320,
+  tablet: 600,
+  computer: 992,
+  desktop: 1200,
+  widescreen: 1920,
 };
+
+export const BREAKPOINTS = Object.entries(BREAKPOINTS_RAW).reduce(
+  (prev, curr) => {
+    prev[curr[0]] = `${curr[1]}px`;
+    return prev;
+  },
+  {}
+);
+
+// export const BREAKPOINTS = {
+//   mobile: "320px",
+//   tablet: "600px",
+//   computer: "992px",
+//   desktop: "1200px",
+//   widescreen: "1920px",
+// };
+
 type MediaQueries = Record<keyof typeof BREAKPOINTS, Record<string, string>>;
 // Generates media queries formatted for Vanilla Extract
 export const MEDIA_QUERIES: MediaQueries = Object.entries(BREAKPOINTS).reduce(
@@ -85,21 +102,21 @@ export const RADIUS_PROPERTIES = {
   4: "21px",
   5: "50px",
   default: "40px",
-  round: '99em'
-}
+  round: "99em",
+};
 
 export const BLUR_PROPERTIES = {
   radius: {
-    0: '0px',
-    1: '4px',
-    2: '12px',
-    3: '36px',
-    4: '48px',
+    0: "0px",
+    1: "4px",
+    2: "12px",
+    3: "36px",
+    4: "48px",
   },
   mask: {
-    0: '0.1',
-    1: '0.25',
-    2: '0.5',
-    3: '0.9',
-  }
-}
+    0: "0.1",
+    1: "0.25",
+    2: "0.5",
+    3: "0.9",
+  },
+};

@@ -26,6 +26,8 @@ import ToastManager from "@components/dom/Toasts/ToastManager";
 import PageWrapper from "@components/dom/PageWrapper/PageWrapper";
 import ScrollBox from "@components/dom/ScrollBox/ScrollBox";
 import Grid from "@components/dom/Grid/Grid";
+import Image from "@components/dom/Image/Image";
+import MasonryGrid from "@components/dom/MasonryGrid/MasonryGrid";
 
 export default function WorkPage() {
   const { customizations, setUserTheme } = useAppStore();
@@ -41,18 +43,17 @@ export default function WorkPage() {
         borderRadius={4}
       >
         <ScrollBox display="flex" height={"80vh"}>
-          <Stack vertical display="block" flex={1} mr={2}>
+          <MasonryGrid>
+            <Image src="/work/art/final-square-web.png" />
             <Box bg="red" flex={1} height={"200px"} />
             <Box bg="red" flex={1} height={"300px"} />
             <Box bg="red" flex={1} height={"200px"} />
             <Box bg="red" flex={1} height={"300px"} />
-          </Stack>
-          <Stack vertical display="block" flex={1} ml={2}>
             <Box bg="red" flex={1} height={"300px"} />
             <Box bg="red" flex={1} height={"200px"} />
             <Box bg="red" flex={1} height={"300px"} />
             <Box bg="red" flex={1} height={"200px"} />
-          </Stack>
+          </MasonryGrid>
         </ScrollBox>
       </Glass>
     </PageWrapper>
