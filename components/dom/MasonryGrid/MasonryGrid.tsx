@@ -56,7 +56,7 @@ const MasonryGrid = ({ children, gap }: PropsWithChildren<Props>) => {
     return columns.map((column, index) => {
       // Gap between columns
       let containerProps: BoxProps = {};
-      if (index > 0 && index < columns.length - 1) {
+      if (index > 0 && index <= columns.length - 1) {
         containerProps.ml = gap;
       }
       if (index < columns.length - 1) {
