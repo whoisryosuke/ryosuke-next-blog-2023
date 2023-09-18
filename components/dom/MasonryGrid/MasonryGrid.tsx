@@ -3,6 +3,25 @@ import { BREAKPOINTS_RAW } from "@theme/tokens";
 import Stack from "../Stack/Stack";
 import { BoxProps } from "../Box/Box";
 import { useWindowSize } from "usehooks-ts";
+import { AnimatePresence, motion } from "framer-motion";
+
+const Wrapper = ({ index, children, ...props }) => {
+  return (
+    <motion.div
+      initial={{
+        opacity: 0,
+        translateZ: 10,
+        translateY: 50,
+      }}
+      animate={{ opacity: 1, translateZ: 0, translateY: 0 }}
+      exit={{ opacity: 0, translateZ: 10 }}
+      transition={{ duration: 1 * ((index + 10) / 10), delay: 0.5 }}
+      {...props}
+    >
+      {children}
+    </motion.div>
+  );
+};
 
 const MASONRY_DEFAULT_BREAKPOINTS = {
   mobile: 1,
@@ -14,11 +33,14 @@ const MASONRY_DEFAULT_BREAKPOINTS = {
 
 const getNumCols = (windowWidth: number) => {
   const breakpointMap = Object.entries(BREAKPOINTS_RAW);
-  const nextBreakpoint = breakpointMap.findIndex(
+  const checkBreakpoint = breakpointMap.findIndex(
     ([breakpointName, breakpointValue]) => {
       return windowWidth < breakpointValue;
     }
   );
+
+  const nextBreakpoint =
+    checkBreakpoint < 0 ? breakpointMap.length : checkBreakpoint;
 
   console.log("nextBreakpoint", nextBreakpoint);
   const currentBreakpoint = breakpointMap[nextBreakpoint - 1];
@@ -44,13 +66,14 @@ const MasonryGrid = ({ children, gap }: PropsWithChildren<Props>) => {
     const columns = [];
 
     const numCols = getNumCols(windowSize.width);
-    console.log("numCols", numCols);
+    console.log("numCols", numCols, windowSize.width);
     // const numItems = React.Children.count(children);
 
     React.Children.forEach(children, (child, index) => {
       const currentColumn = columns[index % numCols];
       if (!currentColumn) columns[index % numCols] = [];
-      columns[index % numCols].push(child);
+      const wrappedChildren = <Wrapper index={index}>{child}</Wrapper>;
+      columns[index % numCols].push(wrappedChildren);
     });
 
     return columns.map((column, index) => {
@@ -63,15 +86,18 @@ const MasonryGrid = ({ children, gap }: PropsWithChildren<Props>) => {
         containerProps.mr = gap;
       }
       return (
-        <Stack
-          key={index}
-          vertical
-          display="block"
-          flex={1}
-          {...containerProps}
-        >
-          {column}
-        </Stack>
+        <AnimatePresence>
+          <Stack
+            key={index}
+            vertical
+            display="block"
+            flex={1}
+            style={{ perspective: "500px" }}
+            {...containerProps}
+          >
+            {column}
+          </Stack>
+        </AnimatePresence>
       );
     });
   };

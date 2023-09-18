@@ -12,6 +12,7 @@ export type UserCustomizations = {
   theme: {
     fontWeights: Theme["fontWeights"];
     modal: boolean;
+    highContrastBlog: boolean;
   };
 };
 
@@ -47,6 +48,7 @@ export const useAppStore = create<AppState>()((set) => ({
     theme: {
       fontWeights: base.fontWeights,
       modal: false,
+      highContrastBlog: false,
     },
   },
   setUserTheme: (theme) =>

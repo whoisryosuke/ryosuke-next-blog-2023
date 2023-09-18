@@ -20,11 +20,22 @@ import {
   BiBong,
   BiUser,
   BiFont,
+  BiBook,
 } from "react-icons/bi";
 import TypographyPanel from "./panels/TypographyPanel";
+import BlogCustomizationPanel from "./panels/BlogCustomizationPanel";
 
 const PANELS = {
-  typography: <TypographyPanel />,
+  typography: {
+    title: "Typography",
+    icon: <BiFont />,
+    panel: <TypographyPanel />,
+  },
+  blog: {
+    title: "Blog",
+    icon: <BiBook />,
+    panel: <BlogCustomizationPanel />,
+  },
 };
 
 type PanelNames = keyof typeof PANELS;
@@ -34,38 +45,18 @@ type Props = {
 };
 
 const CustomizationPanel = ({ open, ...props }: Props) => {
-  const { customizations, setUserTheme, toggleModal } = useAppStore();
+  const { toggleModal } = useAppStore();
   const [currentPanel, setCurrentPanel] = useState<PanelNames>("typography");
-
-  const fontWeightProps = customizations.theme.fontWeights;
-
-  const handleWeightChangeRegular = (e: React.FormEvent<HTMLInputElement>) => {
-    handleWeightChange(e, "regular");
-  };
-
-  const handleWeightChangeBold = (e: React.FormEvent<HTMLInputElement>) => {
-    handleWeightChange(e, "bold");
-  };
-
-  const handleWeightChange = (
-    e: React.FormEvent<HTMLInputElement>,
-    type: keyof Theme["fontWeights"]
-  ) => {
-    setUserTheme({
-      fontWeights: {
-        ...customizations.theme.fontWeights,
-        [type]: e.currentTarget.value,
-      },
-    });
-  };
 
   const onClose = () => {
     toggleModal(false);
   };
 
-  const handleTypographyPanel = () => {
-    setCurrentPanel("typography");
+  const handlePanel = (key: PanelNames) => {
+    setCurrentPanel(key);
   };
+
+  const panelsMap = Object.entries(PANELS);
 
   return (
     <Modal isOpen={open} onClose={onClose} {...props}>
@@ -88,14 +79,16 @@ const CustomizationPanel = ({ open, ...props }: Props) => {
             />
 
             <Stack vertical>
-              <Button
-                icon={<BiFont />}
-                justifyContent="flex-start"
-                borderRadius={1}
-                onClick={handleTypographyPanel}
-              >
-                Typography
-              </Button>
+              {panelsMap.map(([key, panel]) => (
+                <Button
+                  icon={panel.icon}
+                  justifyContent="flex-start"
+                  borderRadius={1}
+                  onClick={() => handlePanel(key as PanelNames)}
+                >
+                  {panel.title}
+                </Button>
+              ))}
             </Stack>
           </Box>
           <Box id="content" py={4} px={5} flex={1}>
@@ -105,7 +98,7 @@ const CustomizationPanel = ({ open, ...props }: Props) => {
               // icon={<BiDotsHorizontal />}
             />
 
-            <ScrollBox height="400px">{PANELS[currentPanel]}</ScrollBox>
+            <ScrollBox height="400px">{PANELS[currentPanel].panel}</ScrollBox>
           </Box>
         </Stack>
       </Glass>

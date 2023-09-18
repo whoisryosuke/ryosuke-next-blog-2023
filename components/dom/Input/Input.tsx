@@ -1,4 +1,5 @@
 import { Theme } from "@theme/index";
+import { inputBgStyles } from "@theme/styles/glass";
 import React, { DetailedHTMLProps, InputHTMLAttributes } from "react";
 import styled from "styled-components";
 
@@ -59,14 +60,8 @@ const StyledContainer = styled("div")<Props>`
   width: 100%;
   display: flex;
   position: relative;
-  background: ${({ theme }) => theme.colors.darkGlass.input};
-  border-radius: ${({ theme, borderRadius }) =>
-    borderRadius ? theme.radius[borderRadius] : theme.radius.round};
 
-  box-shadow:
-    0px -1px 4px rgba(0, 0, 0, 0.25),
-    1px 2px 1px rgba(255, 255, 255, 0.2),
-    inset 4px 4px 4px rgba(0, 0, 0, 0.25);
+  ${inputBgStyles}
 `;
 
 const Input = ({ style, icon, borderRadius, ...props }: Props) => {

@@ -36,7 +36,7 @@ export default function WorkPage() {
     <PageWrapper>
       <Glass
         p={4}
-        maxWidth="800px"
+        maxWidth="80vw"
         margin="auto"
         mt={4}
         blur={4}
@@ -45,14 +45,14 @@ export default function WorkPage() {
         <ScrollBox display="flex" height={"80vh"}>
           <MasonryGrid>
             <Image src="/work/art/final-square-web.png" />
-            <Box bg="red" flex={1} height={"200px"} />
-            <Box bg="red" flex={1} height={"300px"} />
-            <Box bg="red" flex={1} height={"200px"} />
-            <Box bg="red" flex={1} height={"300px"} />
-            <Box bg="red" flex={1} height={"300px"} />
-            <Box bg="red" flex={1} height={"200px"} />
-            <Box bg="red" flex={1} height={"300px"} />
-            <Box bg="red" flex={1} height={"200px"} />
+            <Box bg="teal" flex={1} height={"200px"} />
+            <Image src="/work/art/final-square-web.png" />
+            <Box bg="teal" flex={1} height={"200px"} />
+            <Image src="/work/art/final-square-web.png" />
+            <Image src="/work/art/final-square-web.png" />
+            <Box bg="teal" flex={1} height={"200px"} />
+            <Image src="/work/art/final-square-web.png" />
+            <Box bg="teal" flex={1} height={"200px"} />
           </MasonryGrid>
         </ScrollBox>
       </Glass>

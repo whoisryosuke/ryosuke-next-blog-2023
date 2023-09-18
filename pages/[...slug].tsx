@@ -41,8 +41,7 @@ export default function PostPage({ source, frontMatter, slug }) {
   };
   return (
     <>
-      <BlogPage>
-        <WindowHeader title={frontMatter.title} />
+      <BlogPage title={frontMatter.title}>
         <MDXRemote {...source} components={components} />
       </BlogPage>
     </>
