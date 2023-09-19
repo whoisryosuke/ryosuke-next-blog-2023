@@ -18,6 +18,7 @@ import {
 } from "react-icons/bi";
 import Input from "../Input/Input";
 import { useAppStore } from "@store/app";
+import PageWrapper from "../PageWrapper/PageWrapper";
 
 type Props = {
   title: string;

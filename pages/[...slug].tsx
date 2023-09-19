@@ -16,6 +16,7 @@ import React from "react";
 import BlogPage from "@components/dom/BlogPage/BlogPage";
 import { components } from "@components/dom/MDXComponents/MDXComponents";
 import WindowHeader from "@components/dom/WindowHeader/WindowHeader";
+import BlogTransition from "@components/dom/BlogTransition/BlogTransition";
 
 // Adds the blog post slug to the image URL
 // We do this because NextJS pages don't include the blog post slug
@@ -40,11 +41,9 @@ export default function PostPage({ source, frontMatter, slug }) {
     url: slug,
   };
   return (
-    <>
-      <BlogPage title={frontMatter.title}>
-        <MDXRemote {...source} components={components} />
-      </BlogPage>
-    </>
+    <BlogTransition>
+      <MDXRemote {...source} components={components} />
+    </BlogTransition>
   );
 }
 
