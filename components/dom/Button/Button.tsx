@@ -10,9 +10,11 @@ import {
   BorderRadiusProps,
   FlexProps,
   FlexboxProps,
+  MarginProps,
   borderRadius,
   flex,
   flexbox,
+  margin,
 } from "styled-system";
 import { Theme } from "@theme/index";
 import { borderShineEffect } from "@theme/styles/glass";
@@ -21,7 +23,8 @@ type ButtonProps = DetailedHTMLProps<
   ButtonHTMLAttributes<HTMLButtonElement>,
   HTMLButtonElement
 > &
-  FlexboxProps & {
+  FlexboxProps &
+  MarginProps & {
     focused?: boolean;
     solid?: boolean;
     icon?: React.ReactElement;
@@ -104,6 +107,7 @@ const StyledButton = styled("button")<ButtonProps>`
   }
 
   ${flexbox}
+  ${margin}
 `;
 
 const Button = ({
