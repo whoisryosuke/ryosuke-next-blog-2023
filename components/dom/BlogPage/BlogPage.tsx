@@ -45,8 +45,8 @@ const BlogPage = ({ children, title, ...props }: PropsWithChildren<Props>) => {
       flex={1}
       {...props}
     >
-      <Stack gap={"32px"}>
-        <Box>
+      <Stack gap={"32px"} justifyContent="center">
+        <Box maxWidth="1200px">
           <Glass p={4} borderRadius={"round"} mb={4}>
             <Stack gap="16px">
               <Button solid onlyIcon icon={<BiSidebar />} />
@@ -79,7 +79,7 @@ const BlogPage = ({ children, title, ...props }: PropsWithChildren<Props>) => {
             </Glass>
           </ThemeProvider>
         </Box>
-        <Box width={{ mobile: "100%", tablet: "400px" }}>
+        <Box flex={1}>
           <Glass id="toc" blur={3} overflow="hidden" p={4}>
             <Headline id="test" fontSize={2}>
               Table of Contents
