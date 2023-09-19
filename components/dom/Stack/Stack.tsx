@@ -31,7 +31,9 @@ const Stack = ({
         // @TODO: Change to responsive margin Styled System props
         // and default to marginBottom for mobile always
         //@ts-ignore
-        style: { ...showGapStyle, ...child.props.style },
+        // style: { ...showGapStyle, ...child.props.style },
+        marginBottom: { mobile: gap, tablet: 0 },
+        marginRight: { mobile: 0, tablet: gap },
       });
     }
     return child;

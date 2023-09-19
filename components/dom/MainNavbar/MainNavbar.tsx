@@ -18,6 +18,8 @@ import {
 } from "@noriginmedia/norigin-spatial-navigation";
 import { useAppStore } from "@store/app";
 import Link from "next/link";
+import { useWindowSize } from "usehooks-ts";
+import Box from "../Box/Box";
 
 type MenuOrientations = "left" | "bottom";
 
@@ -73,15 +75,21 @@ const MenuBottomStyles = () => css<MenuProps>`
 `;
 
 const StyledMenu = styled(Glass)<MenuProps>`
-  position: absolute;
+  position: fixed;
   z-index: 710;
   ${({ orientation }) =>
     orientation == "left" ? MenuLeftStyles : MenuBottomStyles};
 `;
 
-const MainNavbar = ({ orientation, ...props }: MenuProps) => {
+const MainNavbar = ({ ...props }: MenuProps) => {
   const { ref, focusKey, focusSelf } = useFocusable();
   const { openModal } = useAppStore();
+  const windowSize = useWindowSize();
+
+  const orientation: MenuOrientations =
+    windowSize.width < 800 ? "bottom" : "left";
+
+  console.log("navbar size", windowSize.width, orientation);
 
   const handleCustomizationModal = () => {
     openModal("customization");
@@ -96,12 +104,16 @@ const MainNavbar = ({ orientation, ...props }: MenuProps) => {
         ref={ref}
         px={orientation == "left" ? 3 : 6}
         py={orientation == "left" ? 6 : 3}
-        orientation={orientation}
         borderRadius="round"
         modal
         {...props}
+        orientation={orientation}
       >
-        <Stack gap="12px" alignItems="center" vertical={orientation == "left"}>
+        <Box
+          display="flex"
+          alignItems="center"
+          flexDirection={orientation == "left" ? "column" : "row"}
+        >
           <Button as="a" href="/" title="Home" icon={<BiHomeAlt />} onlyIcon />
           <Button
             as={Link}
@@ -130,7 +142,7 @@ const MainNavbar = ({ orientation, ...props }: MenuProps) => {
             onlyIcon
             onClick={handleCustomizationModal}
           />
-        </Stack>
+        </Box>
       </StyledMenu>
     </FocusContext.Provider>
   );
