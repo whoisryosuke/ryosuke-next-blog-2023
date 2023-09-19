@@ -28,6 +28,8 @@ const Stack = ({
       const showGapStyle =
         children && index < childArray.length - 1 ? gapStyle : {};
       return React.cloneElement(child, {
+        // @TODO: Change to responsive margin Styled System props
+        // and default to marginBottom for mobile always
         //@ts-ignore
         style: { ...showGapStyle, ...child.props.style },
       });
