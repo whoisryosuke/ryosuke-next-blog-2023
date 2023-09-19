@@ -45,10 +45,20 @@ const BlogPage = ({ children, title, ...props }: PropsWithChildren<Props>) => {
       flex={1}
       {...props}
     >
-      <Stack gap={"32px"} justifyContent="center">
-        <Box maxWidth="1200px">
+      <Box
+        display="flex"
+        flexDirection={{ mobile: "column", computer: "row" }}
+        justifyContent="center"
+      >
+        <Box
+          minWidth="200px"
+          maxWidth="1200px"
+          flex={1}
+          marginRight={{ mobile: 0, computer: 4 }}
+          marginBottom={{ mobile: 4, computer: 0 }}
+        >
           <Glass p={4} borderRadius={"round"} mb={4}>
-            <Stack gap="16px">
+            <Box display="flex">
               <Button solid onlyIcon icon={<BiSidebar />} mr={3} />
               <Button solid onlyIcon icon={<BiArrowToLeft />} disabled mr={3} />
               <Button
@@ -69,7 +79,7 @@ const BlogPage = ({ children, title, ...props }: PropsWithChildren<Props>) => {
               <Button solid onlyIcon icon={<BiShare />} mr={3} />
               <Button solid onlyIcon icon={<BiFont />} mr={3} />
               <Button solid onlyIcon icon={<BiFolder />} mr={3} />
-            </Stack>
+            </Box>
           </Glass>
           <ThemeProvider theme={customTheme}>
             <Glass id="blog" blur={4} borderRadius={3} overflow="hidden">
@@ -85,7 +95,7 @@ const BlogPage = ({ children, title, ...props }: PropsWithChildren<Props>) => {
             </Glass>
           </ThemeProvider>
         </Box>
-        <Box flex={1} opacity={{ mobile: 0, tablet: 1 }}>
+        <Box minWidth="250px" opacity={{ mobile: 0, tablet: 1 }}>
           <Glass id="toc" blur={3} overflow="hidden" p={4}>
             <Headline id="test" fontSize={2}>
               Table of Contents
@@ -108,7 +118,7 @@ const BlogPage = ({ children, title, ...props }: PropsWithChildren<Props>) => {
             </Button>
           </Glass>
         </Box>
-      </Stack>
+      </Box>
     </Box>
   );
 };
