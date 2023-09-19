@@ -39,7 +39,7 @@ const Page = ({ children, transparent = false }: PropsWithChildren<Props>) => {
           flexDirection="column"
           justifyContent="space-between"
           bg={transparent && "background"}
-          style={{ flex: 1 }}
+          style={{ flex: 1, perspective: "none" }}
         >
           <main>
             <MainNavbar orientation="left" />
