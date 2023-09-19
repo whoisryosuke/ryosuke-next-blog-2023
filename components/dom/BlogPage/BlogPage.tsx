@@ -48,7 +48,7 @@ const BlogPage = ({ children, title, ...props }: PropsWithChildren<Props>) => {
       <Stack gap={"32px"} justifyContent="center">
         <Box maxWidth="1200px">
           <Glass p={4} borderRadius={"round"} mb={4}>
-            <Stack gap="16px" vertical>
+            <Stack gap="16px">
               <Button solid onlyIcon icon={<BiSidebar />} mr={3} />
               <Button solid onlyIcon icon={<BiArrowToLeft />} disabled mr={3} />
               <Button

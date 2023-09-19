@@ -88,6 +88,8 @@ const MainNavbar = ({ ...props }: MenuProps) => {
 
   const orientation: MenuOrientations =
     windowSize.width < 800 ? "bottom" : "left";
+  const marginRight = orientation == "left" ? 0 : "8px";
+  const marginBottom = orientation == "left" ? "8px" : 0;
 
   console.log("navbar size", windowSize.width, orientation);
 
@@ -109,18 +111,28 @@ const MainNavbar = ({ ...props }: MenuProps) => {
         {...props}
         orientation={orientation}
       >
-        <Stack
-          // display="flex"
+        <Box
+          display="flex"
           alignItems="center"
-          vertical={orientation == "left"}
+          flexDirection={orientation == "left" ? "column" : "row"}
         >
-          <Button as="a" href="/" title="Home" icon={<BiHomeAlt />} onlyIcon />
+          <Button
+            as="a"
+            href="/"
+            title="Home"
+            icon={<BiHomeAlt />}
+            onlyIcon
+            marginRight={marginRight}
+            marginBottom={marginBottom}
+          />
           <Button
             as={Link}
             href="/explorations/blog"
             title="Blog"
             icon={<BiBook />}
             onlyIcon
+            marginRight={marginRight}
+            marginBottom={marginBottom}
           />
           <Button
             as={Link}
@@ -128,6 +140,8 @@ const MainNavbar = ({ ...props }: MenuProps) => {
             title="Work"
             icon={<BiGhost />}
             onlyIcon
+            marginRight={marginRight}
+            marginBottom={marginBottom}
           />
           <Button
             as={Link}
@@ -135,6 +149,8 @@ const MainNavbar = ({ ...props }: MenuProps) => {
             title="Playlist"
             icon={<BiHeadphone />}
             onlyIcon
+            marginRight={marginRight}
+            marginBottom={marginBottom}
           />
           <Button
             title="Customize"
@@ -142,7 +158,7 @@ const MainNavbar = ({ ...props }: MenuProps) => {
             onlyIcon
             onClick={handleCustomizationModal}
           />
-        </Stack>
+        </Box>
       </StyledMenu>
     </FocusContext.Provider>
   );
