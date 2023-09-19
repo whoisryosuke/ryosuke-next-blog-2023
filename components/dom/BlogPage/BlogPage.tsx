@@ -48,7 +48,7 @@ const BlogPage = ({ children, title, ...props }: PropsWithChildren<Props>) => {
       <Stack gap={"32px"} justifyContent="center">
         <Box maxWidth="1200px">
           <Glass p={4} borderRadius={"round"} mb={4}>
-            <Box display="flex">
+            <Stack gap="16px" vertical>
               <Button solid onlyIcon icon={<BiSidebar />} mr={3} />
               <Button solid onlyIcon icon={<BiArrowToLeft />} disabled mr={3} />
               <Button
@@ -69,7 +69,7 @@ const BlogPage = ({ children, title, ...props }: PropsWithChildren<Props>) => {
               <Button solid onlyIcon icon={<BiShare />} mr={3} />
               <Button solid onlyIcon icon={<BiFont />} mr={3} />
               <Button solid onlyIcon icon={<BiFolder />} mr={3} />
-            </Box>
+            </Stack>
           </Glass>
           <ThemeProvider theme={customTheme}>
             <Glass id="blog" blur={4} borderRadius={3} overflow="hidden">
@@ -78,7 +78,7 @@ const BlogPage = ({ children, title, ...props }: PropsWithChildren<Props>) => {
                 flex={1}
                 height="80vh"
                 borderRadius={10}
-                p={8}
+                p={{ mobile: 5, tablet: 8 }}
               >
                 {children}
               </ScrollBox>

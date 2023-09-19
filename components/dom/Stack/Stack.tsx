@@ -15,10 +15,10 @@ const Stack = ({
   children,
   ...props
 }: PropsWithChildren<Props>) => {
-  const gapDirection = vertical ? "marginBottom" : "marginRight";
   // The CSS for gap between elements
   const gapStyle = {
-    [gapDirection]: gap,
+    marginBottom: { mobile: gap, tablet: vertical ? gap : 0 },
+    marginRight: { mobile: 0, tablet: !vertical ? gap : 0 },
   };
 
   // Loop through children and apply gap (unless it's the last child)
@@ -32,8 +32,7 @@ const Stack = ({
         // and default to marginBottom for mobile always
         //@ts-ignore
         // style: { ...showGapStyle, ...child.props.style },
-        marginBottom: { mobile: gap, tablet: 0 },
-        marginRight: { mobile: 0, tablet: gap },
+        ...showGapStyle,
       });
     }
     return child;

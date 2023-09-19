@@ -109,10 +109,10 @@ const MainNavbar = ({ ...props }: MenuProps) => {
         {...props}
         orientation={orientation}
       >
-        <Box
-          display="flex"
+        <Stack
+          // display="flex"
           alignItems="center"
-          flexDirection={orientation == "left" ? "column" : "row"}
+          vertical={orientation == "left"}
         >
           <Button as="a" href="/" title="Home" icon={<BiHomeAlt />} onlyIcon />
           <Button
@@ -142,7 +142,7 @@ const MainNavbar = ({ ...props }: MenuProps) => {
             onlyIcon
             onClick={handleCustomizationModal}
           />
-        </Box>
+        </Stack>
       </StyledMenu>
     </FocusContext.Provider>
   );
