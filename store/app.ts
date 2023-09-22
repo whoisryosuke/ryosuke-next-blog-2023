@@ -1,4 +1,9 @@
 import { Theme, ThemeOptions, base } from "@theme/index";
+import {
+  AchievementData,
+  AchievementLog,
+  DEFAULT_ACHIEVEMENT_DATA,
+} from "features/achievements/achievement-list";
 import { create } from "zustand";
 
 type ModalNames = "customization";
@@ -31,6 +36,14 @@ interface AppState {
   modalName: ModalNames;
   openModal: (modalName: ModalNames) => void;
   toggleModal: (modal?: boolean) => void;
+
+  // Achievements
+  achievementNotification: boolean;
+  achievements: AchievementLog[];
+  achievementData: AchievementData;
+  updateAchievementData: (achievementData: Partial<AchievementData>) => void;
+  addAchievement: (achievement: AchievementLog) => void;
+  toggleAchivementNotifications: (status?: boolean) => void;
 }
 
 export const useAppStore = create<AppState>()((set) => ({
@@ -87,5 +100,22 @@ export const useAppStore = create<AppState>()((set) => ({
           modal: modal ?? !state.customizations.theme.modal,
         },
       },
+    })),
+
+  // Achievements
+  achievementNotification: false,
+  achievements: [],
+  achievementData: DEFAULT_ACHIEVEMENT_DATA,
+  updateAchievementData: (newAchievementData) =>
+    set((state) => ({
+      achievementData: { ...state.achievementData, ...newAchievementData },
+    })),
+  addAchievement: (achievement) =>
+    set((state) => ({
+      achievements: [achievement, ...state.achievements],
+    })),
+  toggleAchivementNotifications: (status) =>
+    set((state) => ({
+      achievementNotification: status ?? !state.achievementNotification,
     })),
 }));

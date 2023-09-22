@@ -6,7 +6,8 @@ export type AchievementDetails = Toast["content"] & {
 };
 export type AchievementCategory = Record<string, AchievementDetails>;
 
-const BLOG_ACHIEVEMENTS: AchievementCategory = {
+// Achievement Categories
+const BLOG_ACHIEVEMENTS = {
   READ_1: {
     title: "A novel start",
     message: "Read 1 post",
@@ -17,14 +18,31 @@ const BLOG_ACHIEVEMENTS: AchievementCategory = {
   },
 };
 
-const META_ACHIEVEMENTS: AchievementCategory = {
+const META_ACHIEVEMENTS = {
   ACHIEVE_5: {
     title: "All Star",
     message: "Earned 5 achievements",
   },
 };
 
+export type AchievementId =
+  | keyof typeof BLOG_ACHIEVEMENTS
+  | keyof typeof META_ACHIEVEMENTS;
+export type AchievementLog = {
+  id: AchievementId;
+  date: number;
+};
+
 export const ACHIEVEMENT_LIST = {
   BLOG: BLOG_ACHIEVEMENTS,
   META: META_ACHIEVEMENTS,
+};
+
+// Achievement Data Store
+export type AchievementData = {
+  blogsRead: number;
+};
+
+export const DEFAULT_ACHIEVEMENT_DATA = {
+  blogsRead: 0,
 };

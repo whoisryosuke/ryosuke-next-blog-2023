@@ -17,6 +17,7 @@ import BlogPage from "@components/dom/BlogPage/BlogPage";
 import { components } from "@components/dom/MDXComponents/MDXComponents";
 import WindowHeader from "@components/dom/WindowHeader/WindowHeader";
 import BlogTransition from "@components/dom/BlogTransition/BlogTransition";
+import useBlogPostRead from "features/achievements/hooks/useBlogPostRead";
 
 // Adds the blog post slug to the image URL
 // We do this because NextJS pages don't include the blog post slug
@@ -35,6 +36,8 @@ function transformImgSrc({ slug }) {
 }
 
 export default function PostPage({ source, frontMatter, slug }) {
+  useBlogPostRead();
+
   const meta: MetaDataProps = {
     title: frontMatter.title,
     image: frontMatter.cover_image,

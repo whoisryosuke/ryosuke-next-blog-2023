@@ -37,6 +37,7 @@ export default function ComponentsPage() {
         icon: "BONG",
       },
       time: new Date().getTime(),
+      status: "show",
     });
   };
 
