@@ -12,7 +12,6 @@ const Accordion = ({ children, title, ...props }: PropsWithChildren<Props>) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const handleToggle = () => {
-    console.log("clicked!", isExpanded);
     setIsExpanded((prevValue) => !prevValue);
   };
   return (

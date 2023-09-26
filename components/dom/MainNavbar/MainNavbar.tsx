@@ -91,8 +91,6 @@ const MainNavbar = ({ ...props }: MenuProps) => {
   const marginRight = orientation == "left" ? 0 : "8px";
   const marginBottom = orientation == "left" ? "8px" : 0;
 
-  console.log("navbar size", windowSize.width, orientation);
-
   const handleCustomizationModal = () => {
     openModal("customization");
   };

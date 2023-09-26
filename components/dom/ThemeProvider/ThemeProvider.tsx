@@ -51,7 +51,6 @@ export function ThemeProvider({
   };
   const currentTheme = merge(baseTheme, themeOverrides);
 
-  console.log("theme", currentTheme);
   return (
     <StyledThemeProvider theme={currentTheme}>{children}</StyledThemeProvider>
   );

@@ -42,15 +42,11 @@ const getNumCols = (windowWidth: number) => {
   const nextBreakpoint =
     checkBreakpoint < 0 ? breakpointMap.length : checkBreakpoint;
 
-  console.log("nextBreakpoint", nextBreakpoint);
   const currentBreakpoint = breakpointMap[nextBreakpoint - 1];
 
   if (!currentBreakpoint) return 1;
 
-  console.log("current Breakpoint", currentBreakpoint);
-
   const columns = MASONRY_DEFAULT_BREAKPOINTS[currentBreakpoint[0]];
-  console.log("columns", columns);
 
   return columns;
 };
@@ -66,7 +62,6 @@ const MasonryGrid = ({ children, gap }: PropsWithChildren<Props>) => {
     const columns = [];
 
     const numCols = getNumCols(windowSize.width);
-    console.log("numCols", numCols, windowSize.width);
     // const numItems = React.Children.count(children);
 
     React.Children.forEach(children, (child, index) => {

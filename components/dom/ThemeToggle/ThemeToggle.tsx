@@ -18,7 +18,6 @@ const ThemeToggle = (props: Props) => {
     const setLightMode = () => setTheme("light");
 
     const setMode = (e) => {
-      console.log("device theme detected", theme);
       if (e.matches) {
         setDarkMode();
       } else {
