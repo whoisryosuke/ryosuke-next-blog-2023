@@ -70,4 +70,8 @@ export function Link({
   );
 }
 
+Link.defaultProps = {
+  lineHeight: 5,
+};
+
 export default Link;
