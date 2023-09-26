@@ -59,12 +59,12 @@ export const getStaticProps = async ({ params }) => {
 
   let postFilePath;
   // Check if it exists
-  const fullPath = path.join(POSTS_PATH, `${slugPath}.mdx`);
+  const fullPath = path.join(POSTS_PATH, `blog/${slugPath}.mdx`);
   if (fs.existsSync(fullPath)) {
     postFilePath = fullPath;
   }
   // Try the `/index` version instead
-  const indexPath = path.join(POSTS_PATH, `${slugPath}/index.mdx`);
+  const indexPath = path.join(POSTS_PATH, `blog/${slugPath}/index.mdx`);
   if (fs.existsSync(indexPath)) {
     postFilePath = indexPath;
   }
@@ -116,11 +116,14 @@ export const getStaticPaths = async () => {
       // Since some MDX files are `index.mdx` and the folder is the actual title
       const slug = path
         .replace(/^\/|\/$/g, "") // Remove before/after trailing slashes
+        .replace("blog/", "") // Trim off index
         .replace("/index", "") // Trim off index
         .split("/"); // Create an array format - required for getStaticProps above
 
       return { params: { slug } };
     });
+
+  console.log("blog paths", paths[0].params.slug);
 
   return {
     paths,
