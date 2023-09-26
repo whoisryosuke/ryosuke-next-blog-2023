@@ -5,19 +5,21 @@ import Box, { BoxProps } from "../Box/Box";
 type Props = BoxProps & {
   gap?: React.CSSProperties["margin"];
   vertical?: boolean;
+  wrap?: boolean;
   style?: CSSProperties;
 };
 
 const Stack = ({
   gap = "8px",
   vertical = false,
+  wrap = false,
   style,
   children,
   ...props
 }: PropsWithChildren<Props>) => {
   // The CSS for gap between elements
   const gapStyle = {
-    marginBottom: { mobile: gap, tablet: vertical ? gap : 0 },
+    marginBottom: { mobile: gap, tablet: vertical || wrap ? gap : 0 },
     marginRight: { mobile: 0, tablet: !vertical ? gap : 0 },
   };
 
@@ -28,10 +30,6 @@ const Stack = ({
       const showGapStyle =
         children && index < childArray.length - 1 ? gapStyle : {};
       return React.cloneElement(child, {
-        // @TODO: Change to responsive margin Styled System props
-        // and default to marginBottom for mobile always
-        //@ts-ignore
-        // style: { ...showGapStyle, ...child.props.style },
         ...showGapStyle,
       });
     }
@@ -42,6 +40,7 @@ const Stack = ({
     <Box
       display="flex"
       flexDirection={{ mobile: "column", tablet: vertical ? "column" : "row" }}
+      flexWrap={wrap ? "wrap" : "nowrap"}
       style={style}
       {...props}
     >

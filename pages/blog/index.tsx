@@ -7,6 +7,7 @@ import Text from "@components/dom/Text/Text";
 import Link from "@components/dom/Link/Link";
 import List from "@components/dom/List/List";
 import Box from "@components/dom/Box/Box";
+import Stack from "@components/dom/Stack/Stack";
 
 type BlogPostData = {
   frontmatter: {
@@ -30,11 +31,9 @@ const BlogArchivePage = ({ posts }: Props) => {
     return post2Date.getTime() - post1Date.getTime();
   });
 
-  console.log(sortedPosts);
-
   return (
     <BlogTransition>
-      <List>
+      <Stack wrap>
         {sortedPosts.map((post) => (
           <Box as="li" key={post.filePath}>
             <Link
@@ -48,7 +47,7 @@ const BlogArchivePage = ({ posts }: Props) => {
             </Link>
           </Box>
         ))}
-      </List>
+      </Stack>
     </BlogTransition>
   );
 };
