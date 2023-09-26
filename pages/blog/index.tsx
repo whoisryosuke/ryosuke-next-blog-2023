@@ -3,20 +3,9 @@ import { POSTS_PATH, postFilePaths } from "@utils/mdxUtils";
 import React from "react";
 import fs from "fs";
 import matter from "gray-matter";
-import Text from "@components/dom/Text/Text";
-import Link from "@components/dom/Link/Link";
-import List from "@components/dom/List/List";
-import Box from "@components/dom/Box/Box";
 import Stack from "@components/dom/Stack/Stack";
-
-type BlogPostData = {
-  frontmatter: {
-    title: string;
-    date: string;
-  };
-  filePath: string;
-  content: any;
-};
+import { H2, H3, H4 } from "@components/dom/Headline/Headers";
+import BlogCard, { BlogPostData } from "@components/dom/BlogCard/BlogCard";
 
 type Props = {
   posts: BlogPostData[];
@@ -31,23 +20,41 @@ const BlogArchivePage = ({ posts }: Props) => {
     return post2Date.getTime() - post1Date.getTime();
   });
 
+  const postsByYear = Object.entries(
+    sortedPosts.reduce((archive, post) => {
+      const postYear = new Date(
+        Date.parse(post.frontmatter.date)
+      ).getFullYear();
+
+      if (!Array.isArray(archive[postYear])) {
+        archive[postYear] = [];
+      }
+
+      archive[postYear] = [...archive[postYear], post];
+
+      return archive;
+    }, {})
+  );
+
   return (
     <BlogTransition>
-      <Stack wrap>
-        {sortedPosts.map((post) => (
-          <Box as="li" key={post.filePath}>
-            <Link
-              href={`${post.filePath
-                .replace(POSTS_PATH, "")
-                .replace(/\.mdx?$/, "")
-                .replace("/index", "")}`}
-              lineHeight={5}
-            >
-              {post.frontmatter.title}
-            </Link>
-          </Box>
-        ))}
-      </Stack>
+      {postsByYear.reverse().map(([year, posts]) => (
+        <>
+          <H2>{year}</H2>
+          <Stack
+            vertical
+            gap="0px"
+            position="relative"
+            ml={-8}
+            left={0}
+            width="calc(100% + 128px)"
+          >
+            {posts.map((post) => (
+              <BlogCard key={post.filePath} post={post} />
+            ))}
+          </Stack>
+        </>
+      ))}
     </BlogTransition>
   );
 };

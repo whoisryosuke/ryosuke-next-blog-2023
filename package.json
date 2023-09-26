@@ -16,6 +16,7 @@
     "@react-three/drei": "^9.80.1",
     "@react-three/fiber": "^8.13.6",
     "@react-three/postprocessing": "^2.15.0",
+    "date-fns": "^2.30.0",
     "framer-motion": "^10.16.0",
     "gray-matter": "^4.0.2",
     "lodash.merge": "^4.6.2",
