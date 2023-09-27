@@ -19,13 +19,13 @@ import {
 import Input from "../Input/Input";
 import { useAppStore } from "@store/app";
 import PageWrapper from "../PageWrapper/PageWrapper";
+import { useBlogStore } from "@store/blog";
 
-type Props = {
-  title: string;
-};
+type Props = {};
 
-const BlogPage = ({ children, title, ...props }: PropsWithChildren<Props>) => {
+const BlogPage = ({ children, ...props }: PropsWithChildren<Props>) => {
   const { customizations } = useAppStore();
+  const { title, tableOfContents } = useBlogStore();
 
   const customTheme = customizations.theme.highContrastBlog
     ? {
@@ -78,7 +78,7 @@ const BlogPage = ({ children, title, ...props }: PropsWithChildren<Props>) => {
                 />
                 <Box flex={1} mr={3}>
                   <Input
-                    value="The Blog Post"
+                    value={title}
                     icon={<BiBook />}
                     style={{ textAlign: "center" }}
                     disabled
@@ -103,29 +103,25 @@ const BlogPage = ({ children, title, ...props }: PropsWithChildren<Props>) => {
               </Glass>
             </ThemeProvider>
           </Box>
-          <Box minWidth="250px" opacity={{ mobile: 0, tablet: 1 }}>
-            <Glass id="toc" blur={3} overflow="hidden" p={4}>
-              <Headline id="test" fontSize={2}>
-                Table of Contents
-              </Headline>
-              <Button
-                as="a"
-                href="#test"
-                // icon={<BiTime />}
-                justifyContent="flex-start"
-              >
-                Heading 1
-              </Button>
-              <Button
-                as="a"
-                href="#test"
-                // icon={<BiTime />}
-                justifyContent="flex-start"
-              >
-                Heading 2
-              </Button>
-            </Glass>
-          </Box>
+          {tableOfContents.length > 0 && (
+            <Box minWidth="250px" opacity={{ mobile: 0, tablet: 1 }}>
+              <Glass id="toc" blur={3} overflow="hidden" p={4}>
+                <Headline id="test" fontSize={2}>
+                  Table of Contents
+                </Headline>
+                {tableOfContents.map((tocItem) => (
+                  <Button
+                    as="a"
+                    href={`#${tocItem.slug}`}
+                    // icon={<BiTime />}
+                    justifyContent="flex-start"
+                  >
+                    {tocItem.title}
+                  </Button>
+                ))}
+              </Glass>
+            </Box>
+          )}
         </Box>
       </Box>
     </PageWrapper>

@@ -2,22 +2,16 @@ import fs from "fs";
 import matter from "gray-matter";
 import { MDXRemote } from "next-mdx-remote";
 import { serialize } from "next-mdx-remote/serialize";
-import dynamic from "next/dynamic";
-import Head from "next/head";
-import Link from "next/link";
 import path from "path";
-import CustomLink from "@components/CustomLink";
-import Page from "@components/dom/Page/Page";
 import { postFilePaths, POSTS_PATH } from "@utils/mdxUtils";
 import { visit } from "unist-util-visit";
 import remarkPrism from "remark-prism";
 import "prismjs/themes/prism-tomorrow.css";
-import React from "react";
-import BlogPage from "@components/dom/BlogPage/BlogPage";
+import React, { useEffect } from "react";
 import { components } from "@components/dom/MDXComponents/MDXComponents";
-import WindowHeader from "@components/dom/WindowHeader/WindowHeader";
 import BlogTransition from "@components/dom/BlogTransition/BlogTransition";
 import useBlogPostRead from "features/achievements/hooks/useBlogPostRead";
+import { useBlogStore } from "@store/blog";
 
 // Adds the blog post slug to the image URL
 // We do this because NextJS pages don't include the blog post slug
@@ -36,13 +30,19 @@ function transformImgSrc({ slug }) {
 }
 
 export default function PostPage({ source, frontMatter, slug }) {
+  const { setTitle } = useBlogStore();
+
+  useEffect(() => {
+    setTitle(frontMatter.title);
+  }, [frontMatter.title]);
+
   useBlogPostRead();
 
-  const meta: MetaDataProps = {
-    title: frontMatter.title,
-    image: frontMatter.cover_image,
-    url: slug,
-  };
+  // const meta: MetaDataProps = {
+  //   title: frontMatter.title,
+  //   image: frontMatter.cover_image,
+  //   url: slug,
+  // };
   return (
     <BlogTransition>
       <MDXRemote {...source} components={components} />
