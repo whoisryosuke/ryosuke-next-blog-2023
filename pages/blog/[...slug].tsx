@@ -9,9 +9,11 @@ import remarkPrism from "remark-prism";
 import "prismjs/themes/prism-tomorrow.css";
 import React, { useEffect } from "react";
 import { components } from "@components/dom/MDXComponents/MDXComponents";
+import { MetaTagsProps } from "@components/dom/MetaTags/MetaTags";
 import BlogTransition from "@components/dom/BlogTransition/BlogTransition";
 import useBlogPostRead from "features/achievements/hooks/useBlogPostRead";
 import { useBlogStore } from "@store/blog";
+import Head from "@components/dom/Head/Head";
 
 // Adds the blog post slug to the image URL
 // We do this because NextJS pages don't include the blog post slug
@@ -38,13 +40,14 @@ export default function PostPage({ source, frontMatter, slug }) {
 
   useBlogPostRead();
 
-  // const meta: MetaDataProps = {
-  //   title: frontMatter.title,
-  //   image: frontMatter.cover_image,
-  //   url: slug,
-  // };
+  const meta: MetaTagsProps = {
+    title: frontMatter.title,
+    image: frontMatter.cover_image,
+    url: slug,
+  };
   return (
     <BlogTransition>
+      <Head title={frontMatter.title} meta={meta} />
       <MDXRemote {...source} components={components} />
     </BlogTransition>
   );
@@ -122,8 +125,6 @@ export const getStaticPaths = async () => {
 
       return { params: { slug } };
     });
-
-  console.log("blog paths", paths[0].params.slug);
 
   return {
     paths,

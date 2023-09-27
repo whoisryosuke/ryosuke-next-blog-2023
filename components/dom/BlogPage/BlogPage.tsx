@@ -20,6 +20,7 @@ import Input from "../Input/Input";
 import { useAppStore } from "@store/app";
 import PageWrapper from "../PageWrapper/PageWrapper";
 import { useBlogStore } from "@store/blog";
+import Head from "../Head/Head";
 
 type Props = {};
 
