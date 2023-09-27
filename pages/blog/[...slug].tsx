@@ -23,7 +23,7 @@ function transformImgSrc({ slug }) {
 
       if (image) {
         const fileName = image.url.replace("./", "");
-        image.url = `/${slug}/${fileName}`;
+        image.url = `/blog/${slug}/${fileName}`;
       }
     });
   };
