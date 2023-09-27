@@ -43,7 +43,7 @@ const BlogPage = ({ children, ...props }: PropsWithChildren<Props>) => {
         // maxWidth="1200px"
         margin="auto"
         pt={{ mobile: 6, tablet: 8 }}
-        mb={{ mobile: 8, tablet: 10 }}
+        // mb={{ mobile: 8, tablet: 10 }}
         flex={1}
         {...props}
       >

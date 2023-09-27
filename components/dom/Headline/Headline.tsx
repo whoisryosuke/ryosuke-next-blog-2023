@@ -1,9 +1,12 @@
 import React, { PropsWithChildren } from "react";
 import Text, { TextProps } from "../Text/Text";
+import { kebabCase } from "lodash";
 
-type Props = TextProps<HTMLHeadingElement> & {};
+type Props = TextProps<HTMLHeadingElement> & {
+  slug: boolean;
+};
 
-const Headline = ({ children, ...props }: PropsWithChildren<Props>) => {
+const Headline = ({ children, slug, ...props }: PropsWithChildren<Props>) => {
   return (
     <Text
       as="h1"
@@ -13,6 +16,7 @@ const Headline = ({ children, ...props }: PropsWithChildren<Props>) => {
       lineHeight={6}
       display="block"
       letterSpacing={1}
+      id={slug && kebabCase(children)}
       {...props}
     >
       {children}

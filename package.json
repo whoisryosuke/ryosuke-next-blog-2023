@@ -19,6 +19,7 @@
     "date-fns": "^2.30.0",
     "framer-motion": "^10.16.0",
     "gray-matter": "^4.0.2",
+    "lodash": "^4.17.21",
     "lodash.merge": "^4.6.2",
     "maath": "^0.7.0",
     "next": "latest",

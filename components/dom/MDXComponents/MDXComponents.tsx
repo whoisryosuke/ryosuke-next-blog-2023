@@ -10,9 +10,14 @@ import Blockquote from "../Blockquote/Blockquote";
 import Stack from "../Stack/Stack";
 import Headline from "../Headline/Headline";
 import { H1, H2, H3, H4, H5, H6 } from "../Headline/Headers";
+import BlogHeadline from "../BlogHeadline/BlogHeadline";
 
 export const components = {
-  h1: (props) => <H1 {...props} />,
+  h1: (props) => (
+    <BlogHeadline title={props.children}>
+      <H1 slug {...props} />
+    </BlogHeadline>
+  ),
   h2: (props) => <H2 {...props} />,
   h3: (props) => <H3 {...props} />,
   h4: (props) => <H4 {...props} />,
