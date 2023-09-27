@@ -35,7 +35,7 @@ export const components = {
   ),
   a: (props) => <Link {...props} />,
   img: (props) => <Image {...props} />,
-  // // code: (props) => <CodeInline {...props} />,
+  // code: (props) => <CodeInline {...props} />,
   // // pre: (props) => <CodeBlock {...props} />,
   ul: (props) => <List {...props} />,
   li: (props) => <ListItem {...props} />,

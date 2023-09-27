@@ -10,6 +10,8 @@ export const primaryColors = {
   glass: "rgba(255,255,255,0.05)",
   glassSidebar: "rgba(0,0,0,0.2)",
   glassOverlay: "rgba(0,0,0,0.5)",
+  // Higher contrast dark glass
+  glassContrast: "rgba(0,0,0,0.75)",
   darkGlass: {
     panel: "rgba(31,31,31,0.6)",
     input: "rgba(0,0,0,0.25)",

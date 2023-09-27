@@ -5,9 +5,7 @@ import Text from "@components/dom/Text/Text";
 const StyledBlockquote = styled("blockquote")`
   background-color: ${({ theme }) => theme.colors.glassOverlay};
   border-radius: ${({ theme }) => theme.radius[3]};
-  padding: ${({ theme }) => theme.space[3]};
-  padding-left: ${({ theme }) => theme.space[5]};
-  padding-right: ${({ theme }) => theme.space[5]};
+  padding: ${({ theme }) => theme.space[5]};
   border: 0;
   margin: 0;
   margin-bottom: ${({ theme }) => theme.space[4]};

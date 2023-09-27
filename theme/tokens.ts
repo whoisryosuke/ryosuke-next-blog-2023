@@ -39,8 +39,8 @@ export const MEDIA_QUERIES: MediaQueries = Object.entries(BREAKPOINTS).reduce(
 
 export const FONTS = {
   body: `'Inter', Helvetiva Neue, Helvetica, Arial, sans-serif`,
-  heading: `'Days One', Montserrat, Helvetica, Arial, sans-serif`,
-  monospace: "Menlo, monospace",
+  heading: `'Inter', Montserrat, Helvetica, Arial, sans-serif`,
+  monospace: "'Roboto Mono', Menlo, monospace",
 };
 
 export const FONT_WEIGHTS = {
