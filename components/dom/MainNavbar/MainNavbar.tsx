@@ -125,18 +125,9 @@ const MainNavbar = ({ ...props }: MenuProps) => {
           />
           <Button
             as={Link}
-            href="/blog/2023/exporting-geometry-nodes-from-blender"
+            href="/blog"
             title="Blog"
             icon={<BiBook />}
-            onlyIcon
-            marginRight={marginRight}
-            marginBottom={marginBottom}
-          />
-          <Button
-            as={Link}
-            href="/blog/2023/3d-midi-piano-using-rust-and-bevy/"
-            title="Blog"
-            icon={<BiColor />}
             onlyIcon
             marginRight={marginRight}
             marginBottom={marginBottom}

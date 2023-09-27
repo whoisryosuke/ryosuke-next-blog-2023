@@ -36,6 +36,7 @@ export type BlogPostData = {
     cover_image: string;
   };
   filePath: string;
+  slug: string;
   content: any;
 };
 
@@ -44,13 +45,9 @@ type BlogCardProps = {
 };
 
 const BlogCard = ({ post, ...props }: BlogCardProps) => {
-  const slug = post.filePath
-    .replace(POSTS_PATH, "")
-    .replace(/\.mdx?$/, "")
-    .replace("/index", "");
   return (
     <StyledBlogCard px={8} py={4} {...props}>
-      <Link href={`${slug}`} style={{ textDecoration: "none" }}>
+      <Link href={`${post.slug}`} style={{ textDecoration: "none" }}>
         <Box display="flex" justifyContent="space-between" mb={3}>
           <H4 mt={0} mb={0}>
             {post.frontmatter.title}

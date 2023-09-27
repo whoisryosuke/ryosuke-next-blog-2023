@@ -10,6 +10,7 @@ interface BlogState {
   setTitle: (title: string) => void;
   tableOfContents: TOCItem[];
   setTableOfContents: (toc: TOCItem[]) => void;
+  resetTableOfContents: () => void;
   addTOCItem: (toc: TOCItem) => void;
 }
 
@@ -19,6 +20,7 @@ export const useBlogStore = create<BlogState>()((set) => ({
   tableOfContents: [],
   setTableOfContents: (tableOfContents) =>
     set((state) => ({ tableOfContents })),
+  resetTableOfContents: () => set((state) => ({ tableOfContents: [] })),
   addTOCItem: (tocItem) =>
     set((state) => ({ tableOfContents: [...state.tableOfContents, tocItem] })),
 }));

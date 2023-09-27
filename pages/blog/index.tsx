@@ -1,17 +1,25 @@
 import BlogTransition from "@components/dom/BlogTransition/BlogTransition";
 import { POSTS_PATH, postFilePaths } from "@utils/mdxUtils";
-import React from "react";
+import React, { useEffect } from "react";
 import fs from "fs";
 import matter from "gray-matter";
 import Stack from "@components/dom/Stack/Stack";
 import { H2, H3, H4 } from "@components/dom/Headline/Headers";
 import BlogCard, { BlogPostData } from "@components/dom/BlogCard/BlogCard";
+import { useBlogStore } from "@store/blog";
 
 type Props = {
   posts: BlogPostData[];
 };
 
 const BlogArchivePage = ({ posts }: Props) => {
+  const { setTitle, resetTableOfContents } = useBlogStore();
+
+  useEffect(() => {
+    setTitle("Blog Archive");
+    resetTableOfContents();
+  }, []);
+
   // Sort posts by latest to oldest
   const sortedPosts = posts.sort((post1, post2) => {
     const post1Date = new Date(post1.frontmatter.date);
@@ -50,7 +58,7 @@ const BlogArchivePage = ({ posts }: Props) => {
             width="calc(100% + 128px)"
           >
             {posts.map((post) => (
-              <BlogCard key={post.filePath} post={post} />
+              <BlogCard key={post.frontmatter.slug} post={post} />
             ))}
           </Stack>
         </>
@@ -66,10 +74,17 @@ export function getStaticProps() {
       const source = fs.readFileSync(filePath);
       const { content, data } = matter(source);
 
+      // Generate a slug
+      const slug = filePath
+        .replace(POSTS_PATH, "")
+        .replace(/\.mdx?$/, "")
+        .replace("/index", "");
+
       return {
         content,
         frontmatter: data,
         filePath,
+        slug,
       };
     });
 
