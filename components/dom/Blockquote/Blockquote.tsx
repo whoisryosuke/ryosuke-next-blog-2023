@@ -18,11 +18,7 @@ export function Blockquote({
   children,
   ...props
 }: PropsWithChildren<BlockquoteProps>) {
-  return (
-    <StyledBlockquote {...props}>
-      <Text>{children}</Text>
-    </StyledBlockquote>
-  );
+  return <StyledBlockquote {...props}>{children}</StyledBlockquote>;
 }
 
 export default Blockquote;
