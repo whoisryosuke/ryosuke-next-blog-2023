@@ -20,6 +20,7 @@ import { useAppStore } from "@store/app";
 import Link from "next/link";
 import { useWindowSize } from "usehooks-ts";
 import Box from "../Box/Box";
+import { useRouter } from "next/router";
 
 type MenuOrientations = "left" | "bottom";
 
@@ -83,8 +84,9 @@ const StyledMenu = styled(Glass)<MenuProps>`
 
 const MainNavbar = ({ ...props }: MenuProps) => {
   const { ref, focusKey, focusSelf } = useFocusable();
-  const { openModal } = useAppStore();
+  const { openModal, modalName, customizations } = useAppStore();
   const windowSize = useWindowSize();
+  const router = useRouter();
 
   const orientation: MenuOrientations =
     windowSize.width < 800 ? "bottom" : "left";
@@ -94,6 +96,11 @@ const MainNavbar = ({ ...props }: MenuProps) => {
   const handleCustomizationModal = () => {
     openModal("customization");
   };
+
+  const isCustomizalModalOpen =
+    modalName === "customization" && customizations.theme.modal;
+
+  console.log("router path", router.asPath, router.asPath.split("/")[1]);
 
   useEffect(() => {
     focusSelf();
@@ -120,6 +127,7 @@ const MainNavbar = ({ ...props }: MenuProps) => {
             title="Home"
             icon={<BiHomeAlt />}
             onlyIcon
+            solid={router.asPath === "/"}
             marginRight={marginRight}
             marginBottom={marginBottom}
           />
@@ -129,6 +137,7 @@ const MainNavbar = ({ ...props }: MenuProps) => {
             title="Blog"
             icon={<BiBook />}
             onlyIcon
+            solid={router.asPath.includes("blog")}
             marginRight={marginRight}
             marginBottom={marginBottom}
           />
@@ -138,6 +147,7 @@ const MainNavbar = ({ ...props }: MenuProps) => {
             title="Work"
             icon={<BiGhost />}
             onlyIcon
+            solid={router.asPath.includes("work")}
             marginRight={marginRight}
             marginBottom={marginBottom}
           />
@@ -147,6 +157,7 @@ const MainNavbar = ({ ...props }: MenuProps) => {
             title="Playlist"
             icon={<BiHeadphone />}
             onlyIcon
+            solid={router.asPath.includes("playlist")}
             marginRight={marginRight}
             marginBottom={marginBottom}
           />
@@ -154,6 +165,7 @@ const MainNavbar = ({ ...props }: MenuProps) => {
             title="Customize"
             icon={<BiPalette />}
             onlyIcon
+            solid={isCustomizalModalOpen}
             onClick={handleCustomizationModal}
           />
         </Box>
