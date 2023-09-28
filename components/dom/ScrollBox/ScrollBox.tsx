@@ -1,4 +1,4 @@
-import React, { PropsWithChildren } from "react";
+import React, { PropsWithChildren, forwardRef, useEffect, useRef } from "react";
 import { styled } from "styled-components";
 import Box, { BoxProps } from "../Box/Box";
 import { Theme } from "@theme/index";
@@ -38,8 +38,14 @@ const StyledScrollBox = styled(Box)<Props>`
   }
 `;
 
-const ScrollBox = ({ children, ...props }: PropsWithChildren<Props>) => {
-  return <StyledScrollBox {...props}>{children}</StyledScrollBox>;
-};
+const ScrollBox = forwardRef<PropsWithChildren<Props>, HTMLDivElement>(
+  ({ children, ...props }, ref) => {
+    return (
+      <StyledScrollBox ref={ref} {...props}>
+        {children}
+      </StyledScrollBox>
+    );
+  }
+);
 
 export default ScrollBox;

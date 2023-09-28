@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, useEffect } from "react";
+import React, { PropsWithChildren, useEffect, useRef } from "react";
 import Glass from "@components/dom/Glass/Glass";
 import Box from "@components/dom/Box/Box";
 import Stack from "@components/dom/Stack/Stack";
@@ -21,12 +21,20 @@ import { useAppStore } from "@store/app";
 import PageWrapper from "../PageWrapper/PageWrapper";
 import { useBlogStore } from "@store/blog";
 import Head from "../Head/Head";
+import { useRouter } from "next/router";
 
 type Props = {};
 
 const BlogPage = ({ children, ...props }: PropsWithChildren<Props>) => {
+  const router = useRouter();
   const { customizations } = useAppStore();
   const { title, tableOfContents } = useBlogStore();
+  const boxRef = useRef(null);
+
+  useEffect(() => {
+    console.log("resetting scroll position");
+    boxRef?.current?.scrollTo(0, 0);
+  }, [router.pathname]);
 
   const customTheme = customizations.theme.highContrastBlog
     ? {
@@ -93,6 +101,7 @@ const BlogPage = ({ children, ...props }: PropsWithChildren<Props>) => {
             <ThemeProvider theme={customTheme}>
               <Glass id="blog" blur={4} borderRadius={3} overflow="hidden">
                 <ScrollBox
+                  ref={boxRef}
                   overflowY="auto"
                   flex={1}
                   height="80vh"
@@ -104,25 +113,26 @@ const BlogPage = ({ children, ...props }: PropsWithChildren<Props>) => {
               </Glass>
             </ThemeProvider>
           </Box>
-          {tableOfContents.length > 0 && (
-            <Box minWidth="250px" opacity={{ mobile: 0, tablet: 1 }}>
-              <Glass id="toc" blur={3} overflow="hidden" p={4}>
-                <Headline id="test" fontSize={2}>
-                  Table of Contents
-                </Headline>
-                {tableOfContents.map((tocItem) => (
-                  <Button
-                    as="a"
-                    href={`#${tocItem.slug}`}
-                    // icon={<BiTime />}
-                    justifyContent="flex-start"
-                  >
-                    {tocItem.title}
-                  </Button>
-                ))}
-              </Glass>
-            </Box>
-          )}
+          <Box
+            minWidth="250px"
+            opacity={tableOfContents.length > 0 ? { mobile: 0, tablet: 1 } : 0}
+          >
+            <Glass id="toc" blur={3} overflow="hidden" p={4}>
+              <Headline id="test" fontSize={2}>
+                Table of Contents
+              </Headline>
+              {tableOfContents.map((tocItem) => (
+                <Button
+                  as="a"
+                  href={`#${tocItem.slug}`}
+                  // icon={<BiTime />}
+                  justifyContent="flex-start"
+                >
+                  {tocItem.title}
+                </Button>
+              ))}
+            </Glass>
+          </Box>
         </Box>
       </Box>
     </PageWrapper>
