@@ -10,7 +10,8 @@ import Glass from "../Glass/Glass";
 import styled from "styled-components";
 
 const StyledBlogCard = styled(Box)`
-  &:hover {
+  &:hover,
+  &:focus-within {
     background: ${({ theme }) => theme.colors.glassSidebar};
   }
 `;
@@ -47,7 +48,10 @@ type BlogCardProps = {
 const BlogCard = ({ post, ...props }: BlogCardProps) => {
   return (
     <StyledBlogCard px={8} py={4} {...props}>
-      <Link href={`${post.slug}`} style={{ textDecoration: "none" }}>
+      <Link
+        href={`${post.slug}`}
+        style={{ textDecoration: "none", outline: 0 }}
+      >
         <Box display="flex" justifyContent="space-between" mb={3}>
           <H4 mt={0} mb={0}>
             {post.frontmatter.title}

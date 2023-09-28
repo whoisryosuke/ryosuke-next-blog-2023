@@ -95,7 +95,14 @@ const BlogPage = ({ children, ...props }: PropsWithChildren<Props>) => {
                 </Box>
                 <Button solid onlyIcon icon={<BiShare />} mr={3} />
                 <Button solid onlyIcon icon={<BiFont />} mr={3} />
-                <Button solid onlyIcon icon={<BiFolder />} mr={3} />
+                <Button
+                  as="a"
+                  href="/blog"
+                  solid
+                  onlyIcon
+                  icon={<BiFolder />}
+                  mr={3}
+                />
               </Box>
             </Glass>
             <ThemeProvider theme={customTheme}>
