@@ -93,7 +93,7 @@ const CustomizationPanel = ({ open, ...props }: Props) => {
           </Box>
           <Box id="content" py={4} px={5} flex={1}>
             <WindowHeader
-              title="Playlists"
+              title={`${PANELS[currentPanel].title} settings`}
               // subtitle="420 songs"
               // icon={<BiDotsHorizontal />}
             />
