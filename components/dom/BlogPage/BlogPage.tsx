@@ -45,6 +45,13 @@ const BlogPage = ({ children, ...props }: PropsWithChildren<Props>) => {
       }
     : {};
 
+  const handleBackButton = () => {
+    history.back();
+  };
+  const handleForwardButton = () => {
+    history.forward();
+  };
+
   return (
     <PageWrapper>
       <Box
@@ -70,20 +77,20 @@ const BlogPage = ({ children, ...props }: PropsWithChildren<Props>) => {
           >
             <Glass p={4} borderRadius={"round"} mb={4}>
               <Box display="flex">
-                <Button solid onlyIcon icon={<BiSidebar />} mr={3} />
+                {/* <Button solid onlyIcon icon={<BiSidebar />} mr={3} /> */}
                 <Button
                   solid
                   onlyIcon
                   icon={<BiArrowToLeft />}
-                  disabled
                   mr={3}
+                  onClick={handleBackButton}
                 />
                 <Button
                   solid
                   onlyIcon
                   icon={<BiArrowToRight />}
-                  disabled
                   mr={3}
+                  onClick={handleForwardButton}
                 />
                 <Box flex={1} mr={3}>
                   <Input
