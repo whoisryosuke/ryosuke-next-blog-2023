@@ -85,6 +85,7 @@ const MasonryGrid = ({ children, gap }: PropsWithChildren<Props>) => {
           <Stack
             key={index}
             vertical
+            wrapper
             display="block"
             flex={1}
             style={{ perspective: "500px" }}
