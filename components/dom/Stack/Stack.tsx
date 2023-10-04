@@ -26,7 +26,6 @@ const Stack = ({
     marginBottom: { mobile: gap, tablet: vertical || wrap ? gap : 0 },
     marginRight: { mobile: 0, tablet: !vertical ? gap : 0 },
   };
-  console.log("gap", gapStyle);
 
   // Loop through children and apply gap (unless it's the last child)
   const childArray = React.Children.toArray(children);
