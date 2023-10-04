@@ -28,7 +28,7 @@ type Props = {};
 
 const BlogPage = ({ children, ...props }: PropsWithChildren<Props>) => {
   const router = useRouter();
-  const { customizations } = useAppStore();
+  const { openModal, modalName, customizations } = useAppStore();
   const { title, tableOfContents } = useBlogStore();
   const boxRef = useRef(null);
 
@@ -51,6 +51,18 @@ const BlogPage = ({ children, ...props }: PropsWithChildren<Props>) => {
   };
   const handleForwardButton = () => {
     history.forward();
+  };
+
+  const handleCustomizationModal = () => {
+    openModal("customization");
+  };
+
+  const handleShare = () => {
+    navigator.share({
+      url: "https://whoisryosuke.com",
+      title: "whoisryosuke",
+      text: "The personal blog and portfolio of Ryosuke",
+    });
   };
 
   return (
@@ -101,8 +113,20 @@ const BlogPage = ({ children, ...props }: PropsWithChildren<Props>) => {
                     disabled
                   />
                 </Box>
-                <Button solid onlyIcon icon={<BiShare />} mr={3} />
-                <Button solid onlyIcon icon={<BiFont />} mr={3} />
+                <Button
+                  solid
+                  onlyIcon
+                  icon={<BiShare />}
+                  mr={3}
+                  onClick={handleShare}
+                />
+                <Button
+                  solid
+                  onlyIcon
+                  icon={<BiFont />}
+                  mr={3}
+                  onClick={handleCustomizationModal}
+                />
                 <Button
                   as={Link}
                   href="/blog"
