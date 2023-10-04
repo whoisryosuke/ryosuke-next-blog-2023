@@ -2,6 +2,7 @@ import React, { PropsWithChildren } from "react";
 import styled from "styled-components";
 import DialogClose from "./DialogClose";
 import { motion } from "framer-motion";
+import { LayoutProps, layout } from "styled-system";
 
 const StyledDialog = styled("dialog")`
   position: absolute;
@@ -9,6 +10,9 @@ const StyledDialog = styled("dialog")`
   background: transparent;
   border: 0;
   display: block;
+  padding: 0;
+
+  ${layout}
 `;
 const DialogContent = styled("div")`
   z-index: 700;
@@ -17,7 +21,7 @@ const DialogContent = styled("div")`
   }
 `;
 
-type Props = {
+type Props = LayoutProps & {
   onClose: () => void;
 };
 

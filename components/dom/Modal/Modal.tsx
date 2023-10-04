@@ -16,12 +16,14 @@ const MODAL_THEME = {
 type Props = {
   isOpen: boolean;
   onClose: () => void;
+  width: any;
 };
 
 const Modal = ({
   children,
   isOpen,
   onClose,
+  width,
   ...props
 }: PropsWithChildren<Props>) => {
   const rootRef = useRef<Element | null>(null);
@@ -54,7 +56,9 @@ const Modal = ({
         <ThemeProvider theme={MODAL_THEME}>
           <ModalContainer isOpen={isOpen} {...props}>
             <ModalCurtain onClose={onClose} />
-            <Dialog onClose={onClose}>{children}</Dialog>
+            <Dialog width={width} onClose={onClose}>
+              {children}
+            </Dialog>
           </ModalContainer>
         </ThemeProvider>,
         rootRef.current

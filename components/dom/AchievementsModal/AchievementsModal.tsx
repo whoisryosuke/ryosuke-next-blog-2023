@@ -50,17 +50,22 @@ const AchievementsModal = ({ open, ...props }: Props) => {
   const categoryNumber = Object.keys(ACHIEVEMENT_LIST[category]).length;
 
   return (
-    <Modal isOpen={open} onClose={onClose} {...props}>
-      <Glass width="70vw" modal>
+    <Modal isOpen={open} onClose={onClose} width="100%" {...props}>
+      <Glass
+        width={{ mobile: "100%", computer: "80%", widescreen: "50vw" }}
+        modal
+        margin="auto"
+      >
         <Stack>
           <Box
             id="sidebar"
-            width="250px"
+            width={{ mobile: "100%", tablet: "250px" }}
             bg="rgba(0,0,0,0.2)"
             p={4}
             m={"1px"}
             borderTopLeftRadius={18}
-            borderBottomLeftRadius={18}
+            borderBottomLeftRadius={{ mobile: 0, tablet: 18 }}
+            borderTopRightRadius={{ mobile: 18, tablet: 0 }}
           >
             <WindowHeader
               title="Achievements"

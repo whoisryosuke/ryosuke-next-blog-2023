@@ -8,7 +8,7 @@ export const BREAKPOINTS_RAW = {
   tablet: 600,
   computer: 992,
   desktop: 1200,
-  widescreen: 1920,
+  widescreen: 1600,
 };
 
 export const BREAKPOINTS = Object.entries(BREAKPOINTS_RAW).reduce(

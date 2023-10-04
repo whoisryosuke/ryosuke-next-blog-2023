@@ -3,7 +3,7 @@ import React from "react";
 import Text from "../Text/Text";
 import Box from "../Box/Box";
 import ContentListItem from "../ContentListItem/ContentListItem";
-import { H3 } from "../Headline/Headers";
+import { H3, H4 } from "../Headline/Headers";
 import { TOAST_ICONS } from "../Toasts/icons";
 import { BiLock } from "react-icons/bi";
 
@@ -33,9 +33,9 @@ const AchievementItem = ({ key, achievement, isAchieved }: Props) => {
           <Icon style={{ width: "36px", height: "36px" }} />
         </Box>
         <Box ml={5}>
-          <H3 m={0} mb={3}>
+          <H4 m={0} mb={3}>
             {achievement.title}
-          </H3>
+          </H4>
           <Text>{achievement.message}</Text>
         </Box>
       </Box>
