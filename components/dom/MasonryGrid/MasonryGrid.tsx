@@ -1,7 +1,7 @@
 import React, { PropsWithChildren } from "react";
 import { BREAKPOINTS_RAW } from "@theme/tokens";
 import Stack from "../Stack/Stack";
-import { BoxProps } from "../Box/Box";
+import Box, { BoxProps } from "../Box/Box";
 import { useWindowSize } from "usehooks-ts";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -98,7 +98,7 @@ const MasonryGrid = ({ children, gap }: PropsWithChildren<Props>) => {
     });
   };
 
-  return <>{renderChildren()}</>;
+  return <Box display="flex">{renderChildren()}</Box>;
 };
 
 MasonryGrid.defaultProps = {

@@ -29,6 +29,7 @@ import Grid from "@components/dom/Grid/Grid";
 import Image from "@components/dom/Image/Image";
 import MasonryGrid from "@components/dom/MasonryGrid/MasonryGrid";
 import WorkCard, { WorkCardProps } from "@components/dom/WorkCard/WorkCard";
+import WindowHeader from "@components/dom/WindowHeader/WindowHeader";
 
 const WORK_DATA: WorkCardProps[] = [
   {
@@ -105,7 +106,8 @@ export default function WorkPage() {
         blur={4}
         borderRadius={4}
       >
-        <ScrollBox display="flex" height={"80vh"}>
+        <ScrollBox display="flex" flexDirection="column" height={"80vh"}>
+          <WindowHeader title="Work" subtitle={`"What's not under NDA"`} />
           <MasonryGrid>
             {WORK_DATA.map((work) => (
               <WorkCard {...work} date={new Date(Date.parse(work.date))} />
