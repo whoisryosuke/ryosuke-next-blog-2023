@@ -2,6 +2,7 @@ import { ToastIconNames } from "@components/dom/Toasts/icons";
 import { create } from "zustand";
 
 export type ToastStatus = "show" | "hide";
+export type ToastTypes = "general" | "achievement";
 
 export type Toast = {
   content: {
@@ -12,6 +13,7 @@ export type Toast = {
   // Time toast was emitted
   time: number;
   status: ToastStatus;
+  type: ToastTypes;
 };
 
 interface ToastState {

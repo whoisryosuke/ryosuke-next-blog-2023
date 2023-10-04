@@ -2,6 +2,7 @@ import { useAppStore } from "@store/app";
 import React, { useEffect, useState } from "react";
 import { ACHIEVEMENT_LIST, AchievementId } from "../achievement-list";
 import { Toast, useToastStore } from "@store/toasts";
+import createAchievementToast from "../createAchievementToast";
 
 const useBlogPostRead = () => {
   const [loaded, setLoaded] = useState(false);
@@ -44,14 +45,10 @@ const useBlogPostRead = () => {
         blogReadAchievement(key);
 
         // Send out a notification toast about it
-        const toast: Toast = {
-          content: {
-            ...ACHIEVEMENT_LIST.blog[key],
-            icon: "",
-          },
-          time: new Date().getTime(),
-          status: "show",
-        };
+        const toast = createAchievementToast({
+          ...ACHIEVEMENT_LIST.blog[key],
+          icon: "",
+        });
         addToast(toast);
       }
 

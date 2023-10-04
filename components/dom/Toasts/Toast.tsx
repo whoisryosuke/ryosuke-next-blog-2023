@@ -6,15 +6,31 @@ import Text from "../Text/Text";
 import { Toast as ToastData } from "@store/toasts";
 import Stack from "../Stack/Stack";
 import { TOAST_ICONS } from "./icons";
+import { useAppStore } from "@store/app";
+import { noop } from "@utils/handlers";
 
 type Props = {
   toast: ToastData;
 };
 
 const Toast = ({ toast }: Props) => {
+  const { openModal, modalName, customizations } = useAppStore();
+
   const Icon = toast.content.icon && TOAST_ICONS[toast.content.icon];
+
+  const handleAchievementsModal = () => {
+    openModal("achievements");
+  };
+
   return (
-    <Glass width={"250px"} px={4} py={4} mb={3} borderRadius={2}>
+    <Glass
+      width={"250px"}
+      px={4}
+      py={4}
+      mb={3}
+      borderRadius={2}
+      onClick={toast.type === "achievement" ? handleAchievementsModal : noop}
+    >
       <Stack alignItems="center">
         {toast.content.icon && (
           <Text color="textOverlay" lineHeight={0}>
