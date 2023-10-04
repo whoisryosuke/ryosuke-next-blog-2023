@@ -8,13 +8,7 @@ import formatDistance from "date-fns/formatDistance";
 import Stack from "../Stack/Stack";
 import Glass from "../Glass/Glass";
 import styled from "styled-components";
-
-const StyledBlogCard = styled(Box)`
-  &:hover,
-  &:focus-within {
-    background: ${({ theme }) => theme.colors.glassSidebar};
-  }
-`;
+import ContentListItem from "../ContentListItem/ContentListItem";
 
 type BlogCardTagProps = {
   tag: string;
@@ -47,7 +41,7 @@ type BlogCardProps = {
 
 const BlogCard = ({ post, ...props }: BlogCardProps) => {
   return (
-    <StyledBlogCard px={8} py={4} {...props}>
+    <ContentListItem px={8} py={4} {...props}>
       <Link
         href={`${post.slug}`}
         style={{ textDecoration: "none", outline: 0 }}
@@ -67,7 +61,7 @@ const BlogCard = ({ post, ...props }: BlogCardProps) => {
           {post.frontmatter.tags?.map((tag) => <BlogCardTag tag={tag} />)}
         </Stack>
       </Link>
-    </StyledBlogCard>
+    </ContentListItem>
   );
 };
 

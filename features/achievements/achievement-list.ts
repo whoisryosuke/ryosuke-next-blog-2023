@@ -34,9 +34,11 @@ export type AchievementLog = {
 };
 
 export const ACHIEVEMENT_LIST = {
-  BLOG: BLOG_ACHIEVEMENTS,
-  META: META_ACHIEVEMENTS,
+  blog: BLOG_ACHIEVEMENTS,
+  meta: META_ACHIEVEMENTS,
 };
+
+export type AchievementCategories = keyof typeof ACHIEVEMENT_LIST;
 
 // Achievement Data Store
 export type AchievementData = {

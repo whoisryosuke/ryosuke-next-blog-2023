@@ -46,7 +46,7 @@ const useBlogPostRead = () => {
         // Send out a notification toast about it
         const toast: Toast = {
           content: {
-            ...ACHIEVEMENT_LIST.BLOG[key],
+            ...ACHIEVEMENT_LIST.blog[key],
             icon: "",
           },
           time: new Date().getTime(),

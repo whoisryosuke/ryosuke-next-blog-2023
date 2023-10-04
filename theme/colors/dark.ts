@@ -8,6 +8,7 @@ export const primaryColors = {
   background_level2: "rgba(200,200,200,1)",
   background_level3: "rgba(100,100,100,1)",
   glass: "rgba(40, 40, 40, 0.65)",
+  glassBorder: "rgba(40, 40, 40, 0.75)",
   glassSidebar: "rgba(40, 40, 40,0.2)",
   glassOverlay: "rgba(40, 40, 40,0.05)",
   glassContrast: "rgba(40,40,40,0.75)",

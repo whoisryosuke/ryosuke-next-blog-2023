@@ -6,7 +6,7 @@ import {
 } from "features/achievements/achievement-list";
 import { create } from "zustand";
 
-type ModalNames = "customization";
+type ModalNames = "customization" | "achievements";
 
 type UserAnimationSettings = {
   active: boolean;
@@ -39,7 +39,7 @@ interface AppState {
 
   // Achievements
   achievementNotification: boolean;
-  achievements: AchievementLog[];
+  achievementsLog: AchievementLog[];
   achievementData: AchievementData;
   updateAchievementData: (achievementData: Partial<AchievementData>) => void;
   addAchievement: (achievement: AchievementLog) => void;
@@ -104,7 +104,7 @@ export const useAppStore = create<AppState>()((set) => ({
 
   // Achievements
   achievementNotification: false,
-  achievements: [],
+  achievementsLog: [],
   achievementData: DEFAULT_ACHIEVEMENT_DATA,
   updateAchievementData: (newAchievementData) =>
     set((state) => ({
@@ -112,7 +112,7 @@ export const useAppStore = create<AppState>()((set) => ({
     })),
   addAchievement: (achievement) =>
     set((state) => ({
-      achievements: [achievement, ...state.achievements],
+      achievementsLog: [achievement, ...state.achievementsLog],
     })),
   toggleAchivementNotifications: (status) =>
     set((state) => ({

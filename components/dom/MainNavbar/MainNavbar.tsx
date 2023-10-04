@@ -10,6 +10,7 @@ import {
   BiColor,
   BiPaint,
   BiPalette,
+  BiTrophy,
 } from "react-icons/bi";
 import styled, { css, keyframes } from "styled-components";
 import {
@@ -93,6 +94,10 @@ const MainNavbar = ({ ...props }: MenuProps) => {
   const marginRight = orientation == "left" ? 0 : "8px";
   const marginBottom = orientation == "left" ? "8px" : 0;
 
+  const handleAchievementsModal = () => {
+    openModal("achievements");
+  };
+
   const handleCustomizationModal = () => {
     openModal("customization");
   };
@@ -100,7 +105,8 @@ const MainNavbar = ({ ...props }: MenuProps) => {
   const isCustomizalModalOpen =
     modalName === "customization" && customizations.theme.modal;
 
-  console.log("router path", router.asPath, router.asPath.split("/")[1]);
+  const isAchievementModalOpen =
+    modalName === "achievements" && customizations.theme.modal;
 
   useEffect(() => {
     focusSelf();
@@ -160,6 +166,13 @@ const MainNavbar = ({ ...props }: MenuProps) => {
             solid={router.asPath.includes("playlist")}
             marginRight={marginRight}
             marginBottom={marginBottom}
+          />
+          <Button
+            title="Achievements"
+            icon={<BiTrophy />}
+            onlyIcon
+            solid={isAchievementModalOpen}
+            onClick={handleAchievementsModal}
           />
           <Button
             title="Customize"
