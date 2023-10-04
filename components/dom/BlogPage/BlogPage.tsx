@@ -22,6 +22,7 @@ import PageWrapper from "../PageWrapper/PageWrapper";
 import { useBlogStore } from "@store/blog";
 import Head from "../Head/Head";
 import { useRouter } from "next/router";
+import Link from "next/link";
 
 type Props = {};
 
@@ -103,7 +104,7 @@ const BlogPage = ({ children, ...props }: PropsWithChildren<Props>) => {
                 <Button solid onlyIcon icon={<BiShare />} mr={3} />
                 <Button solid onlyIcon icon={<BiFont />} mr={3} />
                 <Button
-                  as="a"
+                  as={Link}
                   href="/blog"
                   solid
                   onlyIcon
