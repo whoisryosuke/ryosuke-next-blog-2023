@@ -32,10 +32,11 @@ function transformImgSrc({ slug }) {
 }
 
 export default function PostPage({ source, frontMatter, slug }) {
-  const { setTitle, resetTableOfContents } = useBlogStore();
+  const { setTitle, setSlug, resetTableOfContents } = useBlogStore();
 
   useEffect(() => {
     setTitle(frontMatter.title);
+    setSlug(slug);
     return () => {
       resetTableOfContents();
     };

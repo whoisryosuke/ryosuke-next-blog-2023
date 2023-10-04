@@ -7,7 +7,9 @@ export type TOCItem = {
 
 interface BlogState {
   title: string;
+  slug: string;
   setTitle: (title: string) => void;
+  setSlug: (slug: string) => void;
   tableOfContents: TOCItem[];
   setTableOfContents: (toc: TOCItem[]) => void;
   resetTableOfContents: () => void;
@@ -16,7 +18,9 @@ interface BlogState {
 
 export const useBlogStore = create<BlogState>()((set) => ({
   title: "",
+  slug: "",
   setTitle: (title) => set((state) => ({ title })),
+  setSlug: (slug) => set((state) => ({ slug })),
   tableOfContents: [],
   setTableOfContents: (tableOfContents) =>
     set((state) => ({ tableOfContents })),

@@ -29,7 +29,7 @@ type Props = {};
 const BlogPage = ({ children, ...props }: PropsWithChildren<Props>) => {
   const router = useRouter();
   const { openModal, modalName, customizations } = useAppStore();
-  const { title, tableOfContents } = useBlogStore();
+  const { title, tableOfContents, slug } = useBlogStore();
   const boxRef = useRef(null);
 
   useEffect(() => {
@@ -59,8 +59,10 @@ const BlogPage = ({ children, ...props }: PropsWithChildren<Props>) => {
 
   const handleShare = () => {
     navigator.share({
-      url: "https://whoisryosuke.com",
-      title: "whoisryosuke",
+      url: slug
+        ? `https://whoisryosuke.com/blog/${slug}`
+        : "https://whoisryosuke.com/",
+      title: title ?? "whoisryosuke",
       text: "The personal blog and portfolio of Ryosuke",
     });
   };
