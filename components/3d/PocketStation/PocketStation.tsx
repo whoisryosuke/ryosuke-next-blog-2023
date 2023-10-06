@@ -16,9 +16,12 @@ export default function PocketStation({ controls, ...props }: Props) {
   const frontPanelRef = useRef(null);
   const { nodes, materials } = useGLTF("/models/PocketStation-v7.glb");
 
-  const { upY, downY } = useSpring({
+  const { upY, downY, leftY, rightY, confirmY } = useSpring({
     upY: controls.up ? BUTTON_PRESSED_DEPTH : BUTTON_DEFAULT_DEPTH,
     downY: controls.down ? BUTTON_PRESSED_DEPTH : BUTTON_DEFAULT_DEPTH,
+    leftY: controls.left ? BUTTON_PRESSED_DEPTH : BUTTON_DEFAULT_DEPTH,
+    rightY: controls.right ? BUTTON_PRESSED_DEPTH : BUTTON_DEFAULT_DEPTH,
+    confirmY: controls.confirm ? BUTTON_PRESSED_DEPTH : BUTTON_DEFAULT_DEPTH,
   });
 
   const { rotation } = useSpring({
@@ -82,6 +85,7 @@ export default function PocketStation({ controls, ...props }: Props) {
         geometry={nodes.BodyFrontButtonsLeft.geometry}
         material={materials["Material.030"]}
         rotation={rotation}
+        position={leftY}
       />
       <animated.mesh
         castShadow
@@ -97,6 +101,7 @@ export default function PocketStation({ controls, ...props }: Props) {
         geometry={nodes.BodyFrontButtonsRight.geometry}
         material={materials["Material.030"]}
         rotation={rotation}
+        position={rightY}
       />
       <animated.mesh
         castShadow
@@ -112,6 +117,7 @@ export default function PocketStation({ controls, ...props }: Props) {
         geometry={nodes.BodyFrontButtonsConfirm.geometry}
         material={materials["Material.030"]}
         rotation={rotation}
+        position={confirmY}
       />
     </group>
   );
