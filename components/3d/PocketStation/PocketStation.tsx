@@ -8,7 +8,7 @@ type Props = {};
 
 export default function PocketStation(props: Props) {
   const frontPanelRef = useRef(null);
-  const { nodes, materials } = useGLTF("/models/PocketStation-v6.glb");
+  const { nodes, materials } = useGLTF("/models/PocketStation-v7.glb");
 
   const { rotation } = useSpring({
     config: { duration: 4200, easing: easings.easeInOutQuad },
@@ -43,14 +43,6 @@ export default function PocketStation(props: Props) {
       <animated.mesh
         castShadow
         receiveShadow
-        geometry={nodes.BodyFrontButtons.geometry}
-        material={materials["Material.030"]}
-        rotation={rotation}
-      />
-      <animated.mesh
-        ref={frontPanelRef}
-        castShadow
-        receiveShadow
         geometry={nodes.BodyFrontPanel003.geometry}
         material={materials.PS_FrontPanel}
         rotation={rotation}
@@ -72,6 +64,41 @@ export default function PocketStation(props: Props) {
         receiveShadow
         geometry={nodes.CurveLanyardTie001.geometry}
         material={materials["BlackPlastic.001"]}
+      />
+      <animated.mesh
+        castShadow
+        receiveShadow
+        geometry={nodes.BodyFrontButtonsLeft.geometry}
+        material={materials["Material.030"]}
+        rotation={rotation}
+      />
+      <animated.mesh
+        castShadow
+        receiveShadow
+        geometry={nodes.BodyFrontButtonsUp.geometry}
+        material={materials["Material.030"]}
+        rotation={rotation}
+      />
+      <animated.mesh
+        castShadow
+        receiveShadow
+        geometry={nodes.BodyFrontButtonsRight.geometry}
+        material={materials["Material.030"]}
+        rotation={rotation}
+      />
+      <animated.mesh
+        castShadow
+        receiveShadow
+        geometry={nodes.BodyFrontButtonsDown.geometry}
+        material={materials["Material.030"]}
+        rotation={rotation}
+      />
+      <animated.mesh
+        castShadow
+        receiveShadow
+        geometry={nodes.BodyFrontButtonsConfirm.geometry}
+        material={materials["Material.030"]}
+        rotation={rotation}
       />
     </group>
   );
