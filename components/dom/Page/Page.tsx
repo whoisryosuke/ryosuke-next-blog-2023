@@ -13,6 +13,7 @@ import { init } from "@noriginmedia/norigin-spatial-navigation";
 import GlobalModals from "../GlobalModals/GlobalModals";
 import ToastManager from "../Toasts/ToastManager";
 import { useAppStore } from "@store/app";
+import InputManager from "../InputManager/InputManager";
 
 // Initialize the Focus Management library
 init({
@@ -83,6 +84,7 @@ const Page = ({ children, transparent = false }: PropsWithChildren<Props>) => {
         </Paper>
         <GlobalModals />
       </ThemeProvider>
+      <InputManager />
     </StyleSheetManager>
   );
 };

@@ -3,17 +3,28 @@ import { useGLTF } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { Vector3 } from "three";
 import { animated, easings, useSpring } from "@react-spring/three";
+import { UserInputMap } from "@store/input";
 
-type Props = {};
+const BUTTON_PRESSED_DEPTH = [0, 0, -0.1];
+const BUTTON_DEFAULT_DEPTH = [0, 0, 0];
 
-export default function PocketStation(props: Props) {
+type Props = {
+  controls: UserInputMap;
+};
+
+export default function PocketStation({ controls, ...props }: Props) {
   const frontPanelRef = useRef(null);
   const { nodes, materials } = useGLTF("/models/PocketStation-v7.glb");
+
+  const { upY, downY } = useSpring({
+    upY: controls.up ? BUTTON_PRESSED_DEPTH : BUTTON_DEFAULT_DEPTH,
+    downY: controls.down ? BUTTON_PRESSED_DEPTH : BUTTON_DEFAULT_DEPTH,
+  });
 
   const { rotation } = useSpring({
     config: { duration: 4200, easing: easings.easeInOutQuad },
     delay: 4200,
-    loop: true,
+    loop: false,
     from: {
       rotation: [0, 0, 0],
     },
@@ -78,6 +89,7 @@ export default function PocketStation(props: Props) {
         geometry={nodes.BodyFrontButtonsUp.geometry}
         material={materials["Material.030"]}
         rotation={rotation}
+        position={upY}
       />
       <animated.mesh
         castShadow
@@ -92,6 +104,7 @@ export default function PocketStation(props: Props) {
         geometry={nodes.BodyFrontButtonsDown.geometry}
         material={materials["Material.030"]}
         rotation={rotation}
+        position={downY}
       />
       <animated.mesh
         castShadow

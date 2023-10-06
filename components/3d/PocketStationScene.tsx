@@ -13,6 +13,7 @@ import { PropsWithChildren } from "react";
 import GlassCube from "./GlassCube";
 import PocketStation from "./PocketStation/PocketStation";
 import Canvas from "./Canvas";
+import PocketStationController from "./PocketStation/PocketStationController";
 
 type Props = Partial<GroupProps> & {
   customizations: UserCustomizations;
@@ -51,10 +52,11 @@ const PocketStationScene = ({ customizations, ...props }: Props) => {
         lookAt={() => [0, 0, 0]}
       />
 
-      <PocketStation />
+      <PocketStationController />
 
       <OrbitControls
-        autoRotate={customizations.animation.active}
+        // autoRotate={customizations.animation.active}
+        autoRotate={false}
         rotateSpeed={0.01}
       />
       {/*         
