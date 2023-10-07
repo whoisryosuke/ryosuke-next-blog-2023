@@ -8,6 +8,7 @@ import Test from "@components/Test";
 import React from "react";
 import PageWrapper from "@components/dom/PageWrapper/PageWrapper";
 import { useAppStore } from "@store/app";
+import PocketStationScreenCanvas from "@components/3d/PocketStation/PocketStationScreenCanvas";
 
 // Prefer dynamic import for production builds
 // But if you have issues and need to debug in local development
@@ -28,6 +29,7 @@ export default function Index() {
   return (
     <PageWrapper>
       <PocketStation customizations={customizations} />
+      <PocketStationScreenCanvas />
     </PageWrapper>
   );
 }

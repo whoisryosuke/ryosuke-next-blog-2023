@@ -1,7 +1,7 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { useGLTF } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
-import { Vector3 } from "three";
+import { CanvasTexture, Vector3 } from "three";
 import { animated, easings, useSpring } from "@react-spring/three";
 import { UserInputMap } from "@store/input";
 
@@ -15,6 +15,7 @@ type Props = {
 export default function PocketStation({ controls, ...props }: Props) {
   const frontPanelRef = useRef(null);
   const { nodes, materials } = useGLTF("/models/PocketStation-v7.glb");
+  const screenMaterial = useRef(null);
 
   const { upY, downY, leftY, rightY, confirmY } = useSpring({
     upY: controls.up ? BUTTON_PRESSED_DEPTH : BUTTON_DEFAULT_DEPTH,
@@ -40,6 +41,16 @@ export default function PocketStation({ controls, ...props }: Props) {
       },
     ],
   });
+
+  useEffect(() => {
+    if (window) {
+      const screenCanvas = document.getElementById("pocketstation-screen");
+      const canvasTexture = new CanvasTexture(screenCanvas);
+      // screenMaterial.current = materials.PS_FrontScreen;
+      materials.PS_FrontScreen.map = canvasTexture;
+    }
+  }, []);
+
   return (
     <group {...props} dispose={null}>
       <mesh
