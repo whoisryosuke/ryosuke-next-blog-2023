@@ -4,6 +4,7 @@ import { useFrame } from "@react-three/fiber";
 import { CanvasTexture, Vector3 } from "three";
 import { animated, easings, useSpring } from "@react-spring/three";
 import { UserInputMap } from "@store/input";
+import useRequestAnimationFrame from "features/animation/useRequestAnimationFrame";
 
 const BUTTON_PRESSED_DEPTH = [0, 0, -0.1];
 const BUTTON_DEFAULT_DEPTH = [0, 0, 0];
@@ -42,14 +43,23 @@ export default function PocketStation({ controls, ...props }: Props) {
     ],
   });
 
-  useEffect(() => {
+  // useEffect(() => {
+  //   if (window) {
+  //     const screenCanvas = document.getElementById("pocketstation-screen");
+  //     const canvasTexture = new CanvasTexture(screenCanvas);
+  //     // screenMaterial.current = materials.PS_FrontScreen;
+  //     materials.PS_FrontScreen.map = canvasTexture;
+  //   }
+  // }, []);
+
+  useRequestAnimationFrame(() => {
     if (window) {
       const screenCanvas = document.getElementById("pocketstation-screen");
       const canvasTexture = new CanvasTexture(screenCanvas);
       // screenMaterial.current = materials.PS_FrontScreen;
       materials.PS_FrontScreen.map = canvasTexture;
     }
-  }, []);
+  });
 
   return (
     <group {...props} dispose={null}>

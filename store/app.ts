@@ -1,3 +1,4 @@
+import { PocketStationAnimations } from "@components/3d/PocketStation/animation";
 import { Theme, ThemeOptions, base } from "@theme/index";
 import {
   AchievementData,
@@ -36,6 +37,10 @@ interface AppState {
   modalName: ModalNames;
   openModal: (modalName: ModalNames) => void;
   toggleModal: (modal?: boolean) => void;
+
+  // Frontpage (PocketStation)
+  pocketStationAnimation: PocketStationAnimations;
+  setPSAnimation: (animation: PocketStationAnimations) => void;
 
   // Achievements
   achievementNotification: boolean;
@@ -100,6 +105,12 @@ export const useAppStore = create<AppState>()((set) => ({
           modal: modal ?? !state.customizations.theme.modal,
         },
       },
+    })),
+
+  pocketStationAnimation: "LOADING",
+  setPSAnimation: (animation) =>
+    set((state) => ({
+      pocketStationAnimation: animation,
     })),
 
   // Achievements
