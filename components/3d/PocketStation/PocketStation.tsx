@@ -15,7 +15,7 @@ type Props = {
 
 export default function PocketStation({ controls, ...props }: Props) {
   const frontPanelRef = useRef(null);
-  const { nodes, materials } = useGLTF("/models/PocketStation-v7.glb");
+  const { nodes, materials } = useGLTF("/models/PocketStation-v11.glb");
   const screenMaterial = useRef(null);
 
   const { upY, downY, leftY, rightY, confirmY } = useSpring({
@@ -72,7 +72,7 @@ export default function PocketStation({ controls, ...props }: Props) {
       <mesh
         castShadow
         receiveShadow
-        geometry={nodes.BodyFrontBase001.geometry}
+        geometry={nodes.BodyFrontScreen.geometry}
         material={materials.PS_FrontScreen}
       />
       <animated.mesh
@@ -139,6 +139,12 @@ export default function PocketStation({ controls, ...props }: Props) {
         material={materials["Material.030"]}
         rotation={rotation}
         position={confirmY}
+      />
+      <mesh
+        castShadow
+        receiveShadow
+        geometry={nodes.BodyFrontBase002.geometry}
+        material={materials["PS_FrontScreen.001"]}
       />
     </group>
   );

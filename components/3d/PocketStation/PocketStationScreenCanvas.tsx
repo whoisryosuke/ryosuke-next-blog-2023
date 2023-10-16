@@ -15,13 +15,13 @@ const PocketStationScreenCanvas = (props: Props) => {
     delay: 4200,
     loop: false,
     from: {
-      x: 700,
+      x: 0,
       y: 0,
     },
     to: [
       {
-        x: 460,
-        y: 350,
+        x: 350,
+        y: 460,
       },
     ],
     onStart(result, ctrl, item) {
@@ -30,7 +30,7 @@ const PocketStationScreenCanvas = (props: Props) => {
     onChange(result, ctrl, item) {
       if (result.value) {
         console.log("animation value", result.value);
-        drawIntro(result.value.x, 350);
+        drawIntro(350, result.value.y);
       }
     },
   });
@@ -40,8 +40,8 @@ const PocketStationScreenCanvas = (props: Props) => {
     const context = canvasRef.current.getContext("2d");
     // clear canvas
     context.clearRect(0, 0, context.canvas.width, context.canvas.height);
-    context.fillStyle = "#FFFFFF";
-    context.fillRect(0, 0, context.canvas.width, context.canvas.height);
+    // context.fillStyle = "#FFFFFF";
+    // context.fillRect(0, 0, context.canvas.width, context.canvas.height);
     context.drawImage(imageRef.current, 0, 0);
     context.save();
 
@@ -51,10 +51,15 @@ const PocketStationScreenCanvas = (props: Props) => {
   const drawIntro = (x: number, y: number) => {
     if (canvasRef.current) {
       console.log("drawing intro", x, y);
-      const context = getContextAndDrawBase();
+      const ctx = getContextAndDrawBase();
+
+      // Create a circular clipping path
+      ctx.beginPath();
+      ctx.roundRect(150, 185, 742, 728, [40]);
+      ctx.clip();
 
       // Draw screens
-      context.drawImage(screenIntroHelloRef.current, x, y);
+      ctx.drawImage(screenIntroHelloRef.current, x, y);
     }
   };
 
@@ -90,12 +95,12 @@ const PocketStationScreenCanvas = (props: Props) => {
       />
       <img
         ref={imageRef}
-        src="/images/Body_Front_Base_001-textured1.png"
+        src="/images/Body.Front.Screen.Rotated-textured1.png"
         style={{ position: "absolute", top: "-9999em", left: "-9999em" }}
       />
       <img
         ref={screenIntroHelloRef}
-        src="/images/ps-screens/intro-hello.png"
+        src="/images/ps-screens/intro-hello-rotated.png"
         style={{ position: "absolute", top: "-9999em", left: "-9999em" }}
       />
     </>
