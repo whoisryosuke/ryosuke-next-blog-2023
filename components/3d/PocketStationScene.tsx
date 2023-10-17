@@ -43,14 +43,14 @@ const PocketStationScene = ({ customizations, ...props }: Props) => {
       {/* <color attach="background" args={["#e0e0e0"]} /> */}
 
       {/* <spotLight position={[0,0,0]} penumbra={1} castShadow angle={0.2} /> */}
-      <rectAreaLight
+      {/* <rectAreaLight
         position={[0, 0, -10]}
         width={40}
         height={40}
-        intensity={10}
+        intensity={5}
         color={"white"}
         lookAt={() => [0, 0, 0]}
-      />
+      /> */}
 
       <PocketStationController />
 

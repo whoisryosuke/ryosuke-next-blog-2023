@@ -1,10 +1,11 @@
-import React, { useEffect, useRef } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import { useGLTF } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { CanvasTexture, Vector3 } from "three";
 import { animated, easings, useSpring } from "@react-spring/three";
 import { UserInputMap } from "@store/input";
 import useRequestAnimationFrame from "features/animation/useRequestAnimationFrame";
+import { useAppStore } from "@store/app";
 
 const BUTTON_PRESSED_DEPTH = [0, 0, -0.1];
 const BUTTON_DEFAULT_DEPTH = [0, 0, 0];
@@ -17,6 +18,9 @@ export default function PocketStation({ controls, ...props }: Props) {
   const frontPanelRef = useRef(null);
   const { nodes, materials } = useGLTF("/models/PocketStation-v11.glb");
   const screenMaterial = useRef(null);
+  const frameId = useRef(null);
+  const screenCanvas = useRef(null);
+  const { pocketStationAnimating } = useAppStore();
 
   const { upY, downY, leftY, rightY, confirmY } = useSpring({
     upY: controls.up ? BUTTON_PRESSED_DEPTH : BUTTON_DEFAULT_DEPTH,
@@ -52,14 +56,27 @@ export default function PocketStation({ controls, ...props }: Props) {
   //   }
   // }, []);
 
-  useRequestAnimationFrame(() => {
+  const animate = (timer) => {
+    console.log("updating material");
+    const screenCanvas = document.getElementById("pocketstation-screen");
+
+    const canvasTexture = new CanvasTexture(screenCanvas);
+    // screenMaterial.current = materials.PS_FrontScreen;
+    materials.PS_FrontScreen.map = canvasTexture;
+  };
+
+  const startAnimation = useCallback(() => {
+    cancelAnimationFrame(frameId.current);
+    frameId.current = requestAnimationFrame(animate);
+  }, [animate]);
+
+  React.useEffect(() => {
     if (window) {
-      const screenCanvas = document.getElementById("pocketstation-screen");
-      const canvasTexture = new CanvasTexture(screenCanvas);
-      // screenMaterial.current = materials.PS_FrontScreen;
-      materials.PS_FrontScreen.map = canvasTexture;
+      console.log("restarting material sync", pocketStationAnimating);
+      startAnimation();
     }
-  });
+    return () => cancelAnimationFrame(frameId.current);
+  }, [pocketStationAnimating]);
 
   return (
     <group {...props} dispose={null}>
@@ -149,5 +166,3 @@ export default function PocketStation({ controls, ...props }: Props) {
     </group>
   );
 }
-
-useGLTF.preload("/PocketStation-v1.glb");

@@ -40,7 +40,9 @@ interface AppState {
 
   // Frontpage (PocketStation)
   pocketStationAnimation: PocketStationAnimations;
+  pocketStationAnimating: boolean;
   setPSAnimation: (animation: PocketStationAnimations) => void;
+  setPocketStationAnimating: (progress: boolean) => void;
 
   // Achievements
   achievementNotification: boolean;
@@ -108,9 +110,14 @@ export const useAppStore = create<AppState>()((set) => ({
     })),
 
   pocketStationAnimation: "LOADING",
+  pocketStationAnimating: false,
   setPSAnimation: (animation) =>
     set((state) => ({
       pocketStationAnimation: animation,
+    })),
+  setPocketStationAnimating: (animation) =>
+    set((state) => ({
+      pocketStationAnimating: animation,
     })),
 
   // Achievements
