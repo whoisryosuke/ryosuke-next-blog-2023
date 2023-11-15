@@ -33,16 +33,16 @@ const PocketStationScene = ({ customizations, ...props }: Props) => {
         {...props}
       >
         {/* Extra space lights if needed */}
-        <Lightformer
-          intensity={4}
+        {/* <Lightformer
+          intensity={0.5}
           position={[0, 7, 0]}
           scale={[10, 30, 1]}
           onUpdate={(self) => self.lookAt(0, 0, 0)}
-        />
+        /> */}
       </Environment>
       {/* <color attach="background" args={["#e0e0e0"]} /> */}
 
-      {/* <spotLight position={[0,0,0]} penumbra={1} castShadow angle={0.2} /> */}
+      {/* <spotLight position={[0, 0, 0]} penumbra={1} castShadow angle={0.2} /> */}
       {/* <rectAreaLight
         position={[0, 0, -10]}
         width={40}

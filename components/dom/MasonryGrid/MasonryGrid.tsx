@@ -80,6 +80,28 @@ const MasonryGrid = ({ children, gap }: PropsWithChildren<Props>) => {
       if (index < columns.length - 1) {
         containerProps.mr = gap;
       }
+      let rotationAngle = "5deg";
+      let rotation = "0deg";
+      if (columns.length == 4) {
+        switch (index) {
+          case 0:
+            rotation = rotationAngle;
+            break;
+          case 3:
+            rotation = `-${rotationAngle}`;
+            break;
+        }
+      }
+      if (columns.length == 3) {
+        switch (index) {
+          case 0:
+            rotation = rotationAngle;
+            break;
+          case 2:
+            rotation = `-${rotationAngle}`;
+            break;
+        }
+      }
       return (
         <AnimatePresence>
           <Stack
@@ -88,7 +110,12 @@ const MasonryGrid = ({ children, gap }: PropsWithChildren<Props>) => {
             wrapper
             display="block"
             flex={1}
-            style={{ perspective: "500px" }}
+            style={{
+              perspective: "500px",
+              transform: `translateZ(-50px)  translateX(${
+                10 * (index + 1)
+              }px) rotateY(${rotation})`,
+            }}
             {...containerProps}
           >
             {column}

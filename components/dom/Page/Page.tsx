@@ -50,8 +50,8 @@ const Page = ({ children, transparent = false }: PropsWithChildren<Props>) => {
 
             <Box minHeight="100vh" width="100%" position="relative">
               <Box
-                backgroundImage="url(/images/room1.png)"
-                backgroundSize="repeat-x"
+                backgroundImage="url(/images/pexels-pixabay-279719.jpg)"
+                backgroundSize="cover"
                 backgroundPosition={`${
                   customizations.theme.modal ? "100%" : "0%"
                 } 100%`}
@@ -67,7 +67,7 @@ const Page = ({ children, transparent = false }: PropsWithChildren<Props>) => {
                 }}
               />
               <Box
-                background="rgba(0,0,0,0.3)"
+                background="rgba(0,0,0,0.6)"
                 minHeight="100vh"
                 width="100%"
                 zIndex={-419}

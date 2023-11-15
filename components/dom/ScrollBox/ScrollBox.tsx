@@ -5,6 +5,7 @@ import { Theme } from "@theme/index";
 
 type Props = BoxProps & {
   borderRadius?: keyof Theme["radius"];
+  hideScrollbar?: boolean;
 };
 
 const StyledScrollBox = styled(Box)<Props>`
@@ -21,8 +22,16 @@ const StyledScrollBox = styled(Box)<Props>`
   }
   /* Scroll bar "thumb" */
   &::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(
+      255,
+      255,
+      255,
+      ${({ hideScrollbar }) => (hideScrollbar ? 0 : 0.2)}
+    );
     border-radius: ${({ theme }) => theme.radius[0]};
+  }
+  &:hover::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
   }
   &::-webkit-scrollbar-thumb:hover {
     background: rgba(255, 255, 255, 0.5);
@@ -36,6 +45,19 @@ const StyledScrollBox = styled(Box)<Props>`
   &::-webkit-scrollbar-track:hover {
     background: rgba(0, 0, 0, 0.1);
   }
+
+  @media (prefers-reduced-motion: no-preference) {
+    &::-webkit-scrollbar-thumb {
+      transition-property: background-color;
+      transition-duration: 710ms;
+    }
+  }
+
+  -webkit-mask-image: linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 1) 15%
+  );
 `;
 
 const ScrollBox = forwardRef<PropsWithChildren<Props>, HTMLDivElement>(

@@ -98,23 +98,21 @@ export default function WorkPage() {
 
   return (
     <PageWrapper>
-      <Glass
-        p={4}
-        maxWidth="80vw"
-        margin="auto"
-        mt={4}
-        blur={4}
-        borderRadius={4}
-      >
-        <ScrollBox display="flex" flexDirection="column" height={"80vh"}>
-          <WindowHeader title="Work" subtitle={`"What's not under NDA"`} />
+      <Box p={4} maxWidth="80vw" margin="auto" mt={4}>
+        <ScrollBox
+          display="flex"
+          flexDirection="column"
+          height={"80vh"}
+          paddingRight={3}
+          hideScrollbar
+        >
           <MasonryGrid>
             {WORK_DATA.map((work) => (
               <WorkCard {...work} date={new Date(Date.parse(work.date))} />
             ))}
           </MasonryGrid>
         </ScrollBox>
-      </Glass>
+      </Box>
     </PageWrapper>
   );
 }
