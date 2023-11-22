@@ -5,7 +5,7 @@ import React, {
 } from "react";
 import styled, { css } from "styled-components";
 import Text from "../Text/Text";
-import { useFocusable } from "@noriginmedia/norigin-spatial-navigation";
+import { useFocusable } from "unified-input";
 import {
   BorderRadiusProps,
   FlexProps,

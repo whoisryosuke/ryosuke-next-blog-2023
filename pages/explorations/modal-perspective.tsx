@@ -18,13 +18,9 @@ import { MdHomeFilled } from "react-icons/md";
 import { useAppStore } from "store/app";
 import { Theme } from "@theme/index";
 import { styled } from "styled-components";
-import {
-  FocusContext,
-  useFocusable,
-} from "@noriginmedia/norigin-spatial-navigation";
-import { MathUtils, PerspectiveCamera as ThreePerspectiveCamera,
-} from "three";
-import { PerspectiveCamera } from "@react-three/drei"
+import { FocusContext, useFocusable } from "unified-input";
+import { MathUtils, PerspectiveCamera as ThreePerspectiveCamera } from "three";
+import { PerspectiveCamera } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 
 // Prefer dynamic import for production builds
@@ -38,13 +34,13 @@ const PrimitiveScene = dynamic(
   () => import("@components/3d/PrimitiveScene/PrimitiveScene"),
   {
     ssr: false,
-  },
+  }
 );
 const Shader = dynamic(
   () => import("@components/3d/ShaderExample/ShaderExample"),
   {
     ssr: false,
-  },
+  }
 );
 
 type NavigationProps = DetailedHTMLProps<
@@ -103,9 +99,7 @@ const PerspectiveContainer = ({
   ...props
 }) => {
   // const ref = useRef<HTMLDivElement>();
-  const { ref, focusKey, focusSelf, hasFocusedChild, focused } = useFocusable({
-    trackChildren: true,
-  });
+  const { ref, focusId, focusSelf, focused } = useFocusable();
 
   useEffect(() => {
     const location = ref.current.getBoundingClientRect();
@@ -113,17 +107,17 @@ const PerspectiveContainer = ({
     syncLocation(id, location);
   }, [ref.current]);
 
-  useEffect(() => {
-    if (hasFocusedChild) {
-      console.log("has a focused child, scrolling to");
-      focusScroll();
-    }
-  }, [hasFocusedChild]);
+  // useEffect(() => {
+  //   if (hasFocusedChild) {
+  //     console.log("has a focused child, scrolling to");
+  //     focusScroll();
+  //   }
+  // }, [hasFocusedChild]);
 
-  console.log("focused child?", focused, hasFocusedChild);
+  // console.log("focused child?", focused, hasFocusedChild);
 
   return (
-    <FocusContext.Provider value={focusKey}>
+    <FocusContext.Provider value={focusId}>
       <StyledPerspectiveContainer ref={ref} {...props}>
         {children}
       </StyledPerspectiveContainer>
@@ -133,12 +127,12 @@ const PerspectiveContainer = ({
 
 type AnimatedCameraProps = {
   rotate: number;
-}
+};
 
-const AnimatedCamera = ({rotate}: AnimatedCameraProps) => {
+const AnimatedCamera = ({ rotate }: AnimatedCameraProps) => {
   const cameraRef = useRef<ThreePerspectiveCamera>();
-  
-  console.log('rotation', rotate)
+
+  console.log("rotation", rotate);
 
   useFrame((state) => {
     // HERE, looking for a way to lerp camera lookAt in a way that can toggle.
@@ -146,22 +140,26 @@ const AnimatedCamera = ({rotate}: AnimatedCameraProps) => {
     // cameraRef.current.rotateY(
     //   MathUtils.lerp(cameraRef.current.rotation.y, rotate, 0.25)
     // );
-    cameraRef.current.rotation.y = MathUtils.lerp(cameraRef.current.rotation.y, rotate, 0.025);
+    cameraRef.current.rotation.y = MathUtils.lerp(
+      cameraRef.current.rotation.y,
+      rotate,
+      0.025
+    );
     cameraRef.current.updateProjectionMatrix();
   });
 
-  return(
-      <PerspectiveCamera
-        ref={cameraRef}
-        makeDefault
-        zoom={1}
-        near={1}
-        far={2000}
-        fov={75}
-        position={[4, 2, 20]}
-      />
-  )
-}
+  return (
+    <PerspectiveCamera
+      ref={cameraRef}
+      makeDefault
+      zoom={1}
+      near={1}
+      far={2000}
+      fov={75}
+      position={[4, 2, 20]}
+    />
+  );
+};
 
 export default function LabPage() {
   const [focusedApp, setFocusedApp] = useState("app");
@@ -212,7 +210,10 @@ export default function LabPage() {
           // camera={{ position: [0, 0, 30], fov: 50 }}
           style={{ height: "100vh" }}
         >
-          <PrimitiveScene customizations={customizations} rotate={focusedApp === 'app' ? Math.PI / 12 : Math.PI / 8} />
+          <PrimitiveScene
+            customizations={customizations}
+            rotate={focusedApp === "app" ? Math.PI / 12 : Math.PI / 8}
+          />
         </Canvas>
       </Box>
       <Box>

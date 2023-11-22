@@ -13,14 +13,14 @@ import { init } from "@noriginmedia/norigin-spatial-navigation";
 import GlobalModals from "../GlobalModals/GlobalModals";
 import ToastManager from "../Toasts/ToastManager";
 import { useAppStore } from "@store/app";
-import InputManager from "../InputManager/InputManager";
+import { InputManager, DebugView } from "unified-input";
 
 // Initialize the Focus Management library
-init({
-  //   debug: true,
-  //   visualDebug: true,
-  shouldFocusDOMNode: true,
-});
+// init({
+//   //   debug: true,
+//   //   visualDebug: true,
+//   shouldFocusDOMNode: true,
+// });
 
 type Props = {
   transparent?: boolean;
@@ -85,6 +85,7 @@ const Page = ({ children, transparent = false }: PropsWithChildren<Props>) => {
         <GlobalModals />
       </ThemeProvider>
       <InputManager />
+      <DebugView />
     </StyleSheetManager>
   );
 };

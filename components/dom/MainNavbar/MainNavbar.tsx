@@ -13,10 +13,7 @@ import {
   BiTrophy,
 } from "react-icons/bi";
 import styled, { css, keyframes } from "styled-components";
-import {
-  useFocusable,
-  FocusContext,
-} from "@noriginmedia/norigin-spatial-navigation";
+import { useFocusable, FocusContext } from "unified-input";
 import { useAppStore } from "@store/app";
 import Link from "next/link";
 import { useWindowSize } from "usehooks-ts";
@@ -84,7 +81,7 @@ const StyledMenu = styled(Glass)<MenuProps>`
 `;
 
 const MainNavbar = ({ ...props }: MenuProps) => {
-  const { ref, focusKey, focusSelf } = useFocusable();
+  const { ref, focusId, focusSelf } = useFocusable();
   const { openModal, modalName, customizations } = useAppStore();
   const windowSize = useWindowSize();
   const router = useRouter();
@@ -110,9 +107,9 @@ const MainNavbar = ({ ...props }: MenuProps) => {
 
   useEffect(() => {
     focusSelf();
-  }, [focusSelf]);
+  }, []);
   return (
-    <FocusContext.Provider value={focusKey}>
+    <FocusContext.Provider value={focusId}>
       <StyledMenu
         ref={ref}
         px={orientation == "left" ? 3 : 6}
