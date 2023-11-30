@@ -7,7 +7,7 @@ type Props = {};
 const PocketStationController = (props: Props) => {
   const { input } = useInputStore();
 
-  return <PocketStation controls={input} />;
+  return <PocketStation controls={input} position={[-3, 0, 0]} />;
 };
 
 export default PocketStationController;
