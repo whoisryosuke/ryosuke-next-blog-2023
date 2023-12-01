@@ -17,10 +17,10 @@ const PocketStationController = (props: Props) => {
     },
     to: [
       {
-        rotation: [0, 1, 0],
+        rotation: [0, 1, 0.25],
       },
       {
-        rotation: [0, -1, 0],
+        rotation: [0, -1, -0.25],
       },
       {
         rotation: [0, 0, 0],
