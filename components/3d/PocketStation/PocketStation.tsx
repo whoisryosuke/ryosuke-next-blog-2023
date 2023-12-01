@@ -79,7 +79,7 @@ export default function PocketStation({ controls, ...props }: Props) {
   }, [pocketStationAnimating]);
 
   return (
-    <group {...props} dispose={null}>
+    <animated.group {...props} dispose={null}>
       <mesh
         castShadow
         receiveShadow
@@ -163,6 +163,6 @@ export default function PocketStation({ controls, ...props }: Props) {
         geometry={nodes.BodyFrontBase002.geometry}
         material={materials["PS_FrontScreen.001"]}
       />
-    </group>
+    </animated.group>
   );
 }
