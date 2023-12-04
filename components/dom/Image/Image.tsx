@@ -9,6 +9,7 @@ import Box from "../Box/Box";
 export type ImageProps = HTMLProps<HTMLImageElement> &
   MarginProps & {
     borderRadius?: keyof Theme["radius"];
+    imageProps?: HTMLProps<HTMLImageElement>;
   };
 
 const StyledImageContainer = styled(Box)<ImageProps>`
@@ -29,10 +30,16 @@ const StyledImage = styled("img")<ImageProps>`
     borderRadius ? theme.radius[borderRadius] : theme.radius[1]};
 `;
 
-const Image = ({ borderRadius, src, alt, ...props }: ImageProps) => {
+const Image = ({
+  borderRadius,
+  src,
+  alt,
+  imageProps,
+  ...props
+}: ImageProps) => {
   return (
     <StyledImageContainer borderRadius={borderRadius} {...props}>
-      <StyledImage src={src} alt={alt} />
+      <StyledImage src={src} alt={alt} {...imageProps} />
     </StyledImageContainer>
   );
 };

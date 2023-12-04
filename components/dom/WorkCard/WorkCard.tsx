@@ -7,20 +7,7 @@ import Video from "../Video/Video";
 import Link from "next/link";
 import format from "date-fns/format";
 import { H4 } from "../Headline/Headers";
-
-type VideoSource = {
-  src: string;
-  width: CSSProperties["width"];
-  height: CSSProperties["height"];
-};
-
-export type WorkCardProps = {
-  src?: string;
-  video?: VideoSource;
-  title: string;
-  date: Date;
-  prototype?: string;
-};
+import { WorkCardProps } from "../PortfolioApp/types";
 
 const WorkCard = ({
   src,

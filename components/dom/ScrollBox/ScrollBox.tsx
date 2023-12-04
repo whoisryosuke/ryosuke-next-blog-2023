@@ -9,7 +9,7 @@ type Props = BoxProps & {
 };
 
 const StyledScrollBox = styled(Box)<Props>`
-  overflow-y: scroll;
+  overflow-y: overlay;
   overflow-x: hidden;
   border-radius: ${({ theme, borderRadius }) =>
     borderRadius ? theme.radius[borderRadius] : theme.radius[0]};
