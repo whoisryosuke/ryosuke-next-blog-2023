@@ -9,9 +9,9 @@ const PortfolioTransition = ({
 }: PropsWithChildren<Props>) => {
   return (
     <motion.div
-      initial={{ opacity: 0, translateY: 300 }}
+      initial={{ opacity: 0, translateY: 50 }}
       animate={{ opacity: 1, translateY: 0 }}
-      exit={{ opacity: 0, translateY: 300 }}
+      exit={{ opacity: 0, translateY: 50 }}
       transition={{
         duration: 0.71,
       }}

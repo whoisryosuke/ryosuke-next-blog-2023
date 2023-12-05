@@ -11,6 +11,7 @@ type Props = PortfolioNavigationProps &
       height: string;
     };
     borderTopRight?: boolean;
+    borderRadius?: string;
   };
 
 const PortfolioGridItem = ({
@@ -23,6 +24,7 @@ const PortfolioGridItem = ({
   handleNavigateWork,
   imageSize,
   borderTopRight,
+  borderRadius,
   ...props
 }: Props) => {
   const handleClick = () => {
@@ -37,9 +39,11 @@ const PortfolioGridItem = ({
           style={{
             width: "100%",
             height: props?.height ?? "auto",
+            maxHeight: props?.maxHeight ?? "",
             objectFit: "cover",
             margin: 0,
             borderTopRightRadius: borderTopRight ? "21px" : "",
+            borderRadius: borderRadius ?? "",
           }}
         />
       )}

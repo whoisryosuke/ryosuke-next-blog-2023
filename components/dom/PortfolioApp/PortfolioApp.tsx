@@ -24,7 +24,7 @@ const PortfolioApp = ({ work }: Props) => {
   };
 
   return (
-    <Glass p={4} maxWidth="80vw" margin="auto" mt={8} p={0} position="relative">
+    <Box maxWidth="80vw" margin="auto" mt={8} p={0} position="relative">
       <AnimatePresence>
         {!showSingleView && (
           <PortfolioGridView
@@ -33,10 +33,15 @@ const PortfolioApp = ({ work }: Props) => {
           />
         )}
         {showSingleView && (
-          <PortfolioSingleView work={work} current={currentId} />
+          <PortfolioSingleView
+            work={work}
+            current={currentId}
+            handleNavigateWork={handleNavigateWork}
+            handleBackToGrid={handleBackToGrid}
+          />
         )}
       </AnimatePresence>
-    </Glass>
+    </Box>
   );
 };
 
