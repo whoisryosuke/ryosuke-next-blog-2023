@@ -11,6 +11,9 @@ import styled from "styled-components";
 import { motion } from "framer-motion";
 import { H3 } from "../Headline/Headers";
 import Text from "../Text/Text";
+import Video from "../Video/Video";
+import PortfolioSingleVideo from "./PortfolioSingleVideo";
+import PortfolioSingleTitle from "./PortfolioSingleTitle";
 
 const PortfolioSingleImageContainer = styled(Box)`
   & .navigation,
@@ -54,37 +57,35 @@ const PortfolioSingleView = ({
         position="relative"
         margin="auto"
       >
-        <motion.img
-          id={currentWork.id}
-          src={currentWork.src}
-          width="60vh"
-          height="60vh"
-          style={{
-            width: "100%",
-            minHeight: "60vh",
-            maxHeight: "60vh",
-            borderRadius: "21px",
-            objectFit: "cover",
-          }}
-          animate={{
-            height: "auto",
-          }}
-        />
-
-        {/* Image Metadata */}
-        <Box
-          className="metadata"
-          position="absolute"
-          padding={5}
-          bottom={0}
-          left={0}
-        >
-          <H3 marginBottom={3}>{currentWork.title}</H3>
-          <Text fontSize={0} lineHeight={1} textAlign="right">
-            {format(new Date(Date.parse(currentWork.date)), "MM/dd/yyyy")}
-          </Text>
-          {/* Video Player TBD */}
-        </Box>
+        {!currentWork.video && (
+          <>
+            <img
+              id={currentWork.id}
+              src={currentWork.src}
+              width="60vh"
+              height="60vh"
+              style={{
+                width: "100%",
+                minHeight: "60vh",
+                maxHeight: "60vh",
+                borderRadius: "21px",
+                objectFit: "cover",
+              }}
+            />
+            {/* Image Metadata */}
+            <Box
+              className="metadata"
+              position="absolute"
+              padding={5}
+              bottom={0}
+              left={0}
+            >
+              <PortfolioSingleTitle work={currentWork} />
+              {/* Video Player TBD */}
+            </Box>
+          </>
+        )}
+        {currentWork.video && <PortfolioSingleVideo work={currentWork} />}
 
         {/* Image Navigation */}
         <Box

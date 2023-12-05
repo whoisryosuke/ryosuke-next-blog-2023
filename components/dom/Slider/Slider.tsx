@@ -1,4 +1,8 @@
-import React, { DetailedHTMLProps, InputHTMLAttributes } from "react";
+import React, {
+  CSSProperties,
+  DetailedHTMLProps,
+  InputHTMLAttributes,
+} from "react";
 import styled from "styled-components";
 
 const SLIDER_HEIGHT = "12px";
@@ -14,7 +18,7 @@ const StyledInput = styled("input")<Props>`
   -webkit-appearance: none;
   background: transparent;
   width: 100%;
-  height: ${SLIDER_HEIGHT};
+  height: ${({ height }) => height ?? SLIDER_HEIGHT};
 
   &::-webkit-slider-thumb {
     -webkit-appearance: none;
@@ -29,9 +33,10 @@ const StyledInput = styled("input")<Props>`
   }
 `;
 
-const StyledContainer = styled("div")`
+const StyledContainer = styled("div")<Partial<StyledProgressBarProps>>`
   width: 100%;
   position: relative;
+  height: ${({ height }) => `calc(${height} + 6px)` ?? SLIDER_HEIGHT};
 
   &:after {
     content: "";
@@ -53,11 +58,12 @@ const StyledContainer = styled("div")`
 
 type StyledProgressBarProps = {
   percent: number;
+  height: CSSProperties["height"];
 };
 
 const StyledProgressBar = styled("div")<StyledProgressBarProps>`
   width: ${({ percent }) => percent}%;
-  height: ${SLIDER_HEIGHT};
+  height: ${({ height }) => height ?? SLIDER_HEIGHT};
   position: absolute;
   top: 3px;
   left: 3px;
@@ -70,14 +76,21 @@ const StyledProgressBar = styled("div")<StyledProgressBarProps>`
     inset 3px 3px 3px rgba(0, 0, 0, 0.2);
 `;
 
-const Slider = ({ style, value, min, max, ...props }: Props) => {
+const Slider = ({ style, value, min, max, height, ...props }: Props) => {
   // @ts-ignore
   const percentComplete = ((value - min) / (max - min)) * 100;
 
   return (
-    <StyledContainer style={style}>
-      <StyledProgressBar percent={percentComplete} />
-      <StyledInput type="range" min={min} max={max} value={value} {...props} />
+    <StyledContainer height={height} style={style}>
+      <StyledProgressBar height={height} percent={percentComplete} />
+      <StyledInput
+        type="range"
+        min={min}
+        max={max}
+        value={value}
+        height={height}
+        {...props}
+      />
     </StyledContainer>
   );
 };

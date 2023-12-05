@@ -10,6 +10,7 @@ type Props = BoxProps & {
   // Wrap elements in a `<Box>` component
   wrapper?: boolean;
   style?: CSSProperties;
+  responsive?: boolean;
 };
 
 const Stack = ({
@@ -17,6 +18,7 @@ const Stack = ({
   vertical = false,
   wrap = false,
   wrapper = false,
+  responsive = true,
   style,
   children,
   ...props
@@ -42,10 +44,15 @@ const Stack = ({
     return child;
   });
 
+  const orientation = vertical ? "column" : "row";
+
   return (
     <Box
       display="flex"
-      flexDirection={{ mobile: "column", tablet: vertical ? "column" : "row" }}
+      flexDirection={{
+        mobile: responsive ? "column" : orientation,
+        tablet: orientation,
+      }}
       flexWrap={wrap ? "wrap" : "nowrap"}
       style={style}
       {...props}

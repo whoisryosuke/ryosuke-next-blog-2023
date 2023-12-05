@@ -1,4 +1,4 @@
-import React, { HTMLProps } from "react";
+import React, { HTMLProps, RefObject, forwardRef } from "react";
 import { MarginProps, margin } from "styled-system";
 import styled from "styled-components";
 import { Theme } from "@theme/index";
@@ -21,8 +21,13 @@ const StyledVideo = styled("video")<VideoProps>`
   }
 `;
 
-const Video = ({ borderRadius, src, alt, ...props }: VideoProps) => {
-  return <StyledVideo src={src} alt={alt} {...props} />;
-};
+const Video = forwardRef(
+  (
+    { borderRadius, src, alt, ...props }: VideoProps,
+    ref: RefObject<HTMLVideoElement>
+  ) => {
+    return <StyledVideo ref={ref} src={src} alt={alt} {...props} />;
+  }
+);
 
 export default Video;
