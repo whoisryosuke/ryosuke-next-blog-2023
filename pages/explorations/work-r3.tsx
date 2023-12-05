@@ -50,6 +50,7 @@ const WORK_DATA: WorkCardProps[] = [
     date: "2023-10-03",
   },
   {
+    src: "/work/art/animation-540p-watermarked.png",
     video: {
       src: "/work/art/animation-540p-watermarked.mp4",
       width: 960 / 2,
@@ -59,6 +60,7 @@ const WORK_DATA: WorkCardProps[] = [
     date: "2023-07-27",
   },
   {
+    src: "/work/art/bevy-midi-revolution-game1.png",
     video: {
       src: "/work/art/bevy-midi-revolution-game1.mp4",
       width: 960 / 2,

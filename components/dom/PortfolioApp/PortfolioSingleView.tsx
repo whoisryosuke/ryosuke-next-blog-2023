@@ -1,4 +1,5 @@
 import React from "react";
+import format from "date-fns/format";
 import { PortfolioNavigationProps, WorkCardData, WorkCardProps } from "./types";
 import PortfolioGridItem from "./PortfolioGridItem";
 import PortfolioTransition from "./PortfolioTransition";
@@ -8,16 +9,21 @@ import { BiArrowBack } from "react-icons/bi";
 import Button from "../Button/Button";
 import styled from "styled-components";
 import { motion } from "framer-motion";
+import { H3 } from "../Headline/Headers";
+import Text from "../Text/Text";
 
 const PortfolioSingleImageContainer = styled(Box)`
-  & .navigation {
+  & .navigation,
+  & .metadata {
     opacity: 0;
   }
-  &:hover .navigation {
+  &:hover .navigation,
+  &:hover .metadata {
     opacity: 1;
   }
 
-  & .navigation {
+  & .navigation,
+  & .metadata {
     /* Animation */
     @media (prefers-reduced-motion: no-preference) {
       transition-property: opacity;
@@ -65,11 +71,26 @@ const PortfolioSingleView = ({
           }}
         />
 
+        {/* Image Metadata */}
+        <Box
+          className="metadata"
+          position="absolute"
+          padding={5}
+          bottom={0}
+          left={0}
+        >
+          <H3 marginBottom={3}>{currentWork.title}</H3>
+          <Text fontSize={0} lineHeight={1} textAlign="right">
+            {format(new Date(Date.parse(currentWork.date)), "MM/dd/yyyy")}
+          </Text>
+          {/* Video Player TBD */}
+        </Box>
+
         {/* Image Navigation */}
         <Box
           className="navigation"
           position="absolute"
-          padding={4}
+          padding={5}
           top={0}
           left={0}
         >

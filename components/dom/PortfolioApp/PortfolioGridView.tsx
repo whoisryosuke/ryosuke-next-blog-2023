@@ -17,7 +17,7 @@ type Props = PortfolioNavigationProps & {
 
 const PortfolioGridView = ({ work, handleNavigateWork }: Props) => {
   // 4 Photos on top
-  const firstSet = work.slice(0, 3);
+  const firstSet = work.slice(0, 4);
   const restWork = work.slice(4);
 
   return (
@@ -51,7 +51,10 @@ const PortfolioGridView = ({ work, handleNavigateWork }: Props) => {
                   borderTopRight
                   handleNavigateWork={handleNavigateWork}
                 />
-                <Stack height={`calc(${HERO_IMG_HEIGHT} * 0.4 - 8px)`}>
+                <Stack
+                  height={`calc(${HERO_IMG_HEIGHT} * 0.4 - 8px)`}
+                  gap={GRID_GAP}
+                >
                   <PortfolioGridItem
                     {...firstSet[2]}
                     width="50%"
