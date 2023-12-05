@@ -7,6 +7,9 @@ import PortfolioTransition from "./PortfolioTransition";
 import Stack from "../Stack/Stack";
 import Grid from "../Grid/Grid";
 import Glass from "../Glass/Glass";
+import Box from "../Box/Box";
+import Text from "../Text/Text";
+import { H2, H3 } from "../Headline/Headers";
 
 const GRID_GAP = "2px";
 const HERO_IMG_HEIGHT = "60vh";
@@ -84,6 +87,15 @@ const PortfolioGridView = ({ work, handleNavigateWork }: Props) => {
               })}
             </Grid>
           </Stack>
+
+          <Box position="absolute" top={0} left={0} p={6}>
+            <H2 marginBottom={1} marginTop={0}>
+              2023
+            </H2>
+            <Text fontSize={0} lineHeight={1} opacity="0.5">
+              {work.length} projects
+            </Text>
+          </Box>
         </ScrollBox>
       </Glass>
     </PortfolioTransition>
