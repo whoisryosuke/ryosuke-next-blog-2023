@@ -67,6 +67,12 @@ const PortfolioSingleVideo = ({ work, ...props }: Props) => {
     };
   }, []);
 
+  const handleSlider = (e: React.FormEvent<HTMLInputElement>) => {
+    setProgress(parseInt(e.currentTarget.value));
+    ref.current.currentTime =
+      ref.current.duration / (100 / parseInt(e.currentTarget.value));
+  };
+
   return (
     <Box width="60vh" height="60vh" position="relative" {...props}>
       <Video
@@ -112,6 +118,7 @@ const PortfolioSingleVideo = ({ work, ...props }: Props) => {
             value={progress}
             height="5px"
             style={{ marginRight: "8px" }}
+            onChange={handleSlider}
           />
 
           {isMuted ? (
