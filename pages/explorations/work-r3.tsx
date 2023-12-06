@@ -32,105 +32,36 @@ import WorkCard from "@components/dom/WorkCard/WorkCard";
 import WindowHeader from "@components/dom/WindowHeader/WindowHeader";
 import { WorkCardProps } from "@components/dom/PortfolioApp/types";
 import PortfolioApp from "@components/dom/PortfolioApp/PortfolioApp";
-
-const WORK_DATA: WorkCardProps[] = [
-  {
-    src: "/work/art/final-square-web.png",
-    title: "Circles",
-    date: "2023-09-13",
-  },
-  {
-    src: "/work/art/glass-test1.png",
-    title: "Glass Shader Experiments",
-    date: "2023-09-26",
-  },
-  {
-    src: "/work/art/abstract-pringle-r2-glass-final1-cam2.png",
-    title: "Abstract Glass with Extra Long Title",
-    date: "2023-10-03",
-  },
-  {
-    src: "/work/art/animation-540p-watermarked.png",
-    video: {
-      src: "/work/art/animation-540p-watermarked.mp4",
-      width: 960 / 2,
-      height: 540 / 2,
-    },
-    title: "Psy Tunnel",
-    date: "2023-07-27",
-  },
-  {
-    src: "/work/art/bevy-midi-revolution-game1.png",
-    video: {
-      src: "/work/art/bevy-midi-revolution-game1.mp4",
-      width: 960 / 2,
-      height: 540 / 2,
-    },
-    title: "Bevy MIDI Game Prototype",
-    date: "2023-04-26",
-    prototype: "https://codesandbox.com/",
-  },
-  {
-    src: "/work/art/custom-final2-f206-50mm.png",
-    title: "Sci-fi Floor",
-    date: "2023-07-24",
-  },
-  {
-    src: "/work/art/depthcore-final-r1-1.png",
-    title: "DepthCore Layers",
-    date: "2023-09-25",
-  },
-  {
-    src: "/work/art/r1-final2.png",
-    title: "DepthCore Experiment",
-    date: "2023-09-26",
-  },
-  {
-    src: "/work/art/Test6-Angle-Denoise.png",
-    title: "Simulation Node Test",
-    date: "2023-09-07",
-  },
-  {
-    src: "/work/art/Test6-mml-psx-servbot.png",
-    title: "Mega Man Legends Tribute",
-    date: "2023-09-06",
-  },
-  {
-    src: "/work/art/custom-final2-f206-50mm.png",
-    title: "Sci-fi Floor",
-    date: "2023-07-24",
-  },
-  {
-    src: "/work/art/depthcore-final-r1-1.png",
-    title: "DepthCore Layers",
-    date: "2023-09-25",
-  },
-  {
-    src: "/work/art/r1-final2.png",
-    title: "DepthCore Experiment",
-    date: "2023-09-26",
-  },
-  {
-    src: "/work/art/Test6-Angle-Denoise.png",
-    title: "Simulation Node Test",
-    date: "2023-09-07",
-  },
-  {
-    src: "/work/art/Test6-mml-psx-servbot.png",
-    title: "Mega Man Legends Tribute",
-    date: "2023-09-06",
-  },
-];
+import { portfolio } from "content/portfolio/portfolio";
 
 export default function WorkPage() {
   const { customizations, setUserTheme } = useAppStore();
 
-  const work = WORK_DATA.map((work, index) => {
-    return {
-      ...work,
-      id: index,
+  let index = 0;
+  // Go through each year and loop through the items inside
+  const work = Object.entries(portfolio).reduce((prev, [year, items]) => {
+    // Sort the posts by date
+    const sortedItems = items.sort((a, b) => {
+      // Newest first (so b - a)
+      return Date.parse(b.date) - Date.parse(a.date);
+    });
+
+    // Loop through each item and add the index
+    const indexedItems = sortedItems.map((work) => {
+      index += 1;
+      return {
+        ...work,
+        id: index,
+      };
+    });
+
+    prev = {
+      ...prev,
+      [year]: indexedItems,
     };
-  });
+
+    return prev;
+  }, {});
 
   return (
     <PageWrapper>

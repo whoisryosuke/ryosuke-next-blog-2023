@@ -5,14 +5,22 @@ import Box from "../Box/Box";
 import { AnimatePresence } from "framer-motion";
 import PortfolioSingleView from "./PortfolioSingleView";
 import Glass from "../Glass/Glass";
+import { PortfolioContent } from "content/portfolio/portfolio";
+
+const condensePortfolio = (work: PortfolioContent) => {
+  return Object.values(work).reduce((merge, workItems) => {
+    return (merge = [...merge, ...workItems]);
+  }, []);
+};
 
 type Props = {
-  work: WorkCardData[];
+  work: PortfolioContent;
 };
 
 const PortfolioApp = ({ work }: Props) => {
   const [showSingleView, setShowSingleView] = useState(false);
   const [currentId, setCurrentId] = useState(0);
+  const [sortedWork, setSortedWork] = useState(condensePortfolio(work));
 
   const handleNavigateWork = (workId: number) => {
     setShowSingleView(true);
@@ -28,13 +36,13 @@ const PortfolioApp = ({ work }: Props) => {
       <AnimatePresence>
         {!showSingleView && (
           <PortfolioGridView
-            work={work}
+            work={sortedWork}
             handleNavigateWork={handleNavigateWork}
           />
         )}
         {showSingleView && (
           <PortfolioSingleView
-            work={work}
+            work={sortedWork}
             current={currentId}
             handleNavigateWork={handleNavigateWork}
             handleBackToGrid={handleBackToGrid}
