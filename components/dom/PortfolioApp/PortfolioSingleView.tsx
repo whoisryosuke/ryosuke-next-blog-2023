@@ -47,7 +47,7 @@ const PortfolioSingleView = ({
   handleNavigateWork,
   handleBackToGrid,
 }: Props) => {
-  const currentWork = work[current];
+  const currentWork = work.find((workItem) => current == workItem.id);
   return (
     <PortfolioTransition>
       <PortfolioSingleImageContainer
