@@ -2,6 +2,35 @@ import React from "react";
 import Image from "../Image/Image";
 import { PortfolioNavigationProps, WorkCardProps } from "./types";
 import Box from "../Box/Box";
+import styled from "styled-components";
+
+const PortfolioGridItemContainer = styled(Box)`
+  & > .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(
+      ellipse at center,
+      rgba(255, 255, 255, 1) 0%,
+      rgba(255, 255, 255, 0.8) 48%,
+      rgba(255, 255, 255, 1) 100%
+    );
+    opacity: 0;
+
+    /* Animation */
+    @media (prefers-reduced-motion: no-preference) {
+      transition-property: opacity;
+      transition-duration: 420ms;
+    }
+  }
+
+  &:hover > .overlay,
+  &:focus > .overlay {
+    opacity: 0.2;
+  }
+`;
 
 type Props = PortfolioNavigationProps &
   WorkCardProps & {
@@ -12,6 +41,8 @@ type Props = PortfolioNavigationProps &
     };
     borderTopRight?: boolean;
     borderRadius?: string;
+    height?: string;
+    maxHeight?: string;
   };
 
 const PortfolioGridItem = ({
@@ -32,7 +63,12 @@ const PortfolioGridItem = ({
   };
 
   return (
-    <Box onClick={handleClick} {...props} position="relative">
+    <PortfolioGridItemContainer
+      onClick={handleClick}
+      {...props}
+      position="relative"
+    >
+      <div className="overlay" />
       {src && (
         <img
           src={src}
@@ -47,7 +83,7 @@ const PortfolioGridItem = ({
           }}
         />
       )}
-    </Box>
+    </PortfolioGridItemContainer>
   );
 };
 
