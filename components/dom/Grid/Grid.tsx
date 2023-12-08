@@ -1,4 +1,5 @@
 import { Theme } from "@theme/index";
+import { MEDIA_QUERIES } from "@theme/tokens";
 import React, { PropsWithChildren } from "react";
 import styled from "styled-components";
 
@@ -14,6 +15,11 @@ const StyledGrid = styled("div")<GridProps>`
   grid-template-rows: repeat(${({ cols }) => cols}, auto);
   column-gap: ${({ theme, columnGap }) => theme.space[columnGap]};
   row-gap: ${({ theme, rowGap }) => theme.space[rowGap]};
+
+  @media (min-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, auto);
+  }
 `;
 
 const Grid = ({ children, ...props }: PropsWithChildren<GridProps>) => {

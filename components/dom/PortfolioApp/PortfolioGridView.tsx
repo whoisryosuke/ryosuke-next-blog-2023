@@ -42,12 +42,16 @@ const PortfolioGridView = ({ work, handleNavigateWork }: Props) => {
               {/* Big Image */}
               <PortfolioGridItem
                 {...firstSet[0]}
-                width="67%"
+                width={{ mobile: "100%", tablet: "67%" }}
                 height={HERO_IMG_HEIGHT}
                 handleNavigateWork={handleNavigateWork}
               />
               {/* 3 side images */}
-              <Stack vertical width="33.33%" gap={GRID_GAP}>
+              <Stack
+                vertical
+                width={{ mobile: "100%", tablet: "33.33%" }}
+                gap={GRID_GAP}
+              >
                 <PortfolioGridItem
                   {...firstSet[1]}
                   height={`calc(${HERO_IMG_HEIGHT} * 0.6)`}
@@ -57,6 +61,7 @@ const PortfolioGridView = ({ work, handleNavigateWork }: Props) => {
                 <Stack
                   height={`calc(${HERO_IMG_HEIGHT} * 0.4 - 8px)`}
                   gap={GRID_GAP}
+                  responsive={false}
                 >
                   <PortfolioGridItem
                     {...firstSet[2]}
