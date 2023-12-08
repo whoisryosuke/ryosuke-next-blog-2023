@@ -6,6 +6,23 @@ type VideoSource = {
   height: CSSProperties["height"];
 };
 
+// Category system
+export type PortfolioCategories =
+  | "3D"
+  | "Web Dev"
+  | "Game Dev"
+  | "Design"
+  | "Illustration"
+  | "All work";
+export const PortfolioCategoryMap: PortfolioCategories[] = [
+  "3D",
+  "Web Dev",
+  "Game Dev",
+  "Design",
+  // "Illustration",
+  "All work",
+];
+
 // Portfolio data after it gets an ID.
 // This happens after the first load (or statically on backend ideally)
 export type WorkCardData = {
@@ -15,6 +32,7 @@ export type WorkCardData = {
   title: string;
   date: string;
   prototype?: string;
+  category: PortfolioCategories[];
 };
 
 // Portfolio data before it gets an ID attached to it.

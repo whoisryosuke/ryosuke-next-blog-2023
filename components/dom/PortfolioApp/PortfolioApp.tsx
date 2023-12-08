@@ -1,16 +1,32 @@
-import React, { useState } from "react";
-import { WorkCardData, WorkCardProps } from "./types";
+import React, { useEffect, useState } from "react";
+import {
+  PortfolioCategories,
+  PortfolioCategoryMap,
+  WorkCardData,
+  WorkCardInitialData,
+  WorkCardProps,
+} from "./types";
 import PortfolioGridView from "./PortfolioGridView";
 import Box from "../Box/Box";
 import { AnimatePresence } from "framer-motion";
 import PortfolioSingleView from "./PortfolioSingleView";
 import Glass from "../Glass/Glass";
 import { PortfolioContent } from "content/portfolio/portfolio";
+import PortfolioCategorySort from "./PortfolioCategorySort";
 
 const condensePortfolio = (work: PortfolioContent) => {
   return Object.values(work).reduce((merge, workItems) => {
     return (merge = [...merge, ...workItems]);
   }, []);
+};
+
+const categoryPortfolio = (
+  work: WorkCardData[],
+  category: PortfolioCategories
+) => {
+  return work.filter((item) =>
+    item.category.find((itemCategory) => itemCategory === category)
+  );
 };
 
 type Props = {
@@ -21,6 +37,9 @@ const PortfolioApp = ({ work }: Props) => {
   const [showSingleView, setShowSingleView] = useState(false);
   const [currentId, setCurrentId] = useState(0);
   const [sortedWork, setSortedWork] = useState(condensePortfolio(work));
+  const [currentCategory, setCurrentCategory] = useState<PortfolioCategories>(
+    PortfolioCategoryMap[PortfolioCategoryMap.length - 1]
+  );
 
   const handleNavigateWork = (workId: number) => {
     setShowSingleView(true);
@@ -31,14 +50,34 @@ const PortfolioApp = ({ work }: Props) => {
     setShowSingleView(false);
   };
 
+  const sortPortfolioByCategory = (category: PortfolioCategories) => {
+    setCurrentCategory(category);
+  };
+
+  useEffect(() => {
+    console.log("sorting category", currentCategory);
+    const freshWork = condensePortfolio(work);
+    if (currentCategory == "All work") {
+      setSortedWork(freshWork);
+    } else {
+      setSortedWork(categoryPortfolio(freshWork, currentCategory));
+    }
+  }, [currentCategory]);
+
   return (
     <Box maxWidth="80vw" margin="auto" mt={8} p={0} position="relative">
       <AnimatePresence>
         {!showSingleView && (
-          <PortfolioGridView
-            work={sortedWork}
-            handleNavigateWork={handleNavigateWork}
-          />
+          <>
+            <PortfolioGridView
+              work={sortedWork}
+              handleNavigateWork={handleNavigateWork}
+            />
+            <PortfolioCategorySort
+              currentCategory={currentCategory}
+              sortPortfolioByCategory={sortPortfolioByCategory}
+            />
+          </>
         )}
         {showSingleView && (
           <PortfolioSingleView
