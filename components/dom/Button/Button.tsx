@@ -11,9 +11,11 @@ import {
   FlexProps,
   FlexboxProps,
   MarginProps,
+  FontSizeProps,
   borderRadius,
   flex,
   flexbox,
+  fontSize,
   margin,
 } from "styled-system";
 import { Theme } from "@theme/index";
@@ -24,7 +26,8 @@ type ButtonProps = DetailedHTMLProps<
   HTMLButtonElement
 > &
   FlexboxProps &
-  MarginProps & {
+  MarginProps &
+  FontSizeProps & {
     focused?: boolean;
     solid?: boolean;
     icon?: React.ReactElement;
@@ -106,6 +109,7 @@ const StyledButton = styled("button")<ButtonProps>`
     transition-duration: 420ms;
   }
 
+  ${fontSize}
   ${flexbox}
   ${margin}
 `;
@@ -128,7 +132,9 @@ const Button = ({
           {icon}
         </Text>
       )}
-      <Text color="inherit">{children}</Text>
+      <Text color="inherit" fontSize="inherit">
+        {children}
+      </Text>
     </StyledButton>
   );
 };

@@ -20,6 +20,7 @@ const PortfolioCategorySort = ({
         <Stack responsive={false}>
           {PortfolioCategoryMap.map((categoryName) => (
             <Button
+              fontSize={1}
               solid={currentCategory == categoryName}
               onClick={() => sortPortfolioByCategory(categoryName)}
             >
