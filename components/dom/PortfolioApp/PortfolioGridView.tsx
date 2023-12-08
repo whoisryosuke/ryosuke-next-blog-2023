@@ -47,7 +47,7 @@ const PortfolioGridView = ({ work, handleNavigateWork }: Props) => {
                 handleNavigateWork={handleNavigateWork}
               />
               {/* 3 side images */}
-              <Stack vertical width="33%" gap={GRID_GAP}>
+              <Stack vertical width="33.33%" gap={GRID_GAP}>
                 <PortfolioGridItem
                   {...firstSet[1]}
                   height={`calc(${HERO_IMG_HEIGHT} * 0.6)`}
