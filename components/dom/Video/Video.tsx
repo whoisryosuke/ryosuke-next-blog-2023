@@ -1,11 +1,20 @@
 import React, { HTMLProps, RefObject, forwardRef } from "react";
-import { MarginProps, margin } from "styled-system";
+import {
+  HeightProps,
+  MarginProps,
+  WidthProps,
+  height,
+  margin,
+  width,
+} from "styled-system";
 import styled from "styled-components";
 import { Theme } from "@theme/index";
 import { borderShineEffect } from "@theme/styles/glass";
 
 export type VideoProps = HTMLProps<HTMLVideoElement> &
-  MarginProps & {
+  MarginProps &
+  WidthProps &
+  HeightProps & {
     borderRadius?: keyof Theme["radius"];
   };
 
@@ -19,6 +28,9 @@ const StyledVideo = styled("video")<VideoProps>`
   &:after {
     ${borderShineEffect}
   }
+
+  ${width}
+  ${height}
 `;
 
 const Video = forwardRef(

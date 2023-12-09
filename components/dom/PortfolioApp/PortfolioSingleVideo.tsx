@@ -13,6 +13,7 @@ import { WorkCardData } from "./types";
 import PortfolioSingleTitle from "./PortfolioSingleTitle";
 import Slider from "../Slider/Slider";
 import Stack from "../Stack/Stack";
+import { SINGLE_VIEW_HEIGHT, SINGLE_VIEW_WIDTH } from "./styles";
 
 type Props = {
   work: WorkCardData;
@@ -74,13 +75,20 @@ const PortfolioSingleVideo = ({ work, ...props }: Props) => {
   };
 
   return (
-    <Box width="60vh" height="60vh" position="relative" {...props}>
+    <Box
+      width={SINGLE_VIEW_WIDTH}
+      height={SINGLE_VIEW_HEIGHT}
+      position="relative"
+      {...props}
+    >
       <Video
         ref={ref}
         autoPlay
         loop
         muted
-        style={{ width: "60vh", height: "60vh" }}
+        width={SINGLE_VIEW_WIDTH}
+        height={SINGLE_VIEW_HEIGHT}
+        // style={{ width: "60vh", height: "60vh" }}
       >
         <source src={work.video.src} />
       </Video>

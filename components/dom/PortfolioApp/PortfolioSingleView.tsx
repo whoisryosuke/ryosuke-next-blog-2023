@@ -14,6 +14,7 @@ import Text from "../Text/Text";
 import Video from "../Video/Video";
 import PortfolioSingleVideo from "./PortfolioSingleVideo";
 import PortfolioSingleTitle from "./PortfolioSingleTitle";
+import { SINGLE_VIEW_HEIGHT, SINGLE_VIEW_WIDTH } from "./styles";
 
 const PortfolioSingleImageContainer = styled(Box)`
   & .navigation,
@@ -51,23 +52,24 @@ const PortfolioSingleView = ({
   return (
     <PortfolioTransition>
       <PortfolioSingleImageContainer
-        width="60vh"
-        height="60vh"
-        maxHeight="60vh"
+        width={SINGLE_VIEW_WIDTH}
+        height={SINGLE_VIEW_HEIGHT}
+        maxHeight={SINGLE_VIEW_HEIGHT}
         position="relative"
         margin="auto"
       >
         {!currentWork.video && (
           <>
-            <img
+            <Box
+              as="img"
               id={currentWork.id}
               src={currentWork.src}
-              width="60vh"
-              height="60vh"
+              width={SINGLE_VIEW_WIDTH}
+              height={SINGLE_VIEW_HEIGHT}
+              maxHeight={SINGLE_VIEW_HEIGHT}
+              minHeight={SINGLE_VIEW_HEIGHT}
               style={{
                 width: "100%",
-                minHeight: "60vh",
-                maxHeight: "60vh",
                 borderRadius: "21px",
                 objectFit: "cover",
               }}
@@ -104,7 +106,7 @@ const PortfolioSingleView = ({
         </Box>
       </PortfolioSingleImageContainer>
       <PortfolioThumbnailSlider
-        width="60vh"
+        width={SINGLE_VIEW_WIDTH}
         work={work}
         current={current}
         handleNavigateWork={handleNavigateWork}

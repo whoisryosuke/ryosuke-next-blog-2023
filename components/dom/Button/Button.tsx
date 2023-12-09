@@ -20,6 +20,7 @@ import {
 } from "styled-system";
 import { Theme } from "@theme/index";
 import { borderShineEffect } from "@theme/styles/glass";
+import { BREAKPOINTS } from "@theme/tokens";
 
 type ButtonProps = DetailedHTMLProps<
   ButtonHTMLAttributes<HTMLButtonElement>,
@@ -32,6 +33,7 @@ type ButtonProps = DetailedHTMLProps<
     solid?: boolean;
     icon?: React.ReactElement;
     onlyIcon?: boolean;
+    mobileIcon?: boolean;
     iconSize?: {
       width: React.CSSProperties["width"];
       height: React.CSSProperties["height"];
@@ -109,6 +111,27 @@ const StyledButton = styled("button")<ButtonProps>`
     transition-duration: 420ms;
   }
 
+  ${({ mobileIcon }) =>
+    mobileIcon &&
+    `
+  @media (min-width: ${BREAKPOINTS.mobile}) {
+    & .text {
+      display:none;
+    }
+    & .icon {
+      margin-right:0;
+      line-height:0;
+    }
+  }
+   @media (min-width: ${BREAKPOINTS.tablet}) {
+    & .text {
+      display:block;
+    }
+    & .icon {
+      display:none;
+    }
+  }`}
+
   ${fontSize}
   ${flexbox}
   ${margin}
@@ -125,6 +148,7 @@ const Button = ({
     <StyledButton ref={ref} solid={focused} onlyIcon={onlyIcon} {...props}>
       {icon && (
         <Text
+          className="icon"
           color={"inherit"}
           mr={onlyIcon ? 0 : 3}
           lineHeight={onlyIcon && 0}
@@ -132,7 +156,7 @@ const Button = ({
           {icon}
         </Text>
       )}
-      <Text color="inherit" fontSize="inherit">
+      <Text className="text" color="inherit" fontSize="inherit">
         {children}
       </Text>
     </StyledButton>
