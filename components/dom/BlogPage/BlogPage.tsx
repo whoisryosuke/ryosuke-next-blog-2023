@@ -99,6 +99,7 @@ const BlogPage = ({ children, ...props }: PropsWithChildren<Props>) => {
                   icon={<BiArrowToLeft />}
                   mr={3}
                   onClick={handleBackButton}
+                  display={{ default: "none", tablet: "inherit" }}
                 />
                 <Button
                   solid
@@ -106,6 +107,7 @@ const BlogPage = ({ children, ...props }: PropsWithChildren<Props>) => {
                   icon={<BiArrowToRight />}
                   mr={3}
                   onClick={handleForwardButton}
+                  display={{ default: "none", tablet: "inherit" }}
                 />
                 <Box flex={1} mr={3}>
                   <Input
@@ -121,6 +123,7 @@ const BlogPage = ({ children, ...props }: PropsWithChildren<Props>) => {
                   icon={<BiShare />}
                   mr={3}
                   onClick={handleShare}
+                  display={{ default: "none", tablet: "inherit" }}
                 />
                 <Button
                   solid
@@ -128,6 +131,7 @@ const BlogPage = ({ children, ...props }: PropsWithChildren<Props>) => {
                   icon={<BiFont />}
                   mr={3}
                   onClick={handleCustomizationModal}
+                  display={{ default: "none", tablet: "inherit" }}
                 />
                 <Button
                   as={Link}
@@ -136,6 +140,7 @@ const BlogPage = ({ children, ...props }: PropsWithChildren<Props>) => {
                   onlyIcon
                   icon={<BiFolder />}
                   mr={3}
+                  display={{ default: "none", tablet: "inherit" }}
                 />
               </Box>
             </Glass>

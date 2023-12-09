@@ -16,7 +16,7 @@ const StyledGrid = styled("div")<GridProps>`
   column-gap: ${({ theme, columnGap }) => theme.space[columnGap]};
   row-gap: ${({ theme, rowGap }) => theme.space[rowGap]};
 
-  @media (min-width: ${({ theme }) => theme.breakpoints.mobile}) {
+  @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
     grid-template-columns: repeat(2, 1fr);
     grid-template-rows: repeat(2, auto);
   }

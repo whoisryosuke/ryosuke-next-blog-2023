@@ -4,6 +4,7 @@ export const ANIMATION = {
 };
 
 export const BREAKPOINTS_RAW = {
+  default: 0,
   mobile: 320,
   tablet: 600,
   computer: 992,
@@ -30,15 +31,16 @@ export const BREAKPOINTS: Breakpoints = Object.entries(BREAKPOINTS_RAW).reduce(
 //   widescreen: "1920px",
 // };
 
-type MediaQueries = Record<keyof typeof BREAKPOINTS, Record<string, string>>;
+type MediaQueries = Record<keyof typeof BREAKPOINTS, string>;
 // Generates media queries formatted for Vanilla Extract
-export const MEDIA_QUERIES: MediaQueries = Object.entries(BREAKPOINTS).reduce(
-  (mergeObj, [key, value]) => ({
-    ...mergeObj,
-    [key]: { "@media": `screen and (min-width: ${value})` },
-  }),
-  {} as MediaQueries
-);
+export const MEDIA_QUERIES: MediaQueries = {
+  default: `@media (screen and (max-width: ${BREAKPOINTS.mobile}))`,
+  mobile: `@media (screen and (min-width: ${BREAKPOINTS.mobile}))`,
+  tablet: `@media (screen and (min-width: ${BREAKPOINTS.tablet}))`,
+  computer: `@media (screen and (min-width: ${BREAKPOINTS.computer}))`,
+  desktop: `@media (screen and (min-width: ${BREAKPOINTS.desktop}))`,
+  widescreen: `@media (screen and (min-width: ${BREAKPOINTS.widescreen}))`,
+};
 
 export const FONTS = {
   body: `'Inter', Helvetiva Neue, Helvetica, Arial, sans-serif`,

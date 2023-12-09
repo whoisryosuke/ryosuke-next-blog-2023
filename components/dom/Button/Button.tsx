@@ -17,6 +17,7 @@ import {
   flexbox,
   fontSize,
   margin,
+  display,
 } from "styled-system";
 import { Theme } from "@theme/index";
 import { borderShineEffect } from "@theme/styles/glass";
@@ -28,7 +29,8 @@ type ButtonProps = DetailedHTMLProps<
 > &
   FlexboxProps &
   MarginProps &
-  FontSizeProps & {
+  FontSizeProps &
+  DisplayProps & {
     focused?: boolean;
     solid?: boolean;
     icon?: React.ReactElement;
@@ -114,7 +116,7 @@ const StyledButton = styled("button")<ButtonProps>`
   ${({ mobileIcon }) =>
     mobileIcon &&
     `
-  @media (min-width: ${BREAKPOINTS.mobile}) {
+  @media (min-width: ${BREAKPOINTS.default}) {
     & .text {
       display:none;
     }
@@ -135,6 +137,7 @@ const StyledButton = styled("button")<ButtonProps>`
   ${fontSize}
   ${flexbox}
   ${margin}
+  ${display}
 `;
 
 const Button = ({

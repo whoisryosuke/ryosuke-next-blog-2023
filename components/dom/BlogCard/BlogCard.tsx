@@ -9,6 +9,7 @@ import Stack from "../Stack/Stack";
 import Glass from "../Glass/Glass";
 import styled from "styled-components";
 import ContentListItem from "../ContentListItem/ContentListItem";
+import format from "date-fns/format";
 
 type BlogCardTagProps = {
   tag: string;
@@ -46,18 +47,24 @@ const BlogCard = ({ post, ...props }: BlogCardProps) => {
         href={`${post.slug}`}
         style={{ textDecoration: "none", outline: 0 }}
       >
-        <Box display="flex" justifyContent="space-between" mb={3}>
+        <Box
+          display="flex"
+          justifyContent="space-between"
+          mb={3}
+          flexDirection={{ default: "column", tablet: "row" }}
+        >
           <H4 mt={0} mb={0}>
             {post.frontmatter.title}
           </H4>
           <Text fontSize={1}>
-            {formatDistance(
-              new Date(Date.parse(post.frontmatter.date)),
-              new Date()
-            )}
+            {format(new Date(Date.parse(post.frontmatter.date)), "MM/dd/yyyy")}
           </Text>
         </Box>
-        <Stack>
+        <Stack
+          responsive={false}
+          wrap
+          display={{ default: "none", tablet: "flex" }}
+        >
           {post.frontmatter.tags?.map((tag) => <BlogCardTag tag={tag} />)}
         </Stack>
       </Link>

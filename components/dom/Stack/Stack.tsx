@@ -50,7 +50,7 @@ const Stack = ({
     <Box
       display="flex"
       flexDirection={{
-        mobile: responsive ? "column" : orientation,
+        default: responsive ? "column" : orientation,
         tablet: orientation,
       }}
       flexWrap={wrap ? "wrap" : "nowrap"}
