@@ -95,10 +95,14 @@ const PortfolioGridView = ({ work, handleNavigateWork }: Props) => {
 
           <Box position="absolute" top={0} left={0} p={6}>
             <H2 marginBottom={1} marginTop={0}>
-              2023
+              {work.length > 0
+                ? new Date(Date.parse(work[0].date)).getFullYear()
+                : "No work found"}
             </H2>
             <Text fontSize={0} lineHeight={1} opacity="0.5">
-              {work.length} projects
+              {work.length > 0
+                ? `${work.length} projects`
+                : "Try another filter"}
             </Text>
           </Box>
         </ScrollBox>

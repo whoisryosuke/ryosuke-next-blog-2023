@@ -149,7 +149,7 @@ const MainNavbar = ({ ...props }: MenuProps) => {
           />
           <Button
             as={Link}
-            href="/explorations/work"
+            href="/explorations/work-r3"
             title="Work"
             icon={<BiGhost />}
             onlyIcon
