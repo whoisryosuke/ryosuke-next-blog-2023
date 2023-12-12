@@ -37,61 +37,63 @@ const PortfolioGridView = ({ work, handleNavigateWork }: Props) => {
           hideScrollbar
           borderRadius={4}
         >
-          <Stack vertical gap={GRID_GAP}>
-            <Stack gap={GRID_GAP}>
-              {/* Big Image */}
-              <PortfolioGridItem
-                {...firstSet[0]}
-                width={{ mobile: "100%", tablet: "67%" }}
-                height={HERO_IMG_HEIGHT}
-                handleNavigateWork={handleNavigateWork}
-              />
-              {/* 3 side images */}
-              <Stack
-                vertical
-                width={{ mobile: "100%", tablet: "33.33%" }}
-                gap={GRID_GAP}
-              >
+          {work.length > 0 && (
+            <Stack vertical gap={GRID_GAP}>
+              <Stack gap={GRID_GAP}>
+                {/* Big Image */}
                 <PortfolioGridItem
-                  {...firstSet[1]}
-                  height={`calc(${HERO_IMG_HEIGHT} * 0.6)`}
-                  borderTopRight
+                  {...firstSet[0]}
+                  width={{ mobile: "100%", tablet: "67%" }}
+                  height={HERO_IMG_HEIGHT}
                   handleNavigateWork={handleNavigateWork}
                 />
+                {/* 3 side images */}
                 <Stack
-                  height={`calc(${HERO_IMG_HEIGHT} * 0.4 - 8px)`}
+                  vertical
+                  width={{ mobile: "100%", tablet: "33.33%" }}
                   gap={GRID_GAP}
-                  responsive={false}
                 >
                   <PortfolioGridItem
-                    {...firstSet[2]}
-                    width="50%"
-                    height={`calc(${HERO_IMG_HEIGHT} * 0.4 - ${GRID_GAP})`}
+                    {...firstSet[1]}
+                    height={`calc(${HERO_IMG_HEIGHT} * 0.6)`}
+                    borderTopRight
                     handleNavigateWork={handleNavigateWork}
                   />
-                  <PortfolioGridItem
-                    {...firstSet[3]}
-                    width="50%"
-                    height={`calc(${HERO_IMG_HEIGHT} * 0.4 - ${GRID_GAP})`}
-                    handleNavigateWork={handleNavigateWork}
-                  />
+                  <Stack
+                    height={`calc(${HERO_IMG_HEIGHT} * 0.4 - 8px)`}
+                    gap={GRID_GAP}
+                    responsive={false}
+                  >
+                    <PortfolioGridItem
+                      {...firstSet[2]}
+                      width="50%"
+                      height={`calc(${HERO_IMG_HEIGHT} * 0.4 - ${GRID_GAP})`}
+                      handleNavigateWork={handleNavigateWork}
+                    />
+                    <PortfolioGridItem
+                      {...firstSet[3]}
+                      width="50%"
+                      height={`calc(${HERO_IMG_HEIGHT} * 0.4 - ${GRID_GAP})`}
+                      handleNavigateWork={handleNavigateWork}
+                    />
+                  </Stack>
                 </Stack>
               </Stack>
+              {/* Grid underneath */}
+              <Grid cols={6} columnGap={GRID_GAP} rowGap={GRID_GAP}>
+                {restWork.map((workItem) => {
+                  return (
+                    <PortfolioGridItem
+                      {...workItem}
+                      height="150px"
+                      date={new Date(Date.parse(workItem.date))}
+                      handleNavigateWork={handleNavigateWork}
+                    />
+                  );
+                })}
+              </Grid>
             </Stack>
-            {/* Grid underneath */}
-            <Grid cols={6} columnGap={GRID_GAP} rowGap={GRID_GAP}>
-              {restWork.map((workItem) => {
-                return (
-                  <PortfolioGridItem
-                    {...workItem}
-                    height="150px"
-                    date={new Date(Date.parse(workItem.date))}
-                    handleNavigateWork={handleNavigateWork}
-                  />
-                );
-              })}
-            </Grid>
-          </Stack>
+          )}
 
           <Box position="absolute" top={0} left={0} p={6}>
             <H2 marginBottom={1} marginTop={0}>
