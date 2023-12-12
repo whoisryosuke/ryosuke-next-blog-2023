@@ -4,6 +4,7 @@ import React, { useEffect } from "react";
 import fs from "fs";
 import matter from "gray-matter";
 import Stack from "@components/dom/Stack/Stack";
+import Box from "@components/dom/Box/Box";
 import { H2, H3, H4 } from "@components/dom/Headline/Headers";
 import BlogCard, { BlogPostData } from "@components/dom/BlogCard/BlogCard";
 import { useBlogStore } from "@store/blog";
@@ -47,8 +48,8 @@ const BlogArchivePage = ({ posts }: Props) => {
   return (
     <BlogTransition>
       {postsByYear.reverse().map(([year, posts]) => (
-        <>
-          <H2>{year}</H2>
+        <Box marginBottom={8}>
+          <H2 marginTop={0}>{year}</H2>
           <Stack
             vertical
             gap="0px"
@@ -61,7 +62,7 @@ const BlogArchivePage = ({ posts }: Props) => {
               <BlogCard key={post.frontmatter.slug} post={post} />
             ))}
           </Stack>
-        </>
+        </Box>
       ))}
     </BlogTransition>
   );

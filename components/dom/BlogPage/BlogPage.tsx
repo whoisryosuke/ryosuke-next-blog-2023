@@ -73,7 +73,7 @@ const BlogPage = ({ children, ...props }: PropsWithChildren<Props>) => {
         width={{ mobile: "100%", tablet: "80vw" }}
         // maxWidth="1200px"
         margin="auto"
-        pt={{ mobile: 6, tablet: 8 }}
+        pt={{ mobile: 4, tablet: 6 }}
         // mb={{ mobile: 8, tablet: 10 }}
         flex={1}
         {...props}
@@ -162,6 +162,7 @@ const BlogPage = ({ children, ...props }: PropsWithChildren<Props>) => {
           <Box
             minWidth="250px"
             opacity={tableOfContents.length > 0 ? { mobile: 0, tablet: 1 } : 0}
+            display={{ default: "none", computer: "block" }}
           >
             <Glass id="toc" blur={3} overflow="hidden" p={4}>
               <Headline id="test" fontSize={2}>
