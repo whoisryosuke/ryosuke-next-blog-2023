@@ -25,8 +25,16 @@ const Stack = ({
 }: PropsWithChildren<Props>) => {
   // The CSS for gap between elements
   const gapStyle = {
-    marginBottom: { mobile: gap, tablet: vertical || wrap ? gap : 0 },
+    marginBottom: {
+      mobile: responsive ? gap : 0,
+      tablet: vertical || wrap ? gap : 0,
+    },
     marginRight: { mobile: 0, tablet: !vertical ? gap : 0 },
+  };
+  // If it's the last child, we still apply some styles depending on the case
+  // If we wrap, there's always a marginBottom needed or it'll offset flex
+  const defaultGap = {
+    marginBottom: { mobile: responsive ? gap : 0, tablet: wrap ? gap : 0 },
   };
 
   // Loop through children and apply gap (unless it's the last child)
@@ -34,7 +42,7 @@ const Stack = ({
   const spacedChildren = React.Children.map(childArray, (child, index) => {
     if (React.isValidElement(child)) {
       const showGapStyle =
-        children && index < childArray.length - 1 ? gapStyle : {};
+        children && index < childArray.length - 1 ? gapStyle : defaultGap;
 
       if (wrapper) return <Box {...showGapStyle}>{child}</Box>;
       return React.cloneElement(child, {
