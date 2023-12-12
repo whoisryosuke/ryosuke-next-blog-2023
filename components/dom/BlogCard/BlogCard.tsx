@@ -18,7 +18,7 @@ type BlogCardTagProps = {
 const BlogCardTag = ({ tag, ...props }: BlogCardTagProps) => {
   return (
     <Glass py={2} px={4} bg="glass" borderRadius={2} modal {...props}>
-      <Text fontSize={1}>{tag}</Text>
+      <Text fontSize={0}>{tag}</Text>
     </Glass>
   );
 };
@@ -50,13 +50,14 @@ const BlogCard = ({ post, ...props }: BlogCardProps) => {
         <Box
           display="flex"
           justifyContent="space-between"
+          alignItems="center"
           mb={3}
           flexDirection={{ default: "column", tablet: "row" }}
         >
           <H4 mt={0} mb={0}>
             {post.frontmatter.title}
           </H4>
-          <Text fontSize={1}>
+          <Text fontSize={1} opacity="0.7">
             {format(new Date(Date.parse(post.frontmatter.date)), "MM/dd/yyyy")}
           </Text>
         </Box>
