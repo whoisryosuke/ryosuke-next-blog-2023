@@ -24,14 +24,15 @@ const Toast = ({ toast }: Props) => {
 
   return (
     <Glass
-      width={"250px"}
+      width={{ default: "100%", tablet: "250px" }}
       px={4}
       py={4}
       mb={3}
       borderRadius={2}
       onClick={toast.type === "achievement" ? handleAchievementsModal : noop}
+      blur={4}
     >
-      <Stack alignItems="center">
+      <Stack>
         {toast.content.icon && (
           <Text color="textOverlay" lineHeight={0}>
             <Icon style={{ width: "36px", height: "36px" }} />

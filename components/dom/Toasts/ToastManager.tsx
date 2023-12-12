@@ -3,6 +3,15 @@ import { AnimatePresence, motion } from "framer-motion";
 import React, { useEffect, useRef } from "react";
 import Stack from "../Stack/Stack";
 import Toast from "./Toast";
+import styled from "styled-components";
+
+const ToastManagerContainer = styled(Stack)`
+  /* Animation */
+  @media (prefers-reduced-motion: no-preference) {
+    transition-property: transform;
+    transition-duration: 710ms;
+  }
+`;
 
 type Props = {};
 
@@ -33,12 +42,32 @@ const ToastManager = (props: Props) => {
       vertical
       gap="2px"
       position="absolute"
-      top={3}
-      right={3}
-      width={"250px"}
+      top={0}
+      right={0}
+      p={3}
+      width={{ default: "100%", tablet: "250px" }}
       role="region"
       aria-live="polite"
-      style={{ perspective: "500px" }}
+      style={{
+        perspective: "500px",
+        minHeight: "300px",
+        background:
+          toastMap.length > 0
+            ? "radial-gradient(circle at 150% -150%, rgba(0,0,0,0.65) 50%,rgba(0,0,0,0) 80%)"
+            : "transparent",
+
+        "-webkit-mask-image": `linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 1) 10%
+  ), linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 1) 10%
+  )`,
+        "-webkit-mask-composite": "source-in" /* For Chrome */,
+        "mask-composite": "intersect" /* For Firefox */,
+      }}
     >
       <AnimatePresence>
         {toastMap.map((toast, index) => (
@@ -64,7 +93,7 @@ const ToastManager = (props: Props) => {
               transformOrigin: "top center",
             }}
             transition={{ duration: 0.7 }}
-            style={{ position: "absolute" }}
+            style={{ position: "absolute", width: "100%" }}
           >
             <Toast toast={toast} />
           </motion.div>
