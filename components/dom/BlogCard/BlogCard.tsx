@@ -50,7 +50,6 @@ const BlogCard = ({ post, ...props }: BlogCardProps) => {
         <Box
           display="flex"
           justifyContent="space-between"
-          alignItems="center"
           mb={3}
           flexDirection={{ default: "column", tablet: "row" }}
         >
