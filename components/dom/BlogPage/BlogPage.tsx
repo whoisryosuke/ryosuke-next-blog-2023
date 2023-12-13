@@ -5,7 +5,7 @@ import Stack from "@components/dom/Stack/Stack";
 import Button from "@components/dom/Button/Button";
 import Headline from "@components/dom/Headline/Headline";
 import ScrollBox from "@components/dom/ScrollBox/ScrollBox";
-import Paragraph from "@components/Paragraph/Paragraph";
+import Paragraph from "@components/dom/Paragraph/Paragraph";
 import ThemeProvider from "../ThemeProvider/ThemeProvider";
 import {
   BiBook,

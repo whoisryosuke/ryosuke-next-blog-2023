@@ -32,7 +32,7 @@ import Input from "@components/dom/Input/Input";
 import Image from "@components/dom/Image/Image";
 import Grid from "@components/dom/Grid/Grid";
 import ScrollBox from "@components/dom/ScrollBox/ScrollBox";
-import Paragraph from "@components/Paragraph/Paragraph";
+import Paragraph from "@components/dom/Paragraph/Paragraph";
 import Container from "@components/dom/Container/Container";
 import PageWrapper from "@components/dom/PageWrapper/PageWrapper";
 

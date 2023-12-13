@@ -1,4 +1,3 @@
-import clsx from "clsx";
 import React, { CSSProperties, PropsWithChildren } from "react";
 import Box, { BoxProps } from "../Box/Box";
 
