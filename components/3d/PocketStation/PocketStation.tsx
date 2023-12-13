@@ -7,15 +7,22 @@ import { UserInputMap } from "@store/input";
 import useRequestAnimationFrame from "features/animation/useRequestAnimationFrame";
 import { useAppStore } from "@store/app";
 
+const AnimatedMesh = (props) => {
+  return <AnimatedMesh {...props} />;
+};
+
 const BUTTON_PRESSED_DEPTH = [0, 0, -0.1];
 const BUTTON_DEFAULT_DEPTH = [0, 0, 0];
 
 type Props = {
   controls: UserInputMap;
+  position: any;
+  rotation: any;
 };
 
 export default function PocketStation({ controls, ...props }: Props) {
   const frontPanelRef = useRef(null);
+  // @ts-ignore Yeah it exists
   const { nodes, materials } = useGLTF("/models/PocketStation-v11.glb");
   const screenMaterial = useRef(null);
   const frameId = useRef(null);
@@ -92,7 +99,7 @@ export default function PocketStation({ controls, ...props }: Props) {
         geometry={nodes.BodyFrontScreen.geometry}
         material={materials.PS_FrontScreen}
       />
-      <animated.mesh
+      <AnimatedMesh
         castShadow
         receiveShadow
         geometry={nodes.BodyFrontPanel003.geometry}
@@ -117,7 +124,7 @@ export default function PocketStation({ controls, ...props }: Props) {
         geometry={nodes.CurveLanyardTie001.geometry}
         material={materials["BlackPlastic.001"]}
       />
-      <animated.mesh
+      <AnimatedMesh
         castShadow
         receiveShadow
         geometry={nodes.BodyFrontButtonsLeft.geometry}
@@ -125,7 +132,7 @@ export default function PocketStation({ controls, ...props }: Props) {
         rotation={rotation}
         position={leftY}
       />
-      <animated.mesh
+      <AnimatedMesh
         castShadow
         receiveShadow
         geometry={nodes.BodyFrontButtonsUp.geometry}
@@ -133,7 +140,7 @@ export default function PocketStation({ controls, ...props }: Props) {
         rotation={rotation}
         position={upY}
       />
-      <animated.mesh
+      <AnimatedMesh
         castShadow
         receiveShadow
         geometry={nodes.BodyFrontButtonsRight.geometry}
@@ -141,7 +148,7 @@ export default function PocketStation({ controls, ...props }: Props) {
         rotation={rotation}
         position={rightY}
       />
-      <animated.mesh
+      <AnimatedMesh
         castShadow
         receiveShadow
         geometry={nodes.BodyFrontButtonsDown.geometry}
@@ -149,7 +156,7 @@ export default function PocketStation({ controls, ...props }: Props) {
         rotation={rotation}
         position={downY}
       />
-      <animated.mesh
+      <AnimatedMesh
         castShadow
         receiveShadow
         geometry={nodes.BodyFrontButtonsConfirm.geometry}
