@@ -22,6 +22,7 @@ const BlogCustomizationPanel = (props: Props) => {
     <fieldset style={{ border: 0 }}>
       <Headline as="legend">Customize Blog</Headline>
       <Stack justifyContent="space-between">
+        {/* @ts-ignore */}
         <Text as="label" for="highContrastBlog">
           High Contrast Blog
         </Text>

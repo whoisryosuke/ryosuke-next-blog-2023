@@ -3,7 +3,6 @@ import Text from "../Text/Text";
 import Link from "../Link/Link";
 import Image from "../Image/BlogImage";
 import CodeInline from "../CodeInline/CodeInline";
-import CodeBlock from "../CodeBlock/CodeBlock";
 import List from "../List/List";
 import ListItem from "../List/ListItem";
 import Blockquote from "../Blockquote/Blockquote";

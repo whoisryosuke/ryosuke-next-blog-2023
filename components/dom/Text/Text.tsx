@@ -18,6 +18,7 @@ export type TextProps<ElementType = HTMLParagraphElement> = ColorProps &
   };
 
 const Text = styled("p")<TextProps>(
+  // @ts-ignore
   {
     boxSizing: "border-box",
     margin: 0,

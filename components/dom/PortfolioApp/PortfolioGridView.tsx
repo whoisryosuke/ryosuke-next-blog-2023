@@ -43,7 +43,7 @@ const PortfolioGridView = ({ work, handleNavigateWork }: Props) => {
                 {/* Big Image */}
                 <PortfolioGridItem
                   {...firstSet[0]}
-                  width={{ mobile: "100%", tablet: "67%" }}
+                  width={{ default: "100%", tablet: "67%" }}
                   height={HERO_IMG_HEIGHT}
                   handleNavigateWork={handleNavigateWork}
                 />
@@ -80,13 +80,12 @@ const PortfolioGridView = ({ work, handleNavigateWork }: Props) => {
                 </Stack>
               </Stack>
               {/* Grid underneath */}
-              <Grid cols={6} columnGap={GRID_GAP} rowGap={GRID_GAP}>
+              <Grid cols={6} columnGap={1} rowGap={1}>
                 {restWork.map((workItem) => {
                   return (
                     <PortfolioGridItem
                       {...workItem}
                       height="150px"
-                      date={new Date(Date.parse(workItem.date))}
                       handleNavigateWork={handleNavigateWork}
                     />
                   );

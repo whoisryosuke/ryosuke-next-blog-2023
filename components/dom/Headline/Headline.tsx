@@ -3,10 +3,15 @@ import Text, { TextProps } from "../Text/Text";
 import { kebabCase } from "lodash";
 
 type Props = TextProps<HTMLHeadingElement> & {
-  slug: boolean;
+  as?: React.ElementType;
+  slug?: boolean;
 };
 
-const Headline = ({ children, slug, ...props }: PropsWithChildren<Props>) => {
+const Headline = ({
+  children,
+  slug = false,
+  ...props
+}: PropsWithChildren<Props>) => {
   return (
     <Text
       as="h1"

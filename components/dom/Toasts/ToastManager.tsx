@@ -56,6 +56,7 @@ const ToastManager = (props: Props) => {
             ? "radial-gradient(circle at 150% -150%, rgba(0,0,0,0.65) 50%,rgba(0,0,0,0) 80%)"
             : "transparent",
 
+        //@ts-ignore
         "-webkit-mask-image": `linear-gradient(
     to top,
     rgba(0, 0, 0, 0) 0%,

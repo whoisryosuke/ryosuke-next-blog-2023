@@ -24,7 +24,9 @@ import Head from "../Head/Head";
 import { useRouter } from "next/router";
 import Link from "next/link";
 
-type Props = {};
+type Props = {
+  title: string;
+};
 
 const BlogPage = ({ children, ...props }: PropsWithChildren<Props>) => {
   const router = useRouter();
@@ -135,6 +137,7 @@ const BlogPage = ({ children, ...props }: PropsWithChildren<Props>) => {
                 />
                 <Button
                   as={Link}
+                  // @ts-ignore hard to image I know
                   href="/blog"
                   solid
                   onlyIcon
@@ -144,14 +147,17 @@ const BlogPage = ({ children, ...props }: PropsWithChildren<Props>) => {
                 />
               </Box>
             </Glass>
-            <ThemeProvider theme={customTheme}>
+            <ThemeProvider
+              // @ts-ignore Ideally each theme prop should be Partial<>
+              theme={customTheme}
+            >
               <Glass id="blog" blur={4} borderRadius={3} overflow="hidden">
                 <ScrollBox
                   ref={boxRef}
                   overflowY="auto"
                   flex={1}
                   height="80vh"
-                  borderRadius={10}
+                  borderRadius={3}
                   p={{ mobile: 5, tablet: 8 }}
                 >
                   {children}
@@ -171,6 +177,7 @@ const BlogPage = ({ children, ...props }: PropsWithChildren<Props>) => {
               {tableOfContents.map((tocItem) => (
                 <Button
                   as="a"
+                  // @ts-ignore
                   href={`#${tocItem.slug}`}
                   // icon={<BiTime />}
                   justifyContent="flex-start"

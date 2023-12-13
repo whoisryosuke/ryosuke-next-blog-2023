@@ -24,7 +24,7 @@ const StyledScrollBox = styled(Box)<Props>`
   );
 `;
 
-const ScrollBox = forwardRef<PropsWithChildren<Props>, HTMLDivElement>(
+const ScrollBox = forwardRef<HTMLDivElement, PropsWithChildren<Props>>(
   ({ children, ...props }, ref) => {
     return (
       <StyledScrollBox ref={ref} {...props}>

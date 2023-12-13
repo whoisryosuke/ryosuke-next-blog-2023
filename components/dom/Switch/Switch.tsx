@@ -1,4 +1,4 @@
-import React from "react";
+import React, { InputHTMLAttributes } from "react";
 import Box from "../Box/Box";
 import styled from "styled-components";
 import { inputBgStyles } from "@theme/styles/glass";
@@ -37,7 +37,7 @@ const SwitchContainer = styled("div")`
   ${inputBgStyles}
 `;
 
-type Props = {};
+type Props = React.InputHTMLAttributes<HTMLInputElement> & {};
 
 const Switch = (props: Props) => {
   return (

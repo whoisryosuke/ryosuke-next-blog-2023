@@ -86,7 +86,9 @@ const PortfolioSingleVideo = ({ work, ...props }: Props) => {
         autoPlay
         loop
         muted
+        //@ts-ignore
         width={SINGLE_VIEW_WIDTH}
+        //@ts-ignore
         height={SINGLE_VIEW_HEIGHT}
         // style={{ width: "60vh", height: "60vh" }}
       >

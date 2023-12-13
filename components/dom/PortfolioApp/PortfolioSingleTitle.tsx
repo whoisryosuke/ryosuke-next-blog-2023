@@ -3,9 +3,9 @@ import { H3 } from "../Headline/Headers";
 import Text from "../Text/Text";
 import format from "date-fns/format";
 import { WorkCardData } from "./types";
-import Box from "../Box/Box";
+import Box, { BoxProps } from "../Box/Box";
 
-type Props = {
+type Props = BoxProps & {
   work: WorkCardData;
 };
 

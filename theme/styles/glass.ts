@@ -17,8 +17,11 @@ export const borderShineEffect = () => css`
 
 export const inputBgStyles = () => css`
   background: ${({ theme }) => theme.colors.darkGlass.input};
-  border-radius: ${({ theme, borderRadius }) =>
-    borderRadius ? theme.radius[borderRadius] : theme.radius.round};
+  border-radius: ${
+    //@ts-ignore
+    ({ theme, borderRadius }) =>
+      borderRadius ? theme.radius[borderRadius] : theme.radius.round
+  };
 
   box-shadow:
     0px -1px 4px rgba(0, 0, 0, 0.25),

@@ -18,6 +18,7 @@ import {
   fontSize,
   margin,
   display,
+  DisplayProps,
 } from "styled-system";
 import { Theme } from "@theme/index";
 import { borderShineEffect } from "@theme/styles/glass";
@@ -31,6 +32,7 @@ type ButtonProps = DetailedHTMLProps<
   MarginProps &
   FontSizeProps &
   DisplayProps & {
+    as?: React.ElementType;
     focused?: boolean;
     solid?: boolean;
     icon?: React.ReactElement;

@@ -18,6 +18,7 @@ const WorkCard = ({
   ...props
 }: WorkCardProps) => {
   return (
+    // @ts-ignore
     <Box {...props}>
       <Box position="relative">
         {src && <Image src={src} />}
@@ -50,7 +51,14 @@ const WorkCard = ({
         </Box>
       </Box>
       {prototype && (
-        <Button as={"a"} href={prototype} solid mt={3} mb={5}>
+        <Button
+          as={"a"}
+          //@ts-ignore
+          href={prototype}
+          solid
+          mt={3}
+          mb={5}
+        >
           View Prototype
         </Button>
       )}

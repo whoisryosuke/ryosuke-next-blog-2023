@@ -5,6 +5,7 @@ type Props = BoxProps & HTMLProps<HTMLDivElement> & {};
 
 const Paper = ({ children, ...props }: PropsWithChildren<Props>) => {
   return (
+    // @ts-ignore
     <Box background="gradients.background" {...props}>
       {children}
     </Box>

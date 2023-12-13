@@ -53,16 +53,16 @@ export default function ComponentsPage() {
           </Glass>
           <Glass p={3}>
             <Stack alignItems="center">
-              <Button icon>
+              <Button onlyIcon>
                 <BiHomeAlt />
               </Button>
-              <Button icon>
+              <Button onlyIcon>
                 <BiBook />
               </Button>
-              <Button icon>
+              <Button onlyIcon>
                 <BiGhost />
               </Button>
-              <Button icon>
+              <Button onlyIcon>
                 <BiHeadphone />
               </Button>
               {/* <Button icon><BiLogoGithub /></Button> */}

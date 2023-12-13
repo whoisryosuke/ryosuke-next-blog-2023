@@ -22,11 +22,12 @@ const PortfolioThumbnailSliderContainer = styled(
   );
 `;
 
-type Props = PortfolioNavigationProps & {
-  width: string;
-  current: number;
-  work: WorkCardData[];
-};
+type Props = PortfolioNavigationProps &
+  BoxProps & {
+    width: string;
+    current: number;
+    work: WorkCardData[];
+  };
 
 const PortfolioThumbnailSlider = ({
   width,

@@ -13,6 +13,8 @@ type Props = {
   posts: BlogPostData[];
 };
 
+type PostsByYear = Record<string, BlogPostData[]>;
+
 const BlogArchivePage = ({ posts }: Props) => {
   const { setTitle, resetTableOfContents } = useBlogStore();
 
@@ -42,7 +44,7 @@ const BlogArchivePage = ({ posts }: Props) => {
       archive[postYear] = [...archive[postYear], post];
 
       return archive;
-    }, {})
+    }, {} as PostsByYear)
   );
 
   return (
@@ -59,7 +61,7 @@ const BlogArchivePage = ({ posts }: Props) => {
             width="calc(100% + 128px)"
           >
             {posts.map((post) => (
-              <BlogCard key={post.frontmatter.slug} post={post} />
+              <BlogCard key={post.slug} post={post} />
             ))}
           </Stack>
         </Box>
@@ -68,26 +70,26 @@ const BlogArchivePage = ({ posts }: Props) => {
   );
 };
 
-export function getStaticProps() {
-  const posts = postFilePaths
-    // Remove root path
-    .map((filePath) => {
-      const source = fs.readFileSync(filePath);
-      const { content, data } = matter(source);
+export async function getStaticProps() {
+  const rawPosts = await postFilePaths();
+  // Remove root path
+  const posts = rawPosts.map((filePath) => {
+    const source = fs.readFileSync(filePath);
+    const { content, data } = matter(source);
 
-      // Generate a slug
-      const slug = filePath
-        .replace(POSTS_PATH, "")
-        .replace(/\.mdx?$/, "")
-        .replace("/index", "");
+    // Generate a slug
+    const slug = filePath
+      .replace(POSTS_PATH, "")
+      .replace(/\.mdx?$/, "")
+      .replace("/index", "");
 
-      return {
-        content,
-        frontmatter: data,
-        filePath,
-        slug,
-      };
-    });
+    return {
+      content,
+      frontmatter: data,
+      filePath,
+      slug,
+    };
+  });
 
   return { props: { posts } };
 }

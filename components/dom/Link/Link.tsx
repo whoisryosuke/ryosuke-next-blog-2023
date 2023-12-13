@@ -36,11 +36,12 @@ const StyledLink = styled("a")`
 
 `;
 
-export type LinkProps = TextProps & {
-  ghost?: boolean;
-  underline?: boolean;
-  color?: "primary";
-};
+export type LinkProps = TextProps &
+  React.AnchorHTMLAttributes<HTMLAnchorElement> & {
+    ghost?: boolean;
+    underline?: boolean;
+    color?: "primary";
+  };
 
 export function Link({
   children,
@@ -54,6 +55,7 @@ export function Link({
   ...props
 }: PropsWithChildren<LinkProps>) {
   return (
+    // @ts-ignore
     <StyledLink {...props}>
       <Text
         as="span"

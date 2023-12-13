@@ -112,8 +112,9 @@ export const getStaticProps = async ({ params }) => {
 export const getStaticPaths = async () => {
   // The goal here is to sanitize the file names to work as URLs
   // and return an array of the slug
-  const paths = postFilePaths
-    // Remove root path
+  const rawPaths = await postFilePaths();
+  // Remove root path
+  const paths = rawPaths
     .map((path) => path.replace(POSTS_PATH, ""))
     // Remove file extensions for page paths
     .map((path) => path.replace(/\.mdx?$/, ""))

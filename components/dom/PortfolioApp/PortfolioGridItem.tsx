@@ -1,7 +1,7 @@
 import React from "react";
 import Image from "../Image/Image";
-import { PortfolioNavigationProps, WorkCardProps } from "./types";
-import Box from "../Box/Box";
+import { PortfolioNavigationProps, WorkCardData, WorkCardProps } from "./types";
+import Box, { BoxProps } from "../Box/Box";
 import styled from "styled-components";
 
 const PortfolioGridItemContainer = styled(Box)`
@@ -33,12 +33,9 @@ const PortfolioGridItemContainer = styled(Box)`
 `;
 
 type Props = PortfolioNavigationProps &
-  WorkCardProps & {
+  WorkCardData &
+  BoxProps & {
     id: number;
-    imageSize: {
-      width: string;
-      height: string;
-    };
     borderTopRight?: boolean;
     borderRadius?: string;
     height?: string;
@@ -53,7 +50,6 @@ const PortfolioGridItem = ({
   //   prototype,
   id,
   handleNavigateWork,
-  imageSize,
   borderTopRight,
   borderRadius,
   ...props

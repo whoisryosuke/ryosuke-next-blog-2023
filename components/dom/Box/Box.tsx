@@ -40,6 +40,7 @@ const Box = styled("div")<BoxProps>(
   color,
   background,
   border,
+  // @ts-ignore
   {
     borderRadius: ({ theme, borderRadius }) =>
       borderRadius in theme.radius && theme.radius[borderRadius],

@@ -8,7 +8,6 @@ import Box from "@components/dom/Box/Box";
 import GlassBordered from "@components/dom/Glass/GlassBordered";
 import Stack from "@components/dom/Stack/Stack";
 import Button from "@components/dom/Button/Button";
-import IconButton from "@components/dom/IconButton/IconButton";
 import { MdHomeFilled, MdSearch } from "react-icons/md";
 import {
   BiHomeAlt,
@@ -38,6 +37,7 @@ export default function ComponentsPage() {
       },
       time: new Date().getTime(),
       status: "show",
+      type: "general",
     });
   };
 
@@ -52,22 +52,22 @@ export default function ComponentsPage() {
             </Stack>
           </Glass>
           <Glass p={3}>
-            <Button solid icon iconSize={{ width: "64px", height: "64px" }}>
+            <Button solid onlyIcon iconSize={{ width: "64px", height: "64px" }}>
               <BiLogoMastodon />
             </Button>
           </Glass>
           <Glass p={3}>
             <Stack alignItems="center">
-              <Button icon>
+              <Button onlyIcon>
                 <BiHomeAlt />
               </Button>
-              <Button icon>
+              <Button onlyIcon>
                 <BiBook />
               </Button>
-              <Button icon>
+              <Button onlyIcon>
                 <BiGhost />
               </Button>
-              <Button icon>
+              <Button onlyIcon>
                 <BiHeadphone />
               </Button>
               {/* <Button icon><BiLogoGithub /></Button> */}

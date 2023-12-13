@@ -16,7 +16,7 @@ const MODAL_THEME = {
 type Props = {
   isOpen: boolean;
   onClose: () => void;
-  width: any;
+  width?: any;
 };
 
 const Modal = ({
@@ -53,7 +53,10 @@ const Modal = ({
 
   return rootRef.current
     ? createPortal(
-        <ThemeProvider theme={MODAL_THEME}>
+        <ThemeProvider
+          //@ts-ignore more need for partials
+          theme={MODAL_THEME}
+        >
           <ModalContainer isOpen={isOpen} {...props}>
             <ModalCurtain onClose={onClose} />
             <Dialog width={width} onClose={onClose}>

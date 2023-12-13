@@ -120,6 +120,7 @@ const MainNavbar = ({ ...props }: MenuProps) => {
         borderRadius="round"
         modal
         {...props}
+        // @ts-ignore
         orientation={orientation}
       >
         <Box
@@ -129,6 +130,7 @@ const MainNavbar = ({ ...props }: MenuProps) => {
         >
           <Button
             as="a"
+            // @ts-ignore hard to image I know
             href="/"
             title="Home"
             icon={<BiHomeAlt />}
@@ -139,6 +141,7 @@ const MainNavbar = ({ ...props }: MenuProps) => {
           />
           <Button
             as={Link}
+            // @ts-ignore hard to image I know
             href="/blog"
             title="Blog"
             icon={<BiBook />}
@@ -149,6 +152,7 @@ const MainNavbar = ({ ...props }: MenuProps) => {
           />
           <Button
             as={Link}
+            // @ts-ignore hard to image I know
             href="/explorations/work-r3"
             title="Work"
             icon={<BiGhost />}
@@ -159,6 +163,7 @@ const MainNavbar = ({ ...props }: MenuProps) => {
           />
           <Button
             as={Link}
+            // @ts-ignore hard to image I know
             href="/explorations/playlist"
             title="Playlist"
             icon={<BiHeadphone />}

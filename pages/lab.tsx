@@ -19,17 +19,11 @@ import { Theme } from "@theme/index";
 const Canvas = dynamic(() => import("@components/3d/Canvas"), {
   ssr: false,
 });
-const PrimitiveScene = dynamic(
-  () => import("@components/3d/PrimitiveScene/PrimitiveScene"),
-  {
-    ssr: false,
-  },
-);
 const Shader = dynamic(
   () => import("@components/3d/ShaderExample/ShaderExample"),
   {
     ssr: false,
-  },
+  }
 );
 
 export default function LabPage() {
@@ -47,7 +41,7 @@ export default function LabPage() {
 
   const handleWeightChange = (
     e: React.FormEvent<HTMLInputElement>,
-    type: keyof Theme["fontWeights"],
+    type: keyof Theme["fontWeights"]
   ) => {
     setUserTheme({
       fontWeights: {
@@ -60,22 +54,7 @@ export default function LabPage() {
   return (
     <>
       {/* <Box backgroundImage="url(./images/room1.png)" backgroundSize="cover" backgroundPosition="bottom center" minHeight="100vh" width="100%" zIndex={-2} position={"absolute"} top={0} left={0} /> */}
-      <Box
-        minHeight="100vh"
-        width="100%"
-        position="absolute"
-        top="0"
-        left="0"
-        zIndex={-420}
-      >
-        <Canvas
-          shadows
-          camera={{ position: [0, 0, 30], fov: 50 }}
-          style={{ height: "100vh" }}
-        >
-          <PrimitiveScene customizations={customizations} />
-        </Canvas>
-      </Box>
+
       <Box minHeight="100vh" width="100%">
         <Box width="800px" margin="auto" p={3}>
           <Stack vertical>
@@ -93,20 +72,20 @@ export default function LabPage() {
             </GlassBordered>
             <Glass p={3}>
               <Stack>
-                <Button icon iconSize={{ width: "64px", height: "64px" }}>
+                <Button onlyIcon iconSize={{ width: "64px", height: "64px" }}>
                   <MdHomeFilled />
                 </Button>
-                <Button icon>
+                <Button onlyIcon>
                   <MdHomeFilled />
                 </Button>
               </Stack>
             </Glass>
             <GlassBordered p={3} transparent>
               <Stack>
-                <Button icon iconSize={{ width: "64px", height: "64px" }}>
+                <Button onlyIcon iconSize={{ width: "64px", height: "64px" }}>
                   <MdHomeFilled />
                 </Button>
-                <Button icon>
+                <Button onlyIcon>
                   <MdHomeFilled />
                 </Button>
               </Stack>

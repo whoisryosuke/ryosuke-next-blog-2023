@@ -9,7 +9,7 @@ const Fonts = (props: Props) => {
       <link
         rel="preconnect"
         href="https://fonts.gstatic.com"
-        crossOrigin="true"
+        crossOrigin="anonymous"
       />
       <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Roboto+Mono&display=swap"

@@ -19,7 +19,7 @@ const BlogHeadline = ({
     });
   }, [title]);
 
-  return children;
+  return <>{children}</>;
 };
 
 export default BlogHeadline;

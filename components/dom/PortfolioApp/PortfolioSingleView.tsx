@@ -62,6 +62,7 @@ const PortfolioSingleView = ({
           <>
             <Box
               as="img"
+              // @ts-ignore
               id={currentWork.id}
               src={currentWork.src}
               width={SINGLE_VIEW_WIDTH}
@@ -106,6 +107,7 @@ const PortfolioSingleView = ({
         </Box>
       </PortfolioSingleImageContainer>
       <PortfolioThumbnailSlider
+        // @ts-ignore
         width={SINGLE_VIEW_WIDTH}
         work={work}
         current={current}
