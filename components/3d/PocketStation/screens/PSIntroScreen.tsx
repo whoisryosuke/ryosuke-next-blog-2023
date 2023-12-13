@@ -8,7 +8,7 @@ type Props = {
 };
 
 const PSIntroScreen = ({ getContextAndDrawBase }: Props) => {
-  const screenIntroHelloRef = useRef<HTMLCanvasElement>(null);
+  const screenIntroHelloRef = useRef<HTMLImageElement>(null);
   const { pocketStationAnimation, setPocketStationAnimating } = useAppStore();
 
   useSpring({
