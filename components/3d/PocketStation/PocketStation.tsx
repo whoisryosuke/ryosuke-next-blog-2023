@@ -24,7 +24,6 @@ export default function PocketStation({ controls, ...props }: Props) {
   const frontPanelRef = useRef(null);
   // @ts-ignore Yeah it exists
   const { nodes, materials } = useGLTF("/models/PocketStation-v11.glb");
-  console.log("the mesh", nodes, materials);
   const screenMaterial = useRef(null);
   const frameId = useRef(null);
   const screenCanvas = useRef(null);
@@ -60,12 +59,14 @@ export default function PocketStation({ controls, ...props }: Props) {
       const screenCanvas = document.getElementById("pocketstation-screen");
       const canvasTexture = new CanvasTexture(screenCanvas);
       // screenMaterial.current = materials.PS_FrontScreen;
+      console.log("materials.PS_FrontScreen", materials.PS_FrontScreen);
+      //@ts-ignore
       materials.PS_FrontScreen.map = canvasTexture;
     }
   }, []);
 
   const animate = (timer) => {
-    console.log("updating material");
+    // console.log("updating material", timer);
     const screenCanvas = document.getElementById("pocketstation-screen");
 
     const canvasTexture = new CanvasTexture(screenCanvas);
@@ -79,13 +80,15 @@ export default function PocketStation({ controls, ...props }: Props) {
     frameId.current = requestAnimationFrame(animate);
   }, [animate]);
 
-  React.useEffect(() => {
-    if (window) {
-      console.log("restarting material sync", pocketStationAnimating);
-      startAnimation();
-    }
-    return () => cancelAnimationFrame(frameId.current);
-  }, [pocketStationAnimating]);
+  // React.useEffect(() => {
+  //   if (window) {
+  //     console.log("restarting material sync", pocketStationAnimating);
+  //     pocketStationAnimating && startAnimation();
+  //   }
+  //   return () => cancelAnimationFrame(frameId.current);
+  // }, [pocketStationAnimating]);
+
+  useRequestAnimationFrame(animate);
 
   return (
     <animated.group {...props} dispose={null}>

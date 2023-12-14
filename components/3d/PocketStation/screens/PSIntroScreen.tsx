@@ -9,7 +9,11 @@ type Props = {
 
 const PSIntroScreen = ({ getContextAndDrawBase }: Props) => {
   const screenIntroHelloRef = useRef<HTMLImageElement>(null);
-  const { pocketStationAnimation, setPocketStationAnimating } = useAppStore();
+  const {
+    pocketStationAnimation,
+    pocketStationAnimating,
+    setPocketStationAnimating,
+  } = useAppStore();
 
   useSpring({
     config: { duration: 4200, easing: easings.easeInOutQuad },
@@ -35,8 +39,7 @@ const PSIntroScreen = ({ getContextAndDrawBase }: Props) => {
       }
     },
     onRest(result, ctrl, item) {
-      console.log("screen animation ended");
-      //   setPocketStationAnimating(false);
+      // if (pocketStationAnimating) setPocketStationAnimating(false);
     },
   });
 
