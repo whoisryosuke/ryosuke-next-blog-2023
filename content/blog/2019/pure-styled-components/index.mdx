@@ -3,14 +3,14 @@ title: Styled Components using Pure CSS Framework
 date: "2019-02-08"
 section: blog
 cover_image: "./pure-styled-components@0.5x.jpg"
-tags: [ 'design system', 'react', 'js', 'css', 'css in js', 'guide' ]
+tags: ["design system", "react", "js", "css", "css in js", "guide"]
 
 layout: "@/layouts/BlogLayout.astro"
 ---
 
 Recently I've been doing a lot of research into the myriad of design systems out there, and I stumbled upon Pure CSS, a tiny CSS framework with only essential modules for creating sites. I've been wanting to experiment with Styled Components, and I thought converting the CSS framework into React components would be an fantastic exercise to flex a few skills. And Pure CSS was so small and modular, it was perfect for translating into CSS-in-JS.
 
-Ultimately, I was able to create a complete React component system in ***only* 135 KB of code 😳🤯  *(not minified/gzipped, but also not including peer dependencies like React and styled-components).*
+Ultimately, I was able to create a complete React component system in _\*\*only_ 135 KB of code 😳🤯 _(not minified/gzipped, but also not including peer dependencies like React and styled-components)._
 
 ## How to use
 
@@ -23,38 +23,46 @@ You can install this into your project today [using npm](https://www.npmjs.com/p
 Then just import the components you need:
 
 ```js
-import React from 'react'
-import { Base, Grid, Button, Menu } from 'pure-styled-components'
+import React from "react";
+import { Base, Grid, Button, Menu } from "pure-styled-components";
 
 function App() {
-  return(
-    <Button>Click Here</Button>
-  )
+  return <Button>Click Here</Button>;
 }
 ```
 
 Here's [a CodeSandbox](https://codesandbox.io/s/5z90r1rkjx) setup with an example blog layout:
 
-<iframe src="https://codesandbox.io/embed/5z90r1rkjx" style="width:100%; height:500px; border:0; border-radius: 4px; overflow:hidden;" sandbox="allow-modals allow-forms allow-popups allow-scripts allow-same-origin"></iframe>
+<iframe
+  src="https://codesandbox.io/embed/5z90r1rkjx"
+  style={{
+    width: "100%",
+    height: "500px",
+    border: 0,
+    borderRadius: "4px",
+    overflow: "hidden",
+  }}
+  sandbox="allow-modals allow-forms allow-popups allow-scripts allow-same-origin"
+></iframe>
 
 ![Screenshot of the blog layout](./pure-styled-components-layout-blog.jpg)
 
 Check out [the Github repo here](https://github.com/whoisryosuke/pure-components) if you're interested in contributing or forking the code.
 
-## Why make *yet another* React UI kit?
+## Why make _yet another_ React UI kit?
 
 There's a repo out there for [pure-components](https://www.npmjs.com/package/pure-components), but it requires you to import the CSS yourself.
 
-To make the components more modular, I opted to use CSS-in-JS. This allows you to import only the Button into your app and have everything you need to display it (rather than possibly figuring out some Webpack config for CSS). 
+To make the components more modular, I opted to use CSS-in-JS. This allows you to import only the Button into your app and have everything you need to display it (rather than possibly figuring out some Webpack config for CSS).
 
 ## The Process
 
 At first I outlined a few goals for the component system:
 
-* **✨ Keep it simple.** Just like Pure CSS, the bundle size should be minimal, and performance should be high.
-* **🔧 Minimal API.** Too many components and props gets confusing and provided excessive overhead. Should be an easy to use library that's extensible for users seeking more complexity.
-* **♻️ Recycle**. Use as much of Pure CSS as possible. Upgrade what conflicts with React.
-* **📚 Documentation**. The docs should be auto-generated from the JSDoc formatted comment blocks inside the code.
+- **✨ Keep it simple.** Just like Pure CSS, the bundle size should be minimal, and performance should be high.
+- **🔧 Minimal API.** Too many components and props gets confusing and provided excessive overhead. Should be an easy to use library that's extensible for users seeking more complexity.
+- **♻️ Recycle**. Use as much of Pure CSS as possible. Upgrade what conflicts with React.
+- **📚 Documentation**. The docs should be auto-generated from the JSDoc formatted comment blocks inside the code.
 
 ### Components
 
@@ -92,7 +100,7 @@ import React from "react";
 const findByType = (children, component) => {
   const result = [];
   const type = [component.displayName] || [component.name];
-  React.Children.forEach(children, child => {
+  React.Children.forEach(children, (child) => {
     const childType =
       child && child.type && (child.type.displayName || child.type.name);
     if (type.includes(childType)) {
@@ -140,11 +148,11 @@ class BaseMenu extends PureComponent {
 
     const listType = [List.displayName] || [List.name];
     const headingType = [Heading.displayName] || [Heading.name];
-    const items = React.Children.map(children, child => {
+    const items = React.Children.map(children, (child) => {
       const childType =
         child && child.type && (child.type.displayName || child.type.name);
       if (childType.includes(listType)) {
-        return child.props.children.map(item => (
+        return child.props.children.map((item) => (
           <Item className="item" key={item.props.children}>
             {item.props.children}
           </Item>
@@ -203,7 +211,7 @@ const Dropdown = styled(BaseDropdown)`
   padding: 0;
   z-index: 3;
 
-  ${props => showDropdown(props)};
+  ${(props) => showDropdown(props)};
 `;
 ```
 
@@ -214,7 +222,7 @@ class BaseItem extends PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      active: false
+      active: false,
     };
   }
 
@@ -224,7 +232,7 @@ class BaseItem extends PureComponent {
    * @memberof BaseItem
    * @private
    */
-  handleDropdown = e => {
+  handleDropdown = (e) => {
     const { active } = this.state;
     this.setState({ active: !active });
   };
@@ -293,7 +301,7 @@ Pure CSS provides a hard-coded 5 and 24 column grid. Using Grunt, you can custom
  *
  * @param {array} columns [Column size, Number of columns]
  */
-const calculateGridWidth = columns => {
+const calculateGridWidth = (columns) => {
   if (columns) {
     return `width: ${(100 / columns[1]) * columns[0]}%;`;
   }
@@ -310,9 +318,15 @@ This code creates a grid with 50% column on **mobile**, 33% on **tablet**, and 2
 
 ```js
 <Grid>
-  <Grid.Unit width={[1 / 3, 1 / 2, 1 / 3, 1 / 4]} bg="red">Thirds</Grid.Unit>
-  <Grid.Unit width={[1 / 3, 1 / 2, 1 / 3, 1 / 4]} bg="blue">Thirds</Grid.Unit>
-  <Grid.Unit width={[1 / 3, 1 / 2, 1 / 3, 1 / 4]} bg="teal">Thirds</Grid.Unit>
+  <Grid.Unit width={[1 / 3, 1 / 2, 1 / 3, 1 / 4]} bg="red">
+    Thirds
+  </Grid.Unit>
+  <Grid.Unit width={[1 / 3, 1 / 2, 1 / 3, 1 / 4]} bg="blue">
+    Thirds
+  </Grid.Unit>
+  <Grid.Unit width={[1 / 3, 1 / 2, 1 / 3, 1 / 4]} bg="teal">
+    Thirds
+  </Grid.Unit>
 </Grid>
 ```
 
@@ -328,13 +342,13 @@ This made the Styled Components pop up, but now they were missing the descriptio
 
 ### Upgrades upon upgrades
 
-I was using an older of react-styleguidist when I started, which used v6 of Babel, but my dev environment was using v7 (I recently upgraded). So my Babel config file included v7 presets that styleguidist couldn't use, and crashed it. After upgrading styleguidist to the latest version, everything worked again. 
+I was using an older of react-styleguidist when I started, which used v6 of Babel, but my dev environment was using v7 (I recently upgraded). So my Babel config file included v7 presets that styleguidist couldn't use, and crashed it. After upgrading styleguidist to the latest version, everything worked again.
 
 Gotta love when you spend 10 minutes having to maintain your development environment instead of actually coding 🙃 **#productivity**
 
 ## The future 🌠
 
-The Pure Styled Component system is stable at 1.0.3, and can be used in your apps today without any major issues (that I've been able to discover 🙊). I've imported all the components and styles from Pure CSS, so there's nothing that would really effect the API immensely. 
+The Pure Styled Component system is stable at 1.0.3, and can be used in your apps today without any major issues (that I've been able to discover 🙊). I've imported all the components and styles from Pure CSS, so there's nothing that would really effect the API immensely.
 
 ### Optimizations 💪
 
@@ -360,7 +374,7 @@ It's always great (and easier) to use the off-the-shelf component systems like B
 
 ### Design System Boilerplate 👇
 
-If you're interested in making your own design/component system, I recommend forking my [design-system-jss repo](https://github.com/whoisryosuke/design-system-jss). It's basically a boilerplate for creating your own React component system, wired up with everything you need to develop, document, and deploy your component code. 
+If you're interested in making your own design/component system, I recommend forking my [design-system-jss repo](https://github.com/whoisryosuke/design-system-jss). It's basically a boilerplate for creating your own React component system, wired up with everything you need to develop, document, and deploy your component code.
 
 > Make sure to browse the branches on the repo, there are different variations of the boilerplate you can swap into (like Gatsby for docs instead of Styleguidist).
 
@@ -369,12 +383,12 @@ Let me know what you think about the components and if you have any issues feel 
 Enjoy! ✌️
 Ryo
 
-***
+---
 
 **References**:
 
-* [Pure Styled Components on Github](https://github.com/whoisryosuke/pure-components)
-* [Pure Styled Components on NPM](https://www.npmjs.com/package/pure-styled-components)
-* [Pure CSS](https://purecss.io/)
-* [StorybookJS](https://storybook.js.org/)
-* [Styleguidist 3rd Parties - Styled Components](https://github.com/styleguidist/react-styleguidist/blob/master/docs/Thirdparties.md#styled-components)
+- [Pure Styled Components on Github](https://github.com/whoisryosuke/pure-components)
+- [Pure Styled Components on NPM](https://www.npmjs.com/package/pure-styled-components)
+- [Pure CSS](https://purecss.io/)
+- [StorybookJS](https://storybook.js.org/)
+- [Styleguidist 3rd Parties - Styled Components](https://github.com/styleguidist/react-styleguidist/blob/master/docs/Thirdparties.md#styled-components)

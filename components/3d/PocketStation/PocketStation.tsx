@@ -69,6 +69,7 @@ export default function PocketStation({ controls, ...props }: Props) {
 
     const canvasTexture = new CanvasTexture(screenCanvas);
     // screenMaterial.current = materials.PS_FrontScreen;
+    // @ts-ignore
     materials.PS_FrontScreen.map = canvasTexture;
   };
 
@@ -90,18 +91,21 @@ export default function PocketStation({ controls, ...props }: Props) {
       <mesh
         castShadow
         receiveShadow
+        //@ts-ignore
         geometry={nodes.BodyBackComplete001.geometry}
         material={materials.PS_Back}
       />
       <mesh
         castShadow
         receiveShadow
+        //@ts-ignore
         geometry={nodes.BodyFrontScreen.geometry}
         material={materials.PS_FrontScreen}
       />
       <AnimatedMesh
         castShadow
         receiveShadow
+        //@ts-ignore
         geometry={nodes.BodyFrontPanel003.geometry}
         material={materials.PS_FrontPanel}
         rotation={rotation}
@@ -109,24 +113,28 @@ export default function PocketStation({ controls, ...props }: Props) {
       <mesh
         castShadow
         receiveShadow
+        //@ts-ignore
         geometry={nodes.CurveLanyardBaked.geometry}
         material={materials.Lanyard}
       />
       <mesh
         castShadow
         receiveShadow
+        //@ts-ignore
         geometry={nodes.LanyardNotch.geometry}
         material={materials.BlackPlastic}
       />
       <mesh
         castShadow
         receiveShadow
+        //@ts-ignore
         geometry={nodes.CurveLanyardTie001.geometry}
         material={materials["BlackPlastic.001"]}
       />
       <AnimatedMesh
         castShadow
         receiveShadow
+        //@ts-ignore
         geometry={nodes.BodyFrontButtonsLeft.geometry}
         material={materials["Material.030"]}
         rotation={rotation}
@@ -135,6 +143,7 @@ export default function PocketStation({ controls, ...props }: Props) {
       <AnimatedMesh
         castShadow
         receiveShadow
+        //@ts-ignore
         geometry={nodes.BodyFrontButtonsUp.geometry}
         material={materials["Material.030"]}
         rotation={rotation}
@@ -143,6 +152,7 @@ export default function PocketStation({ controls, ...props }: Props) {
       <AnimatedMesh
         castShadow
         receiveShadow
+        //@ts-ignore
         geometry={nodes.BodyFrontButtonsRight.geometry}
         material={materials["Material.030"]}
         rotation={rotation}
@@ -151,6 +161,7 @@ export default function PocketStation({ controls, ...props }: Props) {
       <AnimatedMesh
         castShadow
         receiveShadow
+        //@ts-ignore
         geometry={nodes.BodyFrontButtonsDown.geometry}
         material={materials["Material.030"]}
         rotation={rotation}
@@ -159,6 +170,7 @@ export default function PocketStation({ controls, ...props }: Props) {
       <AnimatedMesh
         castShadow
         receiveShadow
+        //@ts-ignore
         geometry={nodes.BodyFrontButtonsConfirm.geometry}
         material={materials["Material.030"]}
         rotation={rotation}
@@ -167,6 +179,7 @@ export default function PocketStation({ controls, ...props }: Props) {
       <mesh
         castShadow
         receiveShadow
+        //@ts-ignore
         geometry={nodes.BodyFrontBase002.geometry}
         material={materials["PS_FrontScreen.001"]}
       />

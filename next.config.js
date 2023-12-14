@@ -1,5 +1,3 @@
-const withLinaria = require("next-linaria");
-
 // The NextJS config defined separately
 // Gets passed to next-offline
 const nextConfig = {
@@ -35,4 +33,4 @@ const nextConfig = {
   },
 };
 
-module.exports = withLinaria(nextConfig);
+module.exports = nextConfig;

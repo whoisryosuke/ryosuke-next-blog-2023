@@ -1,8 +1,8 @@
 ---
 title: xStyled vs Styled System for Design Systems
-date: '2020-05-26'
+date: "2020-05-26"
 section: blog
-tags: ['design systems', 'css', 'react', 'css in js']
+tags: ["design systems", "css", "react", "css in js"]
 
 layout: "@/layouts/BlogLayout.astro"
 ---
@@ -41,36 +41,54 @@ Here's a CodeSandbox with a basic button showing the "magic" shorthand (`margin:
 [xStyled Button Example with Theming](https://codesandbox.io/s/xstyled-button-example-with-theming-w3ro6):
 
 <iframe
-     src="https://codesandbox.io/embed/xstyled-button-example-with-theming-w3ro6?fontsize=14&hidenavigation=1&theme=dark"
-     style="width:100%; height:500px; border:0; border-radius: 4px; overflow:hidden;"
-     title="xStyled Button Example with Theming"
-     allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr"
-     sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
-   ></iframe>
+  src="https://codesandbox.io/embed/xstyled-button-example-with-theming-w3ro6?fontsize=14&hidenavigation=1&theme=dark"
+  style={{
+    width: "100%",
+    height: "500px",
+    border: 0,
+    borderRadius: "4px",
+    overflow: "hidden",
+  }}
+  title="xStyled Button Example with Theming"
+  allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr"
+  sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
+></iframe>
 
 Here's an example of using the `styled` method with the `<Box>` component:
 
 [xStyled Box Example with Theming](https://codesandbox.io/s/xstyled-box-example-with-theming-g1cih):
 
 <iframe
-     src="https://codesandbox.io/embed/xstyled-box-example-with-theming-g1cih?fontsize=14&hidenavigation=1&theme=dark"
-     style="width:100%; height:500px; border:0; border-radius: 4px; overflow:hidden;"
-     title="xStyled Box Example with Theming"
-     allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
-     sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts allow-autoplay"
-   ></iframe>
+  src="https://codesandbox.io/embed/xstyled-box-example-with-theming-g1cih?fontsize=14&hidenavigation=1&theme=dark"
+  style={{
+    width: "100%",
+    height: "500px",
+    border: 0,
+    borderRadius: "4px",
+    overflow: "hidden",
+  }}
+  title="xStyled Box Example with Theming"
+  allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
+  sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts allow-autoplay"
+></iframe>
 
 Here's an example of the flexbox grid (rows / columns) using `<Box>`:
 
 [xStyled - Responsive Docs Fix](https://codesandbox.io/s/xstyled-responsive-docs-fix-l3xg6?file=/src/App.js:170-349):
 
 <iframe
-     src="https://codesandbox.io/embed/xstyled-responsive-docs-fix-l3xg6?fontsize=14&hidenavigation=1&theme=dark"
-     style="width:100%; height:500px; border:0; border-radius: 4px; overflow:hidden;"
-     title="xStyled - Responsive Docs Fix"
-     allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
-     sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts allow-autoplay"
-   ></iframe>
+  src="https://codesandbox.io/embed/xstyled-responsive-docs-fix-l3xg6?fontsize=14&hidenavigation=1&theme=dark"
+  style={{
+    width: "100%",
+    height: "500px",
+    border: 0,
+    borderRadius: "4px",
+    overflow: "hidden",
+  }}
+  title="xStyled - Responsive Docs Fix"
+  allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
+  sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts allow-autoplay"
+></iframe>
 
 You can check out [the xStyled docs](https://xstyled.dev/) to see more examples of their features.
 
@@ -97,7 +115,7 @@ Now that we have some examples to play with, let's break down the two and see ho
   **xStyled:**
 
   ```jsx
-  import styled from '@xstyled/styled-components'
+  import styled from "@xstyled/styled-components";
   const ButtonBase = styled.box`
   	background-color:primary;
   	color: white;
@@ -120,12 +138,12 @@ Now that we have some examples to play with, let's break down the two and see ho
       box-shadow: hover,
       transform: translateY(-0.25em)
   	}
-  `
+  `;
 
   const Button = ({ ...props }) => (
     <ButtonBase as="button" {...props}></ButtonBase>
-  )
-  export default Button
+  );
+  export default Button;
   ```
 
   **Styled System + Rebass:**
@@ -253,7 +271,7 @@ With xStyled, you can mix them, and the utility props will always take precedenc
 [xStyled Box Example - Mixing Props and CSS](https://codesandbox.io/s/xstyled-box-example-mixing-props-and-css-7772l?file=/src/Button.js)
 
 ```jsx
-import styled, { css, breakpoints } from '@xstyled/styled-components'
+import styled, { css, breakpoints } from "@xstyled/styled-components";
 const Button = styled.box`
   width: 100%;
   background-color: primary;
@@ -273,15 +291,15 @@ const Button = styled.box`
       /* From lg breakpoint */
     `,
   })}
-`
-export default Button
+`;
+export default Button;
 ```
 
 ```jsx
-import React from 'react'
-import './styles.css'
+import React from "react";
+import "./styles.css";
 
-import Button from './Button'
+import Button from "./Button";
 
 export default function App() {
   return (
@@ -289,7 +307,7 @@ export default function App() {
       {/* Width defaults to utility values here -- not CSS above */}
       <Button col={{ xs: 1 / 2, md: 1 / 3 }}>Submit</Button>
     </div>
-  )
+  );
 }
 ```
 
