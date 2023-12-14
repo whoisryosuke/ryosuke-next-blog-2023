@@ -8,7 +8,7 @@ import useRequestAnimationFrame from "features/animation/useRequestAnimationFram
 import { useAppStore } from "@store/app";
 
 const AnimatedMesh = (props) => {
-  return <AnimatedMesh {...props} />;
+  return <animated.mesh {...props} />;
 };
 
 const BUTTON_PRESSED_DEPTH = [0, 0, -0.1];
@@ -24,6 +24,7 @@ export default function PocketStation({ controls, ...props }: Props) {
   const frontPanelRef = useRef(null);
   // @ts-ignore Yeah it exists
   const { nodes, materials } = useGLTF("/models/PocketStation-v11.glb");
+  console.log("the mesh", nodes, materials);
   const screenMaterial = useRef(null);
   const frameId = useRef(null);
   const screenCanvas = useRef(null);
@@ -54,14 +55,14 @@ export default function PocketStation({ controls, ...props }: Props) {
     ],
   });
 
-  // useEffect(() => {
-  //   if (window) {
-  //     const screenCanvas = document.getElementById("pocketstation-screen");
-  //     const canvasTexture = new CanvasTexture(screenCanvas);
-  //     // screenMaterial.current = materials.PS_FrontScreen;
-  //     materials.PS_FrontScreen.map = canvasTexture;
-  //   }
-  // }, []);
+  useEffect(() => {
+    if (window) {
+      const screenCanvas = document.getElementById("pocketstation-screen");
+      const canvasTexture = new CanvasTexture(screenCanvas);
+      // screenMaterial.current = materials.PS_FrontScreen;
+      materials.PS_FrontScreen.map = canvasTexture;
+    }
+  }, []);
 
   const animate = (timer) => {
     console.log("updating material");
@@ -73,18 +74,18 @@ export default function PocketStation({ controls, ...props }: Props) {
     materials.PS_FrontScreen.map = canvasTexture;
   };
 
-  // const startAnimation = useCallback(() => {
-  //   cancelAnimationFrame(frameId.current);
-  //   frameId.current = requestAnimationFrame(animate);
-  // }, [animate]);
+  const startAnimation = useCallback(() => {
+    cancelAnimationFrame(frameId.current);
+    frameId.current = requestAnimationFrame(animate);
+  }, [animate]);
 
-  // React.useEffect(() => {
-  //   if (window) {
-  //     console.log("restarting material sync", pocketStationAnimating);
-  //     startAnimation();
-  //   }
-  //   return () => cancelAnimationFrame(frameId.current);
-  // }, [pocketStationAnimating]);
+  React.useEffect(() => {
+    if (window) {
+      console.log("restarting material sync", pocketStationAnimating);
+      startAnimation();
+    }
+    return () => cancelAnimationFrame(frameId.current);
+  }, [pocketStationAnimating]);
 
   return (
     <animated.group {...props} dispose={null}>
