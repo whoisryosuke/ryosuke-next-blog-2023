@@ -73,18 +73,18 @@ export default function PocketStation({ controls, ...props }: Props) {
     materials.PS_FrontScreen.map = canvasTexture;
   };
 
-  const startAnimation = useCallback(() => {
-    cancelAnimationFrame(frameId.current);
-    frameId.current = requestAnimationFrame(animate);
-  }, [animate]);
+  // const startAnimation = useCallback(() => {
+  //   cancelAnimationFrame(frameId.current);
+  //   frameId.current = requestAnimationFrame(animate);
+  // }, [animate]);
 
-  React.useEffect(() => {
-    if (window) {
-      console.log("restarting material sync", pocketStationAnimating);
-      startAnimation();
-    }
-    return () => cancelAnimationFrame(frameId.current);
-  }, [pocketStationAnimating]);
+  // React.useEffect(() => {
+  //   if (window) {
+  //     console.log("restarting material sync", pocketStationAnimating);
+  //     startAnimation();
+  //   }
+  //   return () => cancelAnimationFrame(frameId.current);
+  // }, [pocketStationAnimating]);
 
   return (
     <animated.group {...props} dispose={null}>

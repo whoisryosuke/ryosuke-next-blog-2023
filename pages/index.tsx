@@ -7,7 +7,6 @@ import { postFilePaths, POSTS_PATH } from "../utils/mdxUtils";
 import React from "react";
 import PageWrapper from "@components/dom/PageWrapper/PageWrapper";
 import { useAppStore } from "@store/app";
-import PocketStationScreenCanvas from "@components/3d/PocketStation/PocketStationScreenCanvas";
 import AboutCard from "@components/dom/AboutCard/AboutCard";
 
 // Prefer dynamic import for production builds
@@ -29,7 +28,6 @@ export default function Index() {
   return (
     <PageWrapper>
       <PocketStation customizations={customizations} />
-      <PocketStationScreenCanvas />
       <AboutCard />
     </PageWrapper>
   );
