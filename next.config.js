@@ -1,6 +1,9 @@
 // The NextJS config defined separately
 // Gets passed to next-offline
 const nextConfig = {
+  distDir: "build",
+  output: "export",
+  removeConsole: false,
   compiler: {
     styledComponents: true,
   },
