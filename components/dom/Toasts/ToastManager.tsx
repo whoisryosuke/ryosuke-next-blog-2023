@@ -46,6 +46,7 @@ const ToastManager = (props: Props) => {
       right={0}
       p={3}
       width={{ default: "100%", tablet: "250px" }}
+      //@ts-ignore
       role="region"
       aria-live="polite"
       style={{
@@ -57,7 +58,7 @@ const ToastManager = (props: Props) => {
             : "transparent",
 
         //@ts-ignore
-        "-webkit-mask-image": `linear-gradient(
+        WebkitMaskImage: `linear-gradient(
     to top,
     rgba(0, 0, 0, 0) 0%,
     rgba(0, 0, 0, 1) 10%
@@ -66,8 +67,8 @@ const ToastManager = (props: Props) => {
     rgba(0, 0, 0, 0) 0%,
     rgba(0, 0, 0, 1) 10%
   )`,
-        "-webkit-mask-composite": "source-in" /* For Chrome */,
-        "mask-composite": "intersect" /* For Firefox */,
+        WebkitMaskComposite: "source-in" /* For Chrome */,
+        maskComposite: "intersect" /* For Firefox */,
       }}
     >
       <AnimatePresence>
