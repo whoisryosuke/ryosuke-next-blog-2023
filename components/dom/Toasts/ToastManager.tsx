@@ -19,6 +19,8 @@ const ToastManagerContainer = styled(Box)`
     mask-composite: intersect;
   }
 
+  overflow-x: hidden;
+
   /* Animation */
   @media (prefers-reduced-motion: no-preference) {
     transition-property: transform;
@@ -56,8 +58,8 @@ const ToastManager = (props: Props) => {
       top={0}
       right={0}
       p={{
-        default: toastMap.length > 0 ? 5 : 0,
-        tablet: toastMap.length > 0 ? 3 : 0,
+        default: 5,
+        tablet: 3,
       }}
       width={{ default: "100%", tablet: "250px" }}
       background={{
@@ -68,9 +70,9 @@ const ToastManager = (props: Props) => {
       }}
       style={{
         perspective: "500px",
-        height: toastMap.length > 0 ? "auto" : 0,
         minHeight: toastMap.length > 0 ? "300px" : 0,
         zIndex: 420,
+        opacity: toastMap.length > 0 ? 1 : 0,
       }}
     >
       <Stack
