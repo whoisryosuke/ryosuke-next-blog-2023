@@ -24,13 +24,17 @@ const Toast = ({ toast }: Props) => {
 
   return (
     <Glass
-      width={{ default: "100%", tablet: "250px" }}
+      width={{ default: "80%", tablet: "250px" }}
       px={4}
       py={4}
       mb={3}
+      ml={{
+        default: "10%",
+        tablet: 0,
+      }}
       borderRadius={2}
       onClick={toast.type === "achievement" ? handleAchievementsModal : noop}
-      blur={4}
+      blur={6}
     >
       <Stack>
         {toast.content.icon && (

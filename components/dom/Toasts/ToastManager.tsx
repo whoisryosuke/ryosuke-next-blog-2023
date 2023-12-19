@@ -4,8 +4,21 @@ import React, { useEffect, useRef } from "react";
 import Stack from "../Stack/Stack";
 import Toast from "./Toast";
 import styled from "styled-components";
+import Box from "../Box/Box";
+import { BREAKPOINTS } from "@theme/tokens";
 
-const ToastManagerContainer = styled(Stack)`
+const ToastManagerContainer = styled(Box)`
+  @media (min-width: ${BREAKPOINTS.tablet}) {
+    mask-image: linear-gradient(
+        to top,
+        rgba(0, 0, 0, 0) 0%,
+        rgba(0, 0, 0, 1) 10%
+      ),
+      linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 1) 10%);
+    webkit-mask-composite: source-in;
+    mask-composite: intersect;
+  }
+
   /* Animation */
   @media (prefers-reduced-motion: no-preference) {
     transition-property: transform;
@@ -38,70 +51,67 @@ const ToastManager = (props: Props) => {
   }, [toasts]);
 
   return (
-    <Stack
-      vertical
-      gap="2px"
+    <ToastManagerContainer
       position="absolute"
       top={0}
       right={0}
-      p={3}
+      p={{
+        default: toastMap.length > 0 ? 5 : 0,
+        tablet: toastMap.length > 0 ? 3 : 0,
+      }}
       width={{ default: "100%", tablet: "250px" }}
-      //@ts-ignore
-      role="region"
-      aria-live="polite"
+      background={{
+        default:
+          "linear-gradient(to bottom, rgba(0,0,0,0.75) 0%,rgba(0,0,0,0.5) 40%, rgba(0,0,0,0) 100%)",
+        tablet:
+          "radial-gradient(circle at 150% -150%, rgba(0,0,0,0.65) 50%,rgba(0,0,0,0) 80%)",
+      }}
       style={{
         perspective: "500px",
-        minHeight: "300px",
-        background:
-          toastMap.length > 0
-            ? "radial-gradient(circle at 150% -150%, rgba(0,0,0,0.65) 50%,rgba(0,0,0,0) 80%)"
-            : "transparent",
-
-        //@ts-ignore
-        WebkitMaskImage: `linear-gradient(
-    to top,
-    rgba(0, 0, 0, 0) 0%,
-    rgba(0, 0, 0, 1) 10%
-  ), linear-gradient(
-    to right,
-    rgba(0, 0, 0, 0) 0%,
-    rgba(0, 0, 0, 1) 10%
-  )`,
-        WebkitMaskComposite: "source-in" /* For Chrome */,
-        maskComposite: "intersect" /* For Firefox */,
+        height: toastMap.length > 0 ? "auto" : 0,
+        minHeight: toastMap.length > 0 ? "300px" : 0,
+        zIndex: 420,
       }}
     >
-      <AnimatePresence>
-        {toastMap.map((toast, index) => (
-          <motion.div
-            key={toast.time}
-            initial={{
-              opacity: 0,
-              filter: "blur(20px)",
-              transform:
-                "translateY(-100px) translateX(125px) translateZ(200px)",
-            }}
-            animate={{
-              opacity: 1,
-              filter: "blur(0)",
-              transform: `translateY(${
-                index * 90
-              }px) translateX(0px) translateZ(0px)`,
-            }}
-            exit={{
-              filter: "blur(20px)",
-              opacity: 0,
-              transform: "translateX(125px) translateZ(-200px)",
-              transformOrigin: "top center",
-            }}
-            transition={{ duration: 0.7 }}
-            style={{ position: "absolute", width: "100%" }}
-          >
-            <Toast toast={toast} />
-          </motion.div>
-        ))}
-      </AnimatePresence>
-    </Stack>
+      <Stack
+        vertical
+        gap="2px"
+        //@ts-ignore
+        role="region"
+        aria-live="polite"
+      >
+        <AnimatePresence>
+          {toastMap.map((toast, index) => (
+            <motion.div
+              key={toast.time}
+              initial={{
+                opacity: 0,
+                filter: "blur(20px)",
+                transform:
+                  "translateY(-100px) translateX(125px) translateZ(200px)",
+              }}
+              animate={{
+                opacity: 1,
+                filter: "blur(0)",
+                transform: `translateY(${
+                  index * 90
+                }px) translateX(0px) translateZ(0px)`,
+              }}
+              exit={{
+                filter: "blur(20px)",
+                opacity: 0,
+                transform: "translateX(125px) translateZ(-200px)",
+                transformOrigin: "top center",
+              }}
+              transition={{ duration: 0.7 }}
+              style={{ position: "absolute", width: "100%", zIndex: 710 }}
+            >
+              <Toast toast={toast} />
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </Stack>
+    </ToastManagerContainer>
   );
 };
 

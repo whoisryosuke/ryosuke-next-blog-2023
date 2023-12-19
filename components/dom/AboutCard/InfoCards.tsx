@@ -13,7 +13,7 @@ type InfoCardProps = {
 const InfoCard = ({ title, subtitle, Icon, ...props }: InfoCardProps) => {
   return (
     <OverlayCard padding={3} {...props}>
-      <Stack alignItems="center">
+      <Stack alignItems="center" responsive={false}>
         <Text>
           <Icon style={{ width: 24, height: 24 }} />
         </Text>
@@ -32,7 +32,7 @@ const InfoCards = (props: Props) => {
   return (
     <Stack vertical gap={3}>
       <InfoCard title="San Francisco, CA" subtitle="Location" Icon={BiMapAlt} />
-      <InfoCard title="PlayStation" subtitle="Curently at" Icon={BiBuilding} />
+      <InfoCard title="PlayStation" subtitle="Currently at" Icon={BiBuilding} />
     </Stack>
   );
 };

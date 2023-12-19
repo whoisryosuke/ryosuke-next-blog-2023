@@ -22,7 +22,15 @@ const AboutCard = (props: Props) => {
       justifyContent="center"
       alignItems="center"
     >
-      <Glass width="300px" marginLeft="100px" padding={4}>
+      <Glass
+        width={{
+          default: "60%",
+          tablet: "300px",
+        }}
+        maxWidth="300px"
+        marginLeft="100px"
+        padding={4}
+      >
         <Stack vertical gap={4}>
           <Stack>
             <Box>

@@ -28,7 +28,7 @@ const Stack = ({
       mobile: responsive ? gap : 0,
       tablet: vertical || wrap ? gap : 0,
     },
-    marginRight: { mobile: 0, tablet: !vertical ? gap : 0 },
+    marginRight: { mobile: !vertical ? gap : 0, tablet: !vertical ? gap : 0 },
   };
   // If it's the last child, we still apply some styles depending on the case
   // If we wrap, there's always a marginBottom needed or it'll offset flex

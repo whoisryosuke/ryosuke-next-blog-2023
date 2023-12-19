@@ -54,31 +54,32 @@ export default function PocketStation({ controls, ...props }: Props) {
     ],
   });
 
-  useEffect(() => {
-    if (window) {
-      const screenCanvas = document.getElementById("pocketstation-screen");
-      const canvasTexture = new CanvasTexture(screenCanvas);
-      // screenMaterial.current = materials.PS_FrontScreen;
-      console.log("materials.PS_FrontScreen", materials.PS_FrontScreen);
-      //@ts-ignore
-      materials.PS_FrontScreen.map = canvasTexture;
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (window) {
+  //     const screenCanvas = document.getElementById("pocketstation-screen");
+  //     const canvasTexture = new CanvasTexture(screenCanvas);
+  //     // screenMaterial.current = materials.PS_FrontScreen;
+  //     console.log("materials.PS_FrontScreen", materials.PS_FrontScreen);
+  //     //@ts-ignore
+  //     materials.PS_FrontScreen.map = canvasTexture;
+  //     materials.PS_FrontScreen.needsUpdate = true;
+  //   }
+  // }, []);
 
-  const animate = (timer) => {
-    // console.log("updating material", timer);
-    const screenCanvas = document.getElementById("pocketstation-screen");
+  // const animate = (timer) => {
+  //   // console.log("updating material", timer);
+  //   const screenCanvas = document.getElementById("pocketstation-screen");
 
-    const canvasTexture = new CanvasTexture(screenCanvas);
-    // screenMaterial.current = materials.PS_FrontScreen;
-    // @ts-ignore
-    materials.PS_FrontScreen.map = canvasTexture;
-  };
+  //   const canvasTexture = new CanvasTexture(screenCanvas);
+  //   // screenMaterial.current = materials.PS_FrontScreen;
+  //   // @ts-ignore
+  //   materials.PS_FrontScreen.map = canvasTexture;
+  // };
 
-  const startAnimation = useCallback(() => {
-    cancelAnimationFrame(frameId.current);
-    frameId.current = requestAnimationFrame(animate);
-  }, [animate]);
+  // const startAnimation = useCallback(() => {
+  //   cancelAnimationFrame(frameId.current);
+  //   frameId.current = requestAnimationFrame(animate);
+  // }, [animate]);
 
   // React.useEffect(() => {
   //   if (window) {
@@ -88,7 +89,7 @@ export default function PocketStation({ controls, ...props }: Props) {
   //   return () => cancelAnimationFrame(frameId.current);
   // }, [pocketStationAnimating]);
 
-  useRequestAnimationFrame(animate);
+  // useRequestAnimationFrame(animate);
 
   return (
     <animated.group {...props} dispose={null}>

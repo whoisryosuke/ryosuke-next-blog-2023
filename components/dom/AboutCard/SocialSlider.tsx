@@ -46,7 +46,7 @@ type Props = BoxProps & {};
 const SocialSlider = (props: Props) => {
   return (
     <HorizontalScroll p={3} {...props}>
-      <Stack gap={4}>
+      <Stack gap={4} responsive={false}>
         <SocialPlatform
           image="/images/social-twitch.png"
           title="Twitch"
