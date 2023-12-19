@@ -4,6 +4,7 @@ import { useAppStore } from "@store/app";
 import AboutCard from "@components/dom/AboutCard/AboutCard";
 import dynamic from "next/dynamic";
 import PocketStationScreenCanvas from "@components/3d/PocketStation/PocketStationScreenCanvas";
+import PocketStationLoadingState from "@components/3d/PocketStation/PocketStationLoadingState";
 
 // Prefer dynamic import for production builds
 // But if you have issues and need to debug in local development
@@ -13,6 +14,7 @@ const PocketStation = dynamic(
   () => import("@components/3d/PocketStationScene"),
   {
     ssr: false,
+    loading: () => <PocketStationLoadingState />,
   }
 );
 
@@ -21,7 +23,6 @@ export default function Index() {
   return (
     <PageWrapper>
       <PocketStation customizations={customizations} />
-      <PocketStationScreenCanvas />
       <AboutCard />
     </PageWrapper>
   );
