@@ -8,6 +8,7 @@ import Box from "@components/dom/Box/Box";
 import { H2, H3, H4 } from "@components/dom/Headline/Headers";
 import BlogCard, { BlogPostData } from "@components/dom/BlogCard/BlogCard";
 import { useBlogStore } from "@store/blog";
+import Head from "@components/dom/Head/Head";
 
 type Props = {
   posts: BlogPostData[];
@@ -49,6 +50,7 @@ const BlogArchivePage = ({ posts }: Props) => {
 
   return (
     <BlogTransition>
+      <Head title="Blog Archive" />
       {postsByYear.reverse().map(([year, posts]) => (
         <Box marginBottom={8}>
           <H2 marginTop={0}>{year}</H2>

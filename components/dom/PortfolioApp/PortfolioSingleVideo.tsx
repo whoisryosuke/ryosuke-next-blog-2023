@@ -82,6 +82,7 @@ const PortfolioSingleVideo = ({ work, ...props }: Props) => {
       {...props}
     >
       <Video
+        key={work.id}
         ref={ref}
         autoPlay
         loop

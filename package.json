@@ -10,7 +10,6 @@
     "@emotion/is-prop-valid": "^1.2.1",
     "@noriginmedia/norigin-spatial-navigation": "^2.1.0",
     "@react-spring/three": "^9.7.3",
-    "@react-three/a11y": "^3.0.0",
     "@react-three/drei": "^9.92.3",
     "@react-three/fiber": "^8.15.12",
     "@react-three/postprocessing": "^2.15.11",

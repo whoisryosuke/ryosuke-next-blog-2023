@@ -6,7 +6,7 @@ type Props = {
   // Title of page (passed to `<head>`)
   title: string;
 
-  meta: MetaTagsProps;
+  meta?: MetaTagsProps;
 };
 
 const Head = ({ title, meta, ...props }: Props) => {

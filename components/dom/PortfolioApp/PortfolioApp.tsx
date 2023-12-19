@@ -13,6 +13,7 @@ import PortfolioSingleView from "./PortfolioSingleView";
 import Glass from "../Glass/Glass";
 import { PortfolioContent } from "content/portfolio/portfolio";
 import PortfolioCategorySort from "./PortfolioCategorySort";
+import Head from "../Head/Head";
 
 const condensePortfolio = (work: PortfolioContent) => {
   return Object.values(work).reduce((merge, workItems) => {
@@ -64,8 +65,18 @@ const PortfolioApp = ({ work }: Props) => {
     }
   }, [currentCategory]);
 
+  const currentWork = sortedWork.find((workItem) => currentId == workItem.id);
+  const currentWorkTitle = currentWork?.title ? currentWork?.title : "";
+
   return (
     <Box maxWidth="80vw" margin="auto" mt={8} p={0} position="relative">
+      <Head
+        title={
+          showSingleView
+            ? `${currentWorkTitle} | Ryosuke`
+            : `${currentCategory} Portfolio | Ryosuke`
+        }
+      />
       <AnimatePresence>
         {!showSingleView && (
           <>
