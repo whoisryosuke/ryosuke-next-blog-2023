@@ -21,13 +21,10 @@ export type VideoProps = HTMLProps<HTMLVideoElement> &
 const StyledVideo = styled("video")<VideoProps>`
   max-width: 100%;
   object-fit: cover;
+  position: relative;
 
   border-radius: ${({ theme, borderRadius }) =>
     borderRadius ? theme.radius[borderRadius] : theme.radius[1]};
-
-  &:after {
-    ${borderShineEffect}
-  }
 
   ${width}
   ${height}

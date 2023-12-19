@@ -86,6 +86,8 @@ const PortfolioSingleVideo = ({ work, ...props }: Props) => {
         autoPlay
         loop
         muted
+        playsInline
+        controls={false}
         //@ts-ignore
         width={SINGLE_VIEW_WIDTH}
         //@ts-ignore
