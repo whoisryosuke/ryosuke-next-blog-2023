@@ -11,6 +11,7 @@ const AnimatedMesh = (props) => {
   return <animated.mesh {...props} />;
 };
 
+const MODEL_PATH = "/models/PocketStation-v11.glb";
 const BUTTON_PRESSED_DEPTH = [0, 0, -0.1];
 const BUTTON_DEFAULT_DEPTH = [0, 0, 0];
 
@@ -23,7 +24,7 @@ type Props = {
 export default function PocketStation({ controls, ...props }: Props) {
   const frontPanelRef = useRef(null);
   // @ts-ignore Yeah it exists
-  const { nodes, materials } = useGLTF("/models/PocketStation-v11.glb");
+  const { nodes, materials } = useGLTF(MODEL_PATH);
   const screenMaterial = useRef(null);
   const frameId = useRef(null);
   const screenCanvas = useRef(null);
@@ -191,3 +192,4 @@ export default function PocketStation({ controls, ...props }: Props) {
     </animated.group>
   );
 }
+useGLTF.preload(MODEL_PATH);

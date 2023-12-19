@@ -29,7 +29,7 @@ const PocketStationScene = ({ customizations, ...props }: Props) => {
     >
       <Environment
         // background
-        files="./images/studio_small_08_4k.hdr"
+        files="./images/studio_small_08_1k.hdr"
         {...props}
       >
         {/* Extra space lights if needed */}
