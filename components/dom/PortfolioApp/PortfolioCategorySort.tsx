@@ -32,7 +32,13 @@ const PortfolioCategorySort = ({
   sortPortfolioByCategory,
 }: Props) => {
   return (
-    <Box marginTop={-4} style={{ textAlign: "center" }}>
+    <Box
+      marginTop={{
+        default: -8,
+        tablet: -4,
+      }}
+      style={{ textAlign: "center" }}
+    >
       <Glass display="inline-block" p={3} borderRadius="round">
         <Stack responsive={false}>
           {PortfolioCategoryMap.map((categoryName) => (

@@ -15,10 +15,11 @@ const GRID_GAP = "2px";
 const HERO_IMG_HEIGHT = "60vh";
 
 type Props = PortfolioNavigationProps & {
+  category: string;
   work: WorkCardData[];
 };
 
-const PortfolioGridView = ({ work, handleNavigateWork }: Props) => {
+const PortfolioGridView = ({ work, category, handleNavigateWork }: Props) => {
   // 4 Photos on top
   const firstSet = work.slice(0, 4);
   const restWork = work.slice(4);
@@ -97,8 +98,8 @@ const PortfolioGridView = ({ work, handleNavigateWork }: Props) => {
           <Box position="absolute" top={0} left={0} p={6}>
             <H2 marginBottom={1} marginTop={0}>
               {work.length > 0
-                ? new Date(Date.parse(work[0].date)).getFullYear()
-                : "No work found"}
+                ? category
+                : `No ${category.toLowerCase()} work found`}
             </H2>
             <Text fontSize={0} lineHeight={1} opacity="0.5">
               {work.length > 0

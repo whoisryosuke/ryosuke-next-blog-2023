@@ -70,6 +70,7 @@ const PortfolioApp = ({ work }: Props) => {
         {!showSingleView && (
           <>
             <PortfolioGridView
+              category={currentCategory}
               work={sortedWork}
               handleNavigateWork={handleNavigateWork}
             />
