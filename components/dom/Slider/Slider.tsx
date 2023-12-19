@@ -22,14 +22,14 @@ const StyledInput = styled("input")<Props>`
 
   &::-webkit-slider-thumb {
     -webkit-appearance: none;
+    background: transparent;
+    filter: none;
+    box-shadow: none;
+    border: 0;
+    border-radius: 50%;
 
     height: 25px;
     width: 25px;
-    /* Debug */
-    /* border: 2px solid white;
-    opacity: 0.8;
-    border-radius: 50%;
-    background: gray; */
   }
 `;
 
