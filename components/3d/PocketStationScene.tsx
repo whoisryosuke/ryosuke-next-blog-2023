@@ -54,11 +54,11 @@ const PocketStationScene = ({ customizations, ...props }: Props) => {
 
       <PocketStationController />
 
-      <OrbitControls
+      {/* <OrbitControls
         // autoRotate={customizations.animation.active}
         autoRotate={false}
         rotateSpeed={0.01}
-      />
+      /> */}
       {/*         
         <EffectComposer disableNormalPass>
           <N8AO aoRadius={1} intensity={2} />
