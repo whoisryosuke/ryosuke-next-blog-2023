@@ -1,6 +1,5 @@
 import { useRef } from "react";
 import { Canvas, CanvasProps } from "@react-three/fiber";
-import { A11yAnnouncer } from "@react-three/a11y";
 import { OrbitControls, Preload, Stats } from "@react-three/drei";
 
 const Controls = () => {
@@ -16,12 +15,11 @@ const CanvasWrapper = ({ children, ...props }: CanvasProps) => {
         mode="concurrent"
         {...props}
       >
-        <Stats />
-        <Controls />
+        {/* <Stats /> */}
+        {/* <Controls /> */}
         <Preload all />
         {children}
       </Canvas>
-      <A11yAnnouncer />
     </>
   );
 };
