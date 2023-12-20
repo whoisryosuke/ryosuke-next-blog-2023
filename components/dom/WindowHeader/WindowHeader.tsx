@@ -10,6 +10,7 @@ type WindowHeaderProps = {
   subtitle?: string;
   icon?: React.ReactElement;
   sidebar?: boolean;
+  buttonPress?: () => void;
 };
 
 const WindowHeader = ({
@@ -17,9 +18,10 @@ const WindowHeader = ({
   subtitle,
   icon,
   sidebar,
+  buttonPress,
 }: WindowHeaderProps) => {
   return (
-    <Stack mb={4} p={3} alignItems="flex-start">
+    <Stack mb={4} p={3} alignItems="flex-start" responsive={false}>
       <Box flex={1}>
         <Headline>{title}</Headline>
         {subtitle && (
@@ -28,7 +30,7 @@ const WindowHeader = ({
           </Text>
         )}
       </Box>
-      {icon && <Button icon={icon} onlyIcon solid />}
+      {icon && <Button icon={icon} onlyIcon solid onClick={buttonPress} />}
     </Stack>
   );
 };

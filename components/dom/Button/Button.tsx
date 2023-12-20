@@ -75,7 +75,7 @@ const StyledButton = styled("button")<ButtonProps>`
     ${({ solid }) => solid && borderShineEffect}
   }
 
-  &:hover:enabled {
+  &:hover {
     background: ${({ theme }) => theme.colors.button.hovered};
 
     &:after {
@@ -83,7 +83,7 @@ const StyledButton = styled("button")<ButtonProps>`
     }
   }
 
-  &:active:enabled {
+  &:active {
     background: ${({ theme }) => theme.colors.button.pressed};
     color: ${({ theme }) => theme.colors.button.pressedText};
   }
