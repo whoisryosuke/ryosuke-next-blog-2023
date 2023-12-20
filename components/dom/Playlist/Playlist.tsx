@@ -79,6 +79,7 @@ const SidebarButton = ({ icon, href, children }) => {
 
 export default function Playlist() {
   const { customizations, setUserTheme, toggleModal } = useAppStore();
+  const [search, setSearch] = useState("");
 
   const handleModal = () => {
     toggleModal(true);
@@ -95,6 +96,21 @@ export default function Playlist() {
       text: "Ryosuke's Music Playlist",
     });
   };
+
+  const handleSearchInput = (e: React.FormEvent<HTMLInputElement>) => {
+    setSearch(e.currentTarget.value);
+  };
+
+  // We filter the music by search term
+  // we also make everything lowercase to make matching easier
+  const filteredMusic =
+    search == ""
+      ? PLAYLIST_DATA
+      : PLAYLIST_DATA.filter(
+          (musicData) =>
+            musicData.album.toLowerCase().includes(search.toLowerCase()) ||
+            musicData.artist.toLowerCase().includes(search.toLowerCase())
+        );
 
   return (
     <PageWrapper>
@@ -158,7 +174,7 @@ export default function Playlist() {
             <Box id="content" py={4} px={5} flex={1}>
               <WindowHeader
                 title="Music"
-                subtitle={`${PLAYLIST_DATA.length} albums`}
+                subtitle={`${filteredMusic.length} albums`}
                 icon={<BiShare />}
                 buttonPress={shareMenu}
               />
@@ -167,12 +183,14 @@ export default function Playlist() {
                 <Input
                   icon={<BiMicrophone />}
                   placeholder="Search for album or artist"
+                  value={search}
+                  onChange={handleSearchInput}
                 />
               </Box>
 
               <ScrollBox height="400px">
                 <Grid>
-                  {PLAYLIST_DATA.map((playlistItem) => (
+                  {filteredMusic.map((playlistItem) => (
                     <MusicCard {...playlistItem} />
                   ))}
                 </Grid>
