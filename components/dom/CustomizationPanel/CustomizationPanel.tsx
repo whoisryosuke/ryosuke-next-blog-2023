@@ -88,6 +88,10 @@ const CustomizationPanel = ({ open, ...props }: Props) => {
               {panelsMap.map(([key, panel]) => (
                 <Button
                   icon={panel.icon}
+                  iconSize={{
+                    width: "16px",
+                    height: "16px",
+                  }}
                   justifyContent="flex-start"
                   borderRadius={1}
                   onClick={() => handlePanel(key as PanelNames)}
