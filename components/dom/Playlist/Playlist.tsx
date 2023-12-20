@@ -63,6 +63,8 @@ const SidebarButton = ({ icon, href, children }) => {
       as="a"
       //@ts-ignore
       href={href}
+      //@ts-ignore
+      target="_blank"
       icon={icon}
       iconSize={{
         width: "16px",

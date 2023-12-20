@@ -20,6 +20,7 @@ const SocialPlatform = ({
     <Box
       as="a"
       href={href}
+      target="_blank"
       display="inline-block"
       style={{ textAlign: "center", textDecoration: "none" }}
       {...props}
