@@ -33,12 +33,11 @@ export default class MyDocument extends Document {
   render() {
     return (
       <Html>
-        <Head>
-          <Fonts />
-        </Head>
+        <Head></Head>
         <body>
           <Main />
           <NextScript />
+          <Fonts />
         </body>
       </Html>
     );
