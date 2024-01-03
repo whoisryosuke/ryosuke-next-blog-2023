@@ -25,7 +25,7 @@ const PocketStationScene = ({ customizations, ...props }: Props) => {
   return (
     <Canvas
       camera={{ fov: 75, near: 0.1, far: 1000, position: [0, 0, 10] }}
-      style={{ width: "100%", height: "100vh" }}
+      // style={{ width: "100%", height: "100vh" }}
     >
       <Environment
         // background

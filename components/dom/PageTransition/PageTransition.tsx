@@ -36,7 +36,13 @@ const PageTransition = ({ children }: PropsWithChildren<Props>) => {
       transition={{
         duration: 0.75,
       }}
-      style={{ width: "100%", position: "absolute", top: 0, left: 0 }}
+      style={{
+        width: "100%",
+        height: "100vh",
+        position: "absolute",
+        top: 0,
+        left: 0,
+      }}
     >
       {children}
     </motion.div>
