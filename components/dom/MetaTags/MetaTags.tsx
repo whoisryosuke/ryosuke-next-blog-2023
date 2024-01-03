@@ -7,6 +7,7 @@ export type MetaTagsProps = {
   image?: string;
   // Path appended to domain (e.g. `/blog`)
   url?: string;
+  blogArticle?: boolean;
 };
 
 const MetaTags = ({
@@ -14,15 +15,23 @@ const MetaTags = ({
   description = "The blog and portfolio of Ryosuke Hana",
   image = "/images/social-default.png",
   url = "",
+  blogArticle = false,
 }: MetaTagsProps) => {
+  const siteImage = `https://whoisryosuke.com${image}`;
+  const siteUrl = `https://whoisryosuke.com/${url}`;
   return (
     <>
       <meta property="og:title" content={title} />
-      <meta property="og:type" content="article" />
+      <meta property="og:type" content={blogArticle ? "article" : "website"} />
+      <meta property="og:image" content={siteImage} />
+      <meta property="og:url" content={siteUrl} />
       <meta property="og:description" content={description} />
-      <meta property="og:image" content={`https://whoisryosuke.com${image}`} />
-      <meta property="og:url" content={`https://whoisryosuke.com${url}`} />
-      <meta name="twitter:card" content="summary_large_image"></meta>
+
+      <meta property="twitter:card" content="summary_large_image" />
+      <meta property="twitter:url" content={siteUrl} />
+      <meta property="twitter:title" content={title} />
+      <meta property="twitter:description" content={description} />
+      <meta property="twitter:image" content={siteImage} />
     </>
   );
 };

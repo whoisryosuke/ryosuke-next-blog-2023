@@ -46,9 +46,15 @@ export default function PostPage({ source, frontMatter, slug }) {
 
   const meta: MetaTagsProps = {
     title: frontMatter.title,
-    image: frontMatter.cover_image,
+    // Markdown uses relative image URLs, we convert here
+    image: frontMatter.cover_image.replace(
+      "./",
+      `https://whoisryosuke.com/${slug}/`
+    ),
     url: slug,
+    blogArticle: true,
   };
+  console.log("meta tags", meta);
   return (
     <BlogTransition>
       <Head title={frontMatter.title} meta={meta} />
