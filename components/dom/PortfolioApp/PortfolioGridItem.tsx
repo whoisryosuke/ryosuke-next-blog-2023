@@ -1,5 +1,5 @@
 import React from "react";
-import Image from "../Image/Image";
+import Image from "next/image";
 import { PortfolioNavigationProps, WorkCardData, WorkCardProps } from "./types";
 import Box, { BoxProps } from "../Box/Box";
 import styled from "styled-components";
@@ -66,8 +66,9 @@ const PortfolioGridItem = ({
     >
       <div className="overlay" />
       {src && (
-        <img
+        <Image
           src={src}
+          alt={title}
           style={{
             width: "100%",
             height: props?.height ?? "auto",
