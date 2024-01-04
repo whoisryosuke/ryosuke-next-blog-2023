@@ -54,7 +54,6 @@ export default function PostPage({ source, frontMatter, slug }) {
     url: slug,
     blogArticle: true,
   };
-  console.log("meta tags", meta);
   return (
     <BlogTransition>
       <Head title={frontMatter.title} meta={meta} />
