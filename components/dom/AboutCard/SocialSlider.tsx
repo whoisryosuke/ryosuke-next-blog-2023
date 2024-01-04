@@ -3,17 +3,29 @@ import Box, { BoxProps } from "../Box/Box";
 import styled from "styled-components";
 import Text from "../Text/Text";
 import Stack from "../Stack/Stack";
+import { BREAKPOINTS } from "@theme/tokens";
+
+const SocialIconImage = styled("img")`
+  @media (min-width: ${BREAKPOINTS.default}) {
+    width: auto;
+  }
+
+  @media (min-width: ${BREAKPOINTS.computer}) {
+    width: 100%;
+  }
+`;
 
 type SocialPlatformProps = {
   image: string;
+  alt: string;
   title: string;
   href: string;
 };
 
 const SocialPlatform = ({
   image,
-  title,
   href,
+  alt,
   ...props
 }: SocialPlatformProps) => {
   return (
@@ -25,8 +37,7 @@ const SocialPlatform = ({
       style={{ textAlign: "center", textDecoration: "none" }}
       {...props}
     >
-      <img src={image} alt={`${title} icon`} style={{ display: "block" }} />
-      <Text fontSize={0}>{title}</Text>
+      <SocialIconImage src={image} alt={alt} style={{ display: "block" }} />
     </Box>
   );
 };
@@ -50,22 +61,26 @@ const SocialSlider = (props: Props) => {
       <Stack gap={4} responsive={false}>
         <SocialPlatform
           image="/images/social-twitch.png"
-          title="Twitch"
+          alt="Twitch"
+          title="@whoisryosuke on Twitch"
           href="https://www.twitch.tv/whoisryosuke"
         />
         <SocialPlatform
           image="/images/social-mastodon.png"
-          title="Mastodon"
+          alt="Mastodon"
+          title="@whoisryosuke on Mastodon"
           href="https://mastodon.gamedev.place/@whoisryosuke"
         />
         <SocialPlatform
           image="/images/social-threads.png"
-          title="Threads"
+          alt="Threads"
+          title="@whoisryosuke on Threads"
           href="https://www.threads.net/@whoisryosuke"
         />
         <SocialPlatform
           image="/images/social-youtube.png"
-          title="YouTube"
+          alt="YouTube"
+          title="@whoisryosuke on YouTube"
           href="https://www.youtube.com/@whoisryosuke"
         />
       </Stack>
