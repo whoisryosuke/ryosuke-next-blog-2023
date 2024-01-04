@@ -23,7 +23,7 @@ const Scene = ({ customizations, ...props }: Props) => {
     <>
       <Environment
         background
-        files="./images/neon_photostudio_1k.hdr"
+        files="./images/studio_small_08_1k.hdr"
         {...props}
       >
         {/* Extra space lights if needed */}

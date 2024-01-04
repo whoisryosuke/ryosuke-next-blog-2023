@@ -27,20 +27,18 @@ import {
 import GlassCube from "../GlassCube";
 import { dampE } from "maath/easing";
 
-
 const useAnimatedCamera = (rotate: number) => {
   const ANIMATION_DURATION = 0.7;
   const prevRotate = useRef(rotate);
   const prevRotateTime = useRef(0);
 
   useEffect(() => {
-    if(rotate !== prevRotate.current) {
+    if (rotate !== prevRotate.current) {
       prevRotateTime.current = 0;
     }
-  }, [rotate])
-  
+  }, [rotate]);
 
-  useFrame(({camera, clock}, delta) => {
+  useFrame(({ camera, clock }, delta) => {
     // HERE, looking for a way to lerp camera lookAt in a way that can toggle.
     // cameraRef.current.rotateY(rotate);
     // cameraRef.current.rotateY(
@@ -59,11 +57,12 @@ const useAnimatedCamera = (rotate: number) => {
 
     prevRotateTime.current += delta;
 
-      const duration = Math.min(prevRotateTime.current, ANIMATION_DURATION) / ANIMATION_DURATION
-      console.log('time', prevRotateTime.current, duration)
-      camera.rotation.y = MathUtils.lerp(camera.rotation.y, rotate, duration);
-      console.log('animating', camera.rotation.y, rotate)
-      // camera.rotateY(MathUtils.lerp(camera.rotation.y, rotate, duration));
+    const duration =
+      Math.min(prevRotateTime.current, ANIMATION_DURATION) / ANIMATION_DURATION;
+    console.log("time", prevRotateTime.current, duration);
+    camera.rotation.y = MathUtils.lerp(camera.rotation.y, rotate, duration);
+    console.log("animating", camera.rotation.y, rotate);
+    // camera.rotateY(MathUtils.lerp(camera.rotation.y, rotate, duration));
     if (prevRotateTime.current >= ANIMATION_DURATION) {
       prevRotate.current = rotate;
     }
@@ -83,7 +82,7 @@ const useAnimatedCamera = (rotate: number) => {
     //   camera.updateProjectionMatrix();
     // }
   });
-}
+};
 
 type Props = Partial<GroupProps> & {
   customizations: UserCustomizations;
@@ -98,7 +97,7 @@ const PrimitiveScene = ({ customizations, rotate, ...props }: Props) => {
   const cameraRef = useRef<ThreePerspectiveCamera>();
   useAnimatedCamera(rotate);
 
-  console.log('rotate', rotate)
+  console.log("rotate", rotate);
 
   //    useFrame((state) => {
   //     // HERE, looking for a way to lerp camera lookAt in a way that can toggle.
@@ -111,7 +110,7 @@ const PrimitiveScene = ({ customizations, rotate, ...props }: Props) => {
       <Environment
         background
         blur={0.15}
-        files="/images/neon_photostudio_1k.hdr"
+        files="/images/studio_small_08_1k.hdr"
       >
         {/* Extra space lights if needed */}
         {/* <Lightformer intensity={4} position={[0, 7, 0]} scale={[10, 30, 1]} onUpdate={(self) => self.lookAt(0, 0, 0)} /> */}

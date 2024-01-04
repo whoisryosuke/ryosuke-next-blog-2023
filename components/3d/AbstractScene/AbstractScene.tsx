@@ -42,7 +42,7 @@ const AbstractScene = ({ customizations, ...props }: Props) => {
 
   return (
     <>
-      {/* <Environment background files="./images/neon_photostudio_1k.hdr" {...props}> */}
+      {/* <Environment background files="./images/studio_small_08_1k.hdr" {...props}> */}
       {/* Extra space lights if needed */}
       {/* <Lightformer intensity={4} position={[0, 7, 0]} scale={[10, 30, 1]} onUpdate={(self) => self.lookAt(0, 0, 0)} /> */}
       {/* </Environment> */}
