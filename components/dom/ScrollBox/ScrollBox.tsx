@@ -24,14 +24,16 @@ const StyledScrollBox = styled(Box)<Props>`
   );
 `;
 
+const ScrollBoxContent = ({ children, ...props }, ref) => {
+  return (
+    <StyledScrollBox ref={ref} {...props}>
+      {children}
+    </StyledScrollBox>
+  );
+};
+
 const ScrollBox = forwardRef<HTMLDivElement, PropsWithChildren<Props>>(
-  ({ children, ...props }, ref) => {
-    return (
-      <StyledScrollBox ref={ref} {...props}>
-        {children}
-      </StyledScrollBox>
-    );
-  }
+  ScrollBoxContent
 );
 
 export default ScrollBox;

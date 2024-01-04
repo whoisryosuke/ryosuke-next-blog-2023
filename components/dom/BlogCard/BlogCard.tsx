@@ -65,7 +65,9 @@ const BlogCard = ({ post, ...props }: BlogCardProps) => {
           wrap
           display={{ default: "none", tablet: "flex" }}
         >
-          {post.frontmatter.tags?.map((tag) => <BlogCardTag tag={tag} />)}
+          {post.frontmatter.tags?.map((tag) => (
+            <BlogCardTag key={tag} tag={tag} />
+          ))}
         </Stack>
       </Link>
     </ContentListItem>

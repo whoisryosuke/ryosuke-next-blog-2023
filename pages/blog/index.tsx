@@ -52,7 +52,7 @@ const BlogArchivePage = ({ posts }: Props) => {
     <BlogTransition>
       <Head title="Blog Archive" />
       {postsByYear.reverse().map(([year, posts]) => (
-        <Box marginBottom={8}>
+        <Box key={year} marginBottom={8}>
           <H2 marginTop={0}>{year}</H2>
           <Stack
             vertical

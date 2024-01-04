@@ -64,6 +64,7 @@ const PortfolioThumbnailSlider = ({
     >
       {work.map((workItem) => (
         <PortfolioThumbnailItem
+          key={workItem.id}
           item={workItem}
           selected={current === workItem.id}
           handleNavigateWork={handleNavigateWork}

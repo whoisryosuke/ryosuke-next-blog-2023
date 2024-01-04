@@ -176,6 +176,7 @@ const BlogPage = ({ children, ...props }: PropsWithChildren<Props>) => {
               </Headline>
               {tableOfContents.map((tocItem) => (
                 <Button
+                  key={tocItem.slug}
                   as="a"
                   // @ts-ignore
                   href={`#${tocItem.slug}`}

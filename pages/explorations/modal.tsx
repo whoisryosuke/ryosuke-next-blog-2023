@@ -35,6 +35,7 @@ export default function ComponentsPage() {
             <Stack>
               <Button onClick={handleModal}>Open Modal</Button>
               <Button>About Me</Button>
+              {/* @ts-ignore - allegedly patched in types/react - they lied */}
               <Modal isOpen={customizations.theme.modal} onClose={onClose}>
                 <Glass width="400px" p={5} modal>
                   <Text color="textInverted">Modal Open</Text>

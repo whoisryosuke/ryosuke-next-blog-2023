@@ -59,6 +59,7 @@ const CustomizationPanel = ({ open, ...props }: Props) => {
   const panelsMap = Object.entries(PANELS);
 
   return (
+    //@ts-ignore - allegedly patched in types/react - they lied
     <Modal
       isOpen={open}
       onClose={onClose}
@@ -87,6 +88,7 @@ const CustomizationPanel = ({ open, ...props }: Props) => {
             <Stack vertical>
               {panelsMap.map(([key, panel]) => (
                 <Button
+                  key={key}
                   icon={panel.icon}
                   iconSize={{
                     width: "16px",

@@ -103,9 +103,8 @@ const MasonryGrid = ({ children, gap }: PropsWithChildren<Props>) => {
         }
       }
       return (
-        <AnimatePresence>
+        <AnimatePresence key={index}>
           <Stack
-            key={index}
             vertical
             wrapper
             display="block"

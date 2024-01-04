@@ -85,6 +85,7 @@ const PortfolioGridView = ({ work, category, handleNavigateWork }: Props) => {
                 {restWork.map((workItem) => {
                   return (
                     <PortfolioGridItem
+                      key={workItem.id}
                       {...workItem}
                       height="150px"
                       handleNavigateWork={handleNavigateWork}

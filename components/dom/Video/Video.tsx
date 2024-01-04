@@ -30,13 +30,13 @@ const StyledVideo = styled("video")<VideoProps>`
   ${height}
 `;
 
-const Video = forwardRef(
-  (
-    { borderRadius, src, alt, ...props }: VideoProps,
-    ref: RefObject<HTMLVideoElement>
-  ) => {
-    return <StyledVideo ref={ref} src={src} alt={alt} {...props} />;
-  }
-);
+const VideoContent = (
+  { borderRadius, src, alt, ...props }: VideoProps,
+  ref: RefObject<HTMLVideoElement>
+) => {
+  return <StyledVideo ref={ref} src={src} alt={alt} {...props} />;
+};
+
+const Video = forwardRef(VideoContent);
 
 export default Video;

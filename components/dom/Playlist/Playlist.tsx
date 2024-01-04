@@ -193,7 +193,7 @@ export default function Playlist() {
               <ScrollBox height="400px">
                 <Grid>
                   {filteredMusic.map((playlistItem) => (
-                    <MusicCard {...playlistItem} />
+                    <MusicCard key={playlistItem.album} {...playlistItem} />
                   ))}
                 </Grid>
               </ScrollBox>

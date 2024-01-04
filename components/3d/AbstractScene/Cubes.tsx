@@ -35,6 +35,7 @@ const Cubes = ({ customizations, ...props }: Props) => {
           merge = [
             ...merge,
             <AnimatedCube
+              key={`${xIndex}-${zIndex}`}
               size={CUBE_SIZE}
               offset={xIndex * 10 + zIndex}
               position={[

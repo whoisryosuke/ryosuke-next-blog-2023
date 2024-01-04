@@ -50,6 +50,7 @@ const AchievementsModal = ({ open, ...props }: Props) => {
   const categoryNumber = Object.keys(ACHIEVEMENT_LIST[category]).length;
 
   return (
+    //@ts-ignore - allegedly patched in types/react - they lied
     <Modal
       isOpen={open}
       onClose={onClose}
@@ -78,6 +79,7 @@ const AchievementsModal = ({ open, ...props }: Props) => {
             <Stack vertical>
               {categories.map((categoryName) => (
                 <Button
+                  key={categoryName}
                   //   icon={panel.icon}
                   justifyContent="flex-start"
                   borderRadius={1}
