@@ -1,11 +1,9 @@
 ---
 title: Restyle for React Native (vs Styled System)
-date: '2020-09-25'
+date: "2020-09-25"
 section: blog
-tags: ['react native', 'react', 'design systems']
-cover_image: './Restyle_for_React_Native_(vs_Styled_System).png'
-
-layout: "@/layouts/BlogLayout.astro"
+tags: ["react native", "react", "design systems"]
+cover_image: "./Restyle_for_React_Native_(vs_Styled_System).png"
 ---
 
 Recently Shopify open sourced **[Restyle](https://github.com/Shopify/restyle)**, their styling solution they created for React Native. Restyle takes cues from [**Styled System**](https://styled-system.com/) by offering theming (such as light and dark mode) and utility style props (`<Box marginTop="xl">`). But unlike Styled System, Restyle works off React Native's default styling paradigm ([the "Stylesheet"](https://reactnative.dev/docs/stylesheet)).
@@ -65,20 +63,20 @@ yarn add @shopify/restyle
 Create a theme (`themes/default.ts`)
 
 ```tsx
-import { createTheme } from '@shopify/restyle'
+import { createTheme } from "@shopify/restyle";
 
 const palette = {
-  purpleLight: '#8C6FF7',
-  purplePrimary: '#5A31F4',
-  purpleDark: '#3F22AB',
+  purpleLight: "#8C6FF7",
+  purplePrimary: "#5A31F4",
+  purpleDark: "#3F22AB",
 
-  greenLight: '#56DCBA',
-  greenPrimary: '#0ECD9D',
-  greenDark: '#0A906E',
+  greenLight: "#56DCBA",
+  greenPrimary: "#0ECD9D",
+  greenDark: "#0A906E",
 
-  black: '#0B0B0B',
-  white: '#F0F2F3',
-}
+  black: "#0B0B0B",
+  white: "#F0F2F3",
+};
 
 const theme = createTheme({
   colors: {
@@ -95,10 +93,10 @@ const theme = createTheme({
     phone: 0,
     tablet: 768,
   },
-})
+});
 
-export type Theme = typeof theme
-export default theme
+export type Theme = typeof theme;
+export default theme;
 ```
 
 If you don't use Typescript, you can remove the `export type` line and it should work in vanilla JS. But it's highly recommended you use Typescript with this library, as it's incredibly simple to setup (as you can see, basically one line here, a few in the component). And it offers great autocomplete support for your theme props, so you'll be able to see all the `spacing` values if your use a `margin` prop for example.
@@ -106,23 +104,23 @@ If you don't use Typescript, you can remove the `export type` line and it should
 Wrap the app in the Theme Provider component:
 
 ```tsx
-import { ThemeProvider } from '@shopify/restyle'
-import theme from './theme'
+import { ThemeProvider } from "@shopify/restyle";
+import theme from "./theme";
 
 const App = () => (
   <ThemeProvider theme={theme}>{/* Rest of the app */}</ThemeProvider>
-)
+);
 ```
 
 Or if you use Storybook, as a decorator:
 
 ```tsx
-import { configure, addDecorator } from '@storybook/react'
-import { ThemeProvider } from '@shopify/restyle'
-import theme from '../themes/default'
+import { configure, addDecorator } from "@storybook/react";
+import { ThemeProvider } from "@shopify/restyle";
+import theme from "../themes/default";
 
 // Wrap all stories in Theme Provider
-addDecorator((story) => <ThemeProvider theme={theme}>{story()}</ThemeProvider>)
+addDecorator((story) => <ThemeProvider theme={theme}>{story()}</ThemeProvider>);
 ```
 
 Now the app is setup and you should be able to create Restyle components from here.
@@ -137,14 +135,13 @@ A box component is basically a React Native `<View>` component (or `<div>` in we
 
 Since RN styles are so encapsulated, we don't set any typography values here (like font family or text color) because we have to use a `<Text>` component to contain text.
 
-
 ```tsx
-import { createBox } from '@shopify/restyle'
-import { Theme } from './theme'
+import { createBox } from "@shopify/restyle";
+import { Theme } from "./theme";
 
-const Box = createBox<Theme>()
+const Box = createBox<Theme>();
 
-export default Box
+export default Box;
 ```
 
 Comes with the props:
@@ -158,18 +155,17 @@ Comes with the props:
 - `shadow`
 - `position`
 
-
 ### Text component
 
 A text component is basically a React Native `<Text>` component (or `<p>` in web) that can be used to display and style text. It's responsible for typography related properties, like the text color or font family.
 
 ```tsx
-import { createText } from '@shopify/restyle'
-import { Theme } from './theme'
+import { createText } from "@shopify/restyle";
+import { Theme } from "./theme";
 
-const Text = createText<Theme>()
+const Text = createText<Theme>();
 
-export default Text
+export default Text;
 ```
 
 Comes with the props:
@@ -225,17 +221,17 @@ import {
   spacing,
   SpacingProps,
   VariantProps,
-} from '@shopify/restyle'
-import { Theme } from './theme'
+} from "@shopify/restyle";
+import { Theme } from "./theme";
 
-type Props = SpacingProps<Theme> & VariantProps<Theme, 'cardVariants'>
+type Props = SpacingProps<Theme> & VariantProps<Theme, "cardVariants">;
 
 const Card = createRestyleComponent<Props>([
   spacing,
-  createVariant({ themeKey: 'cardVariants' }),
-])
+  createVariant({ themeKey: "cardVariants" }),
+]);
 
-export default Card
+export default Card;
 ```
 
 This creates a card that you can use across the app like so:
@@ -249,7 +245,7 @@ This creates a card that you can use across the app like so:
 This is great for components where you're styling nested elements, instead of applying them to the wrapper (like a button in this case):
 
 ```tsx
-import { TouchableOpacity, View } from 'react-native'
+import { TouchableOpacity, View } from "react-native";
 import {
   useRestyle,
   spacing,
@@ -258,19 +254,19 @@ import {
   SpacingProps,
   BorderProps,
   BackgroundColorProps,
-} from '@shopify/restyle'
+} from "@shopify/restyle";
 
-import Text from './Text'
-import { Theme } from './theme'
+import Text from "./Text";
+import { Theme } from "./theme";
 
 type Props = SpacingProps<Theme> &
   BorderProps<Theme> &
   BackgroundColorProps<Theme> & {
-    onPress: () => void
-  }
+    onPress: () => void;
+  };
 
 const Button = ({ onPress, label, ...rest }: Props) => {
-  const props = useRestyle([spacing, border, backgroundColor], rest)
+  const props = useRestyle([spacing, border, backgroundColor], rest);
 
   return (
     <TouchableOpacity onPress={onPress}>
@@ -278,8 +274,8 @@ const Button = ({ onPress, label, ...rest }: Props) => {
         <Text>{label}</Text>
       </View>
     </TouchableOpacity>
-  )
-}
+  );
+};
 ```
 
 This lets you create more complex components that don't require as much forced composition.
@@ -302,10 +298,10 @@ If you need to manually access the theme outside of a component created with Res
 
 ```tsx
 const Component = () => {
-  const theme = useTheme<Theme>()
-  const { cardPrimaryBackground } = theme.colors
+  const theme = useTheme<Theme>();
+  const { cardPrimaryBackground } = theme.colors;
   // ...
-}
+};
 ```
 
 ## Dark mode (or creating new themes)
@@ -323,7 +319,7 @@ const darkTheme: Theme = {
     secondaryCardBackground: palette.darkGray,
     secondaryCardText: palette.white,
   },
-}
+};
 ```
 
 Then when you want to swap from light to dark, you pass a different theme to your `<ThemeProvider>` component.
@@ -554,8 +550,8 @@ If you ignore the Typescript, making custom components with Styled System is fai
 But it's good to note that the typing here for components is a little funky, but it's also because we're extending native web elements (like a `<div>` in this case).
 
 ```tsx
-import React from 'react'
-import styled from 'styled-components'
+import React from "react";
+import styled from "styled-components";
 import {
   compose,
   typography,
@@ -564,31 +560,31 @@ import {
   layout,
   SpaceProps,
   ColorProps,
-} from 'styled-system'
+} from "styled-system";
 
 export type Assign<T, U> = {
   [P in keyof (T & U)]: P extends keyof T
     ? T[P]
     : P extends keyof U
-    ? U[P]
-    : never
-}
+      ? U[P]
+      : never;
+};
 
 export interface BoxOwnProps extends SpaceProps, ColorProps {
-  as?: React.ElementType
-  variant?: string
+  as?: React.ElementType;
+  variant?: string;
 }
 export interface BoxProps
-  extends Assign<React.ComponentProps<'div'>, BoxOwnProps> {}
+  extends Assign<React.ComponentProps<"div">, BoxOwnProps> {}
 
-export const Box = styled('div')<BoxProps>(
+export const Box = styled("div")<BoxProps>(
   {
-    boxSizing: 'border-box',
+    boxSizing: "border-box",
     margin: 0,
     minWidth: 0,
   },
   compose(typography, space, color, layout)
-)
+);
 ```
 
 ## Creating variants
@@ -596,64 +592,64 @@ export const Box = styled('div')<BoxProps>(
 Creating [a variant](https://styled-system.com/variants/) in Styled System uses the `variant` function, and each variant is described as an object of styles with the key as the variant name:
 
 ```tsx
-import { variant } from 'styled-system'
+import { variant } from "styled-system";
 
-export type SizeProp = 'xs' | 'small' | 'medium' | 'large' | 'xl'
+export type SizeProp = "xs" | "small" | "medium" | "large" | "xl";
 
 export const sizeVariants = variant({
-  prop: 'size',
+  prop: "size",
   variants: {
     xs: {
-      fontSize: '0.75em',
+      fontSize: "0.75em",
     },
     small: {
-      fontSize: '0.9em',
+      fontSize: "0.9em",
     },
     medium: {
-      fontSize: '1em',
+      fontSize: "1em",
     },
     large: {
-      fontSize: '1.2em',
+      fontSize: "1.2em",
     },
     xl: {
-      fontSize: '1.5em',
+      fontSize: "1.5em",
     },
   },
-})
+});
 ```
 
 Using the variant in the component:
 
 ```tsx
-import React from 'react'
-import styled from 'styled-components'
-import { Box, Assign, BoxOwnProps } from 'zenny-ui-box'
+import React from "react";
+import styled from "styled-components";
+import { Box, Assign, BoxOwnProps } from "zenny-ui-box";
 import {
   SizeProp,
   sizeVariants,
   AppearanceProp,
   appearanceVariants,
-} from 'zenny-ui-variants'
+} from "zenny-ui-variants";
 
 export interface ButtonProps
-  extends Assign<React.ComponentPropsWithRef<'button'>, BoxOwnProps> {
-  size?: SizeProp
-  appearance?: AppearanceProp
+  extends Assign<React.ComponentPropsWithRef<"button">, BoxOwnProps> {
+  size?: SizeProp;
+  appearance?: AppearanceProp;
 }
 
 export const Button = styled(Box).attrs(() => ({
   // Define props on top of Box
   // Set underlying element as button
-  as: 'button',
+  as: "button",
 }))<ButtonProps>(
   {
-    appearance: 'none',
-    fontFamily: 'inherit',
-    backgroundColor: 'teal',
+    appearance: "none",
+    fontFamily: "inherit",
+    backgroundColor: "teal",
   },
   sizeVariants, // Variants here
   appearanceVariants
-)
+);
 ```
 
 It works well and it's modular. You can also define multiple variants for a component. And these can be overridden by the theme if we create a property named after our variant.

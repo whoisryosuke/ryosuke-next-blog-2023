@@ -1,11 +1,9 @@
 ---
 title: Using Typescript with electron-store
-date: '2022-01-03'
+date: "2022-01-03"
 section: blog
-tags: ['nodejs', 'react', 'javascript', 'electron']
-cover_image: './using-typescript-with-electron-store.png'
-
-layout: "@/layouts/BlogLayout.astro"
+tags: ["nodejs", "react", "javascript", "electron"]
+cover_image: "./using-typescript-with-electron-store.png"
 ---
 
 When building Electron apps, you’ll inevitably need to reach for a storage solution to persist your data across sessions (like saving user data or preferences). You can rely on the web’s `localStorage` or even cookies - but sometimes you want something a little more robust. For Electron, the easiest option is **[electron-store](https://www.npmjs.com/package/electron-store)**, a key-value storage very similar to localStorage.
@@ -26,7 +24,7 @@ When you use Electron store inside your app to `get()` data, the variables will 
 An easy workaround for this is “casting” the type:
 
 ```tsx
-const user = store.get('user') as UserData
+const user = store.get("user") as UserData;
 ```
 
 This forces Typescript to use the `UserData` type for `user`. This works fine and won’t trigger compilation errors — but ultimately adds extra work each time you grab data.
@@ -41,41 +39,41 @@ Create a file to contain the store and your schema. This should live in near the
 
 ```tsx
 // src/main/store.ts
-import Store from 'electron-store'
-import { JSONSchemaType } from 'ajv'
-import { InstallData } from 'renderer/common/types'
+import Store from "electron-store";
+import { JSONSchemaType } from "ajv";
+import { InstallData } from "renderer/common/types";
 
 // Define your schema in TS
 // This is essentially the shape/spec of your store
 export type SchemaType = {
-  installs: InstallData[]
-}
+  installs: InstallData[];
+};
 
 // Define your schema per the ajv/JSON spec
 // But you also need to create a mirror of that spec in TS
 // And use the type here
 const schema: JSONSchemaType<SchemaType> = {
-  type: 'object',
+  type: "object",
   properties: {
     installs: {
-      type: 'array',
+      type: "array",
       items: {
-        type: 'object',
+        type: "object",
         properties: {
-          version: { type: 'string' },
-          path: { type: 'string' },
-          type: { type: 'string' },
+          version: { type: "string" },
+          path: { type: "string" },
+          type: { type: "string" },
           tags: {
-            type: 'array',
-            items: { type: 'string' },
+            type: "array",
+            items: { type: "string" },
           },
         },
-        required: ['path', 'tags', 'type', 'version'],
+        required: ["path", "tags", "type", "version"],
       },
     },
   },
-  required: ['installs'],
-}
+  required: ["installs"],
+};
 
 // We define the keys we'll be using to access the store
 // This is basically the top-level properties in the object
@@ -84,10 +82,10 @@ const schema: JSONSchemaType<SchemaType> = {
 // We set the type like this so when we use `store.get()`
 // It'll use the actual keys from store and infer the data type
 export const STORE_KEYS: { [key: string]: keyof SchemaType } = {
-  INSTALLS: 'installs',
+  INSTALLS: "installs",
   // PREFERENCES: 'preferences',
   // PROJECTS: 'projects',
-}
+};
 
 // Create new store with schema
 // And make sure to pass in schema TS types
@@ -95,9 +93,9 @@ export const STORE_KEYS: { [key: string]: keyof SchemaType } = {
 // Not sure why this has lint error. But get/set methods return proper types so...
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-const store = new Store<SchemaType>({ schema })
+const store = new Store<SchemaType>({ schema });
 
-export default store
+export default store;
 ```
 
 Here are the types for references (and maybe better visualization of the data structure):
@@ -105,73 +103,73 @@ Here are the types for references (and maybe better visualization of the data st
 ```tsx
 // types.ts
 export const TAGS = {
-  Android: 'Android',
-  MacOS: 'MacOS',
-  Windows: 'Windows',
-}
-export type TagsEnum = keyof typeof TAGS
+  Android: "Android",
+  MacOS: "MacOS",
+  Windows: "Windows",
+};
+export type TagsEnum = keyof typeof TAGS;
 
 export type InstallData = {
   /**
    * Version of app
    */
-  version: string
+  version: string;
   /**
    * Path to Blender on computer
    */
-  path: string
+  path: string;
   /**
    * Is it Release, Beta, etc?
    */
-  type: string
+  type: string;
   /**
    * Maybe not needed? Maybe if versions have modules others don't?
    */
-  tags: TagsEnum[]
-}
+  tags: TagsEnum[];
+};
 ```
 
 Now that we have a store, we can use it to `get()` and `set()` some data. This happens inside the “main” Electron process, the place where we can use “server-side” APIs like NodeJS. In the main process, we create an IPC event handler. This will allow our client-side Electron (aka React) talk to our “server-side”:
 
 ```tsx
-import { app, BrowserWindow, shell, ipcMain, dialog } from 'electron'
-import { InstallData } from 'renderer/common/types'
-import store, { STORE_KEYS } from './store'
+import { app, BrowserWindow, shell, ipcMain, dialog } from "electron";
+import { InstallData } from "renderer/common/types";
+import store, { STORE_KEYS } from "./store";
 
-ipcMain.handle('store:install', async (_, newInstall: InstallData) => {
+ipcMain.handle("store:install", async (_, newInstall: InstallData) => {
   // We grab the previous data
-  const prevInstalls = store.get(STORE_KEYS.INSTALLS)
+  const prevInstalls = store.get(STORE_KEYS.INSTALLS);
   // And merge old data with new data
   // We also do a quick null check and pass empty array if so
   const result = store.set(STORE_KEYS.INSTALLS, [
     ...(prevInstalls || []),
     newInstall,
-  ])
-  return result
-})
+  ]);
+  return result;
+});
 ```
 
 Then we can create a “bridge” from backend (”main”) to frontend (React) using the IPC:
 
 ```tsx
 // preload.js
-const { contextBridge, ipcRenderer } = require('electron')
+const { contextBridge, ipcRenderer } = require("electron");
 
-contextBridge.exposeInMainWorld('electron', {
-  storeInstall: async () => ipcRenderer.invoke('store:install'),
-})
+contextBridge.exposeInMainWorld("electron", {
+  storeInstall: async () => ipcRenderer.invoke("store:install"),
+});
 ```
 
 And inside our React app we can just:
 
 ```tsx
 const installData: InstallData = {
-  version: '2.0',
+  version: "2.0",
   //etc
-}
+};
 // Grab the method we passed into `window.electron`
 // Try typing `window.electron.` and seeing what autocomplete pops up
-const saveInstall = await window.electron.storeInstall(installData)
+const saveInstall = await window.electron.storeInstall(installData);
 ```
 
 > Want to see the code in it's entirety? Check out [the project on Github here.](https://github.com/whoisryosuke/blender-hub2)

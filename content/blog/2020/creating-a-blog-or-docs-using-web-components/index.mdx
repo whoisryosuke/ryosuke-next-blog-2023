@@ -1,18 +1,16 @@
 ---
 title: Creating a Blog or Docs using Web Components
-date: '2020-03-10'
+date: "2020-03-10"
 section: blog
 tags:
   [
-    'markdown',
-    'web components',
-    'productivity',
-    'template',
-    'resource',
-    'open source',
+    "markdown",
+    "web components",
+    "productivity",
+    "template",
+    "resource",
+    "open source",
   ]
-
-layout: "@/layouts/BlogLayout.astro"
 ---
 
 Markdown is my jam. I'm always looking for ways to integrate it into my workflows to make authoring content easier for myself (and ideally others). When I started using Web Components, I used them with other SSG (static-site generator) solutions like GatsbyJS, Gridsome, or Eleventy to create landing pages, blogs, or documentation websites. But none of them actually pre-rendered my web components, something integral for SEO. When you use web components with SSG's like Gatsby, the web components don't get pre-rendered on the build server, so you just see the `<web-component>` inside the production code instead of the HTML elements it ultimately returns.
@@ -135,7 +133,7 @@ a. For the main navigation, you add it to `src/components/site-header/site-heade
   url="/resources"
   exact={true}
   onClick={() => {
-    this.hideNav()
+    this.hideNav();
   }}
 >
   Resources

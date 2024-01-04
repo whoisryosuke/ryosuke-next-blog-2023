@@ -1,19 +1,17 @@
 ---
 title: Theming in Modern Design Systems
-date: '2020-01-23'
+date: "2020-01-23"
 section: blog
 tags:
   [
-    'design systems',
-    'css in js',
-    'css',
-    'sass',
-    'utility css',
-    'oocss',
-    'component library',
+    "design systems",
+    "css in js",
+    "css",
+    "sass",
+    "utility css",
+    "oocss",
+    "component library",
   ]
-
-layout: "@/layouts/BlogLayout.astro"
 ---
 
 Theming requires a lot of variables to enable customization. Some frameworks and libraries go as far to have hundreds, if not thousands of variables, that account for each component property (`$button-text-color-primary`) - as well as all the base design tokens (`$red`).
@@ -162,19 +160,19 @@ Parsing the class names is also a trickier affair when you want to dynamically a
            Fonts
     --------------------*/
 
-@fontName: 'Lato';
+@fontName: "Lato";
 @fontSmoothing: antialiased;
 
-@headerFont: @fontName, 'Helvetica Neue', Arial, Helvetica, sans-serif;
-@pageFont: @fontName, 'Helvetica Neue', Arial, Helvetica, sans-serif;
+@headerFont: @fontName, "Helvetica Neue", Arial, Helvetica, sans-serif;
+@pageFont: @fontName, "Helvetica Neue", Arial, Helvetica, sans-serif;
 
 @googleFontName: @fontName;
 @importGoogleFonts: true;
-@googleFontSizes: '400,700,400italic,700italic';
-@googleSubset: 'latin';
+@googleFontSizes: "400,700,400italic,700italic";
+@googleSubset: "latin";
 
-@googleProtocol: 'https://';
-@googleFontRequest: '@{googleFontName}:@{googleFontSizes}&subset=@{googleSubset}';
+@googleProtocol: "https://";
+@googleFontRequest: "@{googleFontName}:@{googleFontSizes}&subset=@{googleSubset}";
 
 @bold: bold;
 @normal: normal;
@@ -278,11 +276,11 @@ Themes are often separated into different folders, which contain variable files 
 --sui-button-icon-height: var(--sui-sizes-tiny);
 --sui-button-icon-opacity: 0.8;
 --sui-button-icon-distance: 0.4em;
---sui-button-icon-color: '';
+--sui-button-icon-color: "";
 --sui-button-icon-transition: opacity var(--sui-animation-duration) var(
     --sui-animation-easing
   );
---sui-button-icon-vertical-align: '';
+--sui-button-icon-vertical-align: "";
 
 --sui-button-icon-margin: 0em var(--sui-button-icon-distance) 0em - (var(
         --sui-button-icon-distance
@@ -301,7 +299,7 @@ Themes are often separated into different folders, which contain variable files 
     var(--sui-animation-duration) var(--sui-animation-easing),
   background var(--sui-animation-duration) var(--sui-animation-easing);
 
---sui-button-will-change: '';
+--sui-button-will-change: "";
 
 /*******************************
                 Button Styles
@@ -445,8 +443,8 @@ This also makes a case for CSS in JS, where you can override a component's style
 ## CSS in JS (CSS style)
 
 ```js
-import React from 'react'
-import styled from 'styled-components'
+import React from "react";
+import styled from "styled-components";
 
 const StyledButton = styled.button`
   font-family: ${({ theme }) => theme.fonts.heading};
@@ -456,14 +454,14 @@ const StyledButton = styled.button`
   padding: ${({ theme }) => `${theme.space[1]}px ${theme.space[3]}px`};
   border: 0;
   border-radius: ${({ theme }) => theme.radii.default}em;
-  text-align: ${props => (props.align ? props.align : 'center')};
-`
+  text-align: ${(props) => (props.align ? props.align : "center")};
+`;
 
 const Button = ({ className, children }) => {
-  return <StyledButton>{children}</StyledButton>
-}
+  return <StyledButton>{children}</StyledButton>;
+};
 
-export default Button
+export default Button;
 ```
 
 CSS in JS is a technique of writing your CSS inside of JavaScript, often alongside your components. It's a modular architecture that allows you to reference style to logic faster, remove components completely without leaving behind unused CSS, and handle the complex process of class names. It's usually accomplished with a library that facilitates the processing of the CSS inside of JS. The most popular choices currently are Styled Components, Emotion, and JSS.
@@ -482,11 +480,11 @@ const ButtonOverride = styled(Button)`
   border: 1px solid black;
   color: black;
   margin: 1em;
-`
+`;
 
 // or use CSS prop (requires Babel plugin)
 
-;<Button
+<Button
   css={`
     background-color: white;
     border: 1px solid black;
@@ -495,7 +493,7 @@ const ButtonOverride = styled(Button)`
   `}
 >
   Submit
-</Button>
+</Button>;
 ```
 
 With this method, you can have a `<BaseButton>` that gets extended into a `<GhostButton>` that's styled with a transparent BG and border (as CSS overrides). This is useful with Styled Components, since the entire component style block gets loaded in production. So if you have a prop to change the component style (to a ghost button for example), all the ghost button styles will be loaded (even if it isn't used). To ensure this doesn't happen, separating the logic for more complex variations is a more sensible way to structure components. For simpler styles (like a couple property changes similar to above), this might be overkill.
@@ -513,23 +511,23 @@ You can also reuse CSS across components if you separate the CSS into it's own v
 ```js
 // Works, but only recommended for smaller style blocks
 // Since this code will be duplicated, breaking DRY
-const simpleStyles = `color:red;`
-const styles = props => `
+const simpleStyles = `color:red;`;
+const styles = (props) => `
       font-family: ${({ theme }) => theme.fonts.heading};
       font-size: ${({ theme }) => theme.fontSizes[1]}px;
-    `
+    `;
 
 const Button = styled.button`
   ${simpleStyles}
   ${styles}
-`
+`;
 
 const GhostButton = styled.button`
   ${simpleStyles}
   ${styles}
     	border: 1px solid;
   background-color: transparent;
-`
+`;
 ```
 
 This would create duplicate styles across the app, breaking DRY principle. When you extend a component (`GhostButton = styled(Button)`), the extended component inherits the class name from the original component, condensing the stylesheet. But when you import the same CSS into 2 separate components, the CSS will appear twice in the stylesheet under 2 different class names. Only good for similar styles (like "primary" background coloring between elements or font definitions) - instead of base component styles.
@@ -610,11 +608,11 @@ As you can see, we create a component here using Styled System. But we can also 
 The only issue with this method is Styled Components way of styling components. If you have a `<Box>` component and try to extend the styles using `styled(Box)`, you'll lose the ability to change the base element using the `as` prop. For example:
 
 ```js
-import Box from 'above'
+import Box from "above";
 
 const StyledBox = styled(Box)`
   color: red;
-`
+`;
 
 const Page = () => (
   <div>
@@ -627,7 +625,7 @@ const Page = () => (
       Test link
     </Box>
   </div>
-)
+);
 ```
 
 Extending the `<Box>` works fine until you need more complex styles, like using the `:after` selector to create pseudo elements. If you wanted to accomplish that, you'd need to use the `sx` or `css` props, which mix the component logic with the equivalent of inline styles.

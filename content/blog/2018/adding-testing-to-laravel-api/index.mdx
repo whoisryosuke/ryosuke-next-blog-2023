@@ -3,9 +3,7 @@ title: "Adding testing to a Laravel API 📝"
 date: "2018-08-03"
 section: blog
 cover_image: "./Adding-testing-to-a-Laravel-API-1920px.jpg"
-tags: [ 'laravel', 'tdd', 'testing', 'api', 'php', 'phpunit' ]
-
-layout: "@/layouts/BlogLayout.astro"
+tags: ["laravel", "tdd", "testing", "api", "php", "phpunit"]
 ---
 
 Lately I've been trying my best to get into TDD, test-driven development, which is a style of programming where you build tests alongside your code. I picked [Laravel](http://laravel.com) a while ago as my primary PHP framework for a lot of projects because of how easy it makes testing. Laravel makes it simple -- from making a test (`php artisan make:test YourTest`), to the easy to use API they provide for interfacing with PHPUnit (`$this->assertStatus(404)`).
@@ -71,7 +69,7 @@ Laravel doesn't actually write this anywhere in their docs, and you'd assume tha
 ./vendor/bin/phpunit
 ```
 
-Run that command from the project root and PHPUnit will run all tests located in your `/tests/` folder. 
+Run that command from the project root and PHPUnit will run all tests located in your `/tests/` folder.
 
 > Make sure all composer dependencies are installed or you won't be able to run this script. And if you're running Laravel inside of Docker, make sure to run PHPUnit inside the container `docker-compose exec workspace ./vendor/bin/phpunit`
 
@@ -117,9 +115,9 @@ class StrainsControllerTest extends CrudTest
      */
     protected $states = 'strains';
     /**
-     * Extra data to pass to POST endpoint 
+     * Extra data to pass to POST endpoint
      * aka the (store() method)
-     * 
+     *
      * Must be array (ends up merged with another)
      *
      * @var array
@@ -130,7 +128,7 @@ class StrainsControllerTest extends CrudTest
 }
 ```
 
-With the power of abstract classes in OOP, we can create a kind of *base* class to *extend* the functionality of our specific endpoint's test class. Let's create a new test called `tests/CrudTest.php`:
+With the power of abstract classes in OOP, we can create a kind of _base_ class to _extend_ the functionality of our specific endpoint's test class. Let's create a new test called `tests/CrudTest.php`:
 
 ```php
 <?php
@@ -156,7 +154,7 @@ abstract class CrudTest extends TestCase
         {
             return factory($this->model)->states($this->states)->create();
         }
-        
+
         return factory($this->model)->create();
     }
 
@@ -221,7 +219,7 @@ abstract class CrudTest extends TestCase
                 'data' => true
             ]);
     }
-    
+
     /**
      * DELETE /endpoint/<id>
      * Tests the destroy() method that deletes the shop
@@ -281,7 +279,7 @@ $factory->state(YourAppName\YourModelName::class, 'product', [
 ]);
 ```
 
-> Use *states* to add extra data or modify existing params in your fake Model entry. `factory(YourModelName::class)->state('product');`Works great if you need to have control over a model's specific parameter(s), like setting a user as an admin or customer. In this case, we set the post's category.
+> Use _states_ to add extra data or modify existing params in your fake Model entry. `factory(YourModelName::class)->state('product');`Works great if you need to have control over a model's specific parameter(s), like setting a user as an admin or customer. In this case, we set the post's category.
 
 ## Handling JWT
 
@@ -293,24 +291,24 @@ The `AttachJwtToken` trait handles this process for us. I found this originally 
 
 ## It's that simple!
 
-It really is this **simple** to test your API *(if it's a simple CRUD API).* 
+It really is this **simple** to test your API _(if it's a simple CRUD API)._
 
 The hardest part of researching testing was feeling secure in the amount of information I'd accrued. At the end of the day, when you look at the source code, there are only so many testing methods Laravel/PHPUnit provides. You assert one thing or another, whether it's the status code or JSON itself, or mock users using the `actingAs($user)`.
 
-What becomes **more complex** are tasks like replicating features that span across multiple controllers, jobs, services, etc -- or mocking functionality like image storage. Or just creating factories for all your models. 
+What becomes **more complex** are tasks like replicating features that span across multiple controllers, jobs, services, etc -- or mocking functionality like image storage. Or just creating factories for all your models.
 
-Testing is easy, setting up the proper conditions becomes the true *test*.
+Testing is easy, setting up the proper conditions becomes the true _test_.
 
 Hope this helps your API TDD 🤘
 Ryo
 
-***
+---
 
 **References**:
 
-* [Attach JWT Token to Test snippet](https://gist.github.com/whoisryosuke/2ee866ba6c32af5b4614ac6136a0012a)
-* [Laravel Docs - Testing JSON APIs](https://laravel.com/docs/5.6/http-tests#testing-json-apis)
-* [Faker docs](https://github.com/fzaninotto/Faker#fakerprovideruuid)
-* [Test Driven Laravel course (paid with free samples via email)](https://course.testdrivenlaravel.com/)
-* [Using PHPUnit for Laravel Testing](https://dev.to/lechatthecat/how-to-use-phpunit-for-laravel-3d3c)
-* [Laravel Testing Woes: Token Mismatch](https://dev.to/fatboyxpc/laravel-testing-woes-token-mismatch-28pd)
+- [Attach JWT Token to Test snippet](https://gist.github.com/whoisryosuke/2ee866ba6c32af5b4614ac6136a0012a)
+- [Laravel Docs - Testing JSON APIs](https://laravel.com/docs/5.6/http-tests#testing-json-apis)
+- [Faker docs](https://github.com/fzaninotto/Faker#fakerprovideruuid)
+- [Test Driven Laravel course (paid with free samples via email)](https://course.testdrivenlaravel.com/)
+- [Using PHPUnit for Laravel Testing](https://dev.to/lechatthecat/how-to-use-phpunit-for-laravel-3d3c)
+- [Laravel Testing Woes: Token Mismatch](https://dev.to/fatboyxpc/laravel-testing-woes-token-mismatch-28pd)

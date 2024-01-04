@@ -1,11 +1,9 @@
 ---
 title: Using Web Components with Gatsby and Preact
-date: '2020-06-22'
+date: "2020-06-22"
 section: blog
-tags: ['gatsby', 'react', 'preact', 'web components']
-cover_image: './web-components-with-gatsby-and-preact.png'
-
-layout: "@/layouts/BlogLayout.astro"
+tags: ["gatsby", "react", "preact", "web components"]
+cover_image: "./web-components-with-gatsby-and-preact.png"
 ---
 
 As I've been working with Web Components, I've been trying to find a compatible workflow that is easy to use and efficient. I'm primarily a React developer, which is [the only framework that hasn't fully integrated web components](https://custom-elements-everywhere.com/). This means my usual tools of the trade, such as [Gatsby](https://www.gatsbyjs.org/docs/quick-start/) or [NextJS](https://nextjs.org/), don't immediately work with web components well. And I wasn't too hyped about digging into another framework's docs, like [11ty](https://www.11ty.dev/), which is a more generic SSG that supports web components.
@@ -47,15 +45,15 @@ And like I mentioned at the start, it's an excellent way to incorporate web comp
 This is much better than the React alternative of assigning props through the `ref`:
 
 ```jsx
-import React, { Component } from 'react'
+import React, { Component } from "react";
 // Utility that helps assign data using ref
 // @see: StencilJS React components
-import { wc } from './utils/webcomponent'
+import { wc } from "./utils/webcomponent";
 
 class SomeComponent extends Component {
   render() {
-    const postArray = []
-    const userObject = {}
+    const postArray = [];
+    const userObject = {};
 
     return (
       <div>
@@ -71,11 +69,11 @@ class SomeComponent extends Component {
           )}
         />
       </div>
-    )
+    );
   }
 }
 
-export default SomeComponent
+export default SomeComponent;
 ```
 
 # Process
@@ -109,8 +107,8 @@ Just import the web component library as a `<script>` in the app wrapper/layout 
 Here's an example of using WiredJS web components inside a `<Layout>` wrapper (trimmed down for size):
 
 ```jsx
-import React from 'react'
-import { Helmet } from 'react-helmet'
+import React from "react";
+import { Helmet } from "react-helmet";
 
 const Layout = ({ children }) => {
   return (
@@ -126,10 +124,10 @@ const Layout = ({ children }) => {
 
       <main>{children}</main>
     </>
-  )
-}
+  );
+};
 
-export default Layout
+export default Layout;
 ```
 
 Then just use the web components anywhere inside the app!

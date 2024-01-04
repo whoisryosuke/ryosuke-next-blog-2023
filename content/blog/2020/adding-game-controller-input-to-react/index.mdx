@@ -1,11 +1,9 @@
 ---
 title: Adding Game Controller Input to React
-date: '2020-09-02'
+date: "2020-09-02"
 section: blog
-tags: ['game design', 'react', 'javascript']
-cover_image: './Adding_Game_Controller_Input_to_React.png'
-
-layout: "@/layouts/BlogLayout.astro"
+tags: ["game design", "react", "javascript"]
+cover_image: "./Adding_Game_Controller_Input_to_React.png"
 ---
 
 Recently I've been getting into game design in React and I had a thought: "What if I could get user input from a game controller and apply it to my apps and games?".
@@ -15,15 +13,17 @@ After a bit of research, I found that the web has a **[Gamepad API](https://deve
 This led me to create **[react-gamepads](https://github.com/whoisryosuke/react-gamepads)**, a set of utilities to integrate gamepad input into your React applications. With my library you can use either a hook or context provider to add plug-and-play gamepad support. The hook (or context provider) detects any gamepads, checks for any new input, and provides it to your component.
 
 ```jsx
-import React, { useState } from 'react'
-import { useGamepads } from 'react-gamepads'
+import React, { useState } from "react";
+import { useGamepads } from "react-gamepads";
 
 export default function App() {
-  const [gamepads, setGamepads] = useState({})
-  useGamepads((gamepads) => setGamepads(gamepads))
+  const [gamepads, setGamepads] = useState({});
+  useGamepads((gamepads) => setGamepads(gamepads));
 
   // Shows when the "fourth button" of "first gamepad" is pressed
-  return <div>{gamepads[0].buttons[4].pressed ? 'Pressed' : 'Not Pressed'}</div>
+  return (
+    <div>{gamepads[0].buttons[4].pressed ? "Pressed" : "Not Pressed"}</div>
+  );
 }
 ```
 
@@ -44,60 +44,60 @@ The Gamepad API uses event listeners to allow you to run code based on certain e
 You can connect to a gamepad, and discover it's name, buttons, etc using the `gamepadconnected` event:
 
 ```jsx
-window.addEventListener('gamepadconnected', function (e) {
+window.addEventListener("gamepadconnected", function (e) {
   console.log(
-    'Gamepad connected at index %d: %s. %d buttons, %d axes.',
+    "Gamepad connected at index %d: %s. %d buttons, %d axes.",
     e.gamepad.index,
     e.gamepad.id,
     e.gamepad.buttons.length,
     e.gamepad.axes.length
-  )
-})
+  );
+});
 ```
 
 Similarly, when it's disconnected, you can use that callback:
 
 ```jsx
-window.addEventListener('gamepaddisconnected', function (e) {
+window.addEventListener("gamepaddisconnected", function (e) {
   console.log(
-    'Gamepad disconnected from index %d: %s',
+    "Gamepad disconnected from index %d: %s",
     e.gamepad.index,
     e.gamepad.id
-  )
-})
+  );
+});
 ```
 
 So if you wanted a callback-based event handler that stored all controllers in a global `controllers` var, it'd look like this:
 
 ```jsx
-var gamepads = {}
+var gamepads = {};
 
 function gamepadHandler(event, connecting) {
-  var gamepad = event.gamepad
+  var gamepad = event.gamepad;
   // Note:
   // gamepad === navigator.getGamepads()[gamepad.index]
 
   if (connecting) {
-    gamepads[gamepad.index] = gamepad
+    gamepads[gamepad.index] = gamepad;
   } else {
-    delete gamepads[gamepad.index]
+    delete gamepads[gamepad.index];
   }
 }
 
 window.addEventListener(
-  'gamepadconnected',
+  "gamepadconnected",
   function (e) {
-    gamepadHandler(e, true)
+    gamepadHandler(e, true);
   },
   false
-)
+);
 window.addEventListener(
-  'gamepaddisconnected',
+  "gamepaddisconnected",
   function (e) {
-    gamepadHandler(e, false)
+    gamepadHandler(e, false);
   },
   false
-)
+);
 ```
 
 ## Displaying gamepad input
@@ -109,135 +109,135 @@ The input is received by using `requestAnimationFrame`, which allows you to run 
 [Working demo](http://luser.github.io/gamepadtest/) - [Full source code on Github](https://github.com/luser/gamepadtest)
 
 ```jsx
-var haveEvents = 'ongamepadconnected' in window
-var controllers = {}
+var haveEvents = "ongamepadconnected" in window;
+var controllers = {};
 
 function connecthandler(e) {
-  addgamepad(e.gamepad)
+  addgamepad(e.gamepad);
 }
 
 function addgamepad(gamepad) {
-  controllers[gamepad.index] = gamepad
+  controllers[gamepad.index] = gamepad;
 
-  var d = document.createElement('div')
-  d.setAttribute('id', 'controller' + gamepad.index)
+  var d = document.createElement("div");
+  d.setAttribute("id", "controller" + gamepad.index);
 
-  var t = document.createElement('h1')
-  t.appendChild(document.createTextNode('gamepad: ' + gamepad.id))
-  d.appendChild(t)
+  var t = document.createElement("h1");
+  t.appendChild(document.createTextNode("gamepad: " + gamepad.id));
+  d.appendChild(t);
 
-  var b = document.createElement('div')
-  b.className = 'buttons'
+  var b = document.createElement("div");
+  b.className = "buttons";
   for (var i = 0; i < gamepad.buttons.length; i++) {
-    var e = document.createElement('span')
-    e.className = 'button'
+    var e = document.createElement("span");
+    e.className = "button";
     //e.id = "b" + i;
-    e.innerHTML = i
-    b.appendChild(e)
+    e.innerHTML = i;
+    b.appendChild(e);
   }
 
-  d.appendChild(b)
+  d.appendChild(b);
 
-  var a = document.createElement('div')
-  a.className = 'axes'
+  var a = document.createElement("div");
+  a.className = "axes";
 
   for (var i = 0; i < gamepad.axes.length; i++) {
-    var p = document.createElement('progress')
-    p.className = 'axis'
+    var p = document.createElement("progress");
+    p.className = "axis";
     //p.id = "a" + i;
-    p.setAttribute('max', '2')
-    p.setAttribute('value', '1')
-    p.innerHTML = i
-    a.appendChild(p)
+    p.setAttribute("max", "2");
+    p.setAttribute("value", "1");
+    p.innerHTML = i;
+    a.appendChild(p);
   }
 
-  d.appendChild(a)
+  d.appendChild(a);
 
   // See https://github.com/luser/gamepadtest/blob/master/index.html
-  var start = document.getElementById('start')
+  var start = document.getElementById("start");
   if (start) {
-    start.style.display = 'none'
+    start.style.display = "none";
   }
 
-  document.body.appendChild(d)
-  requestAnimationFrame(updateStatus)
+  document.body.appendChild(d);
+  requestAnimationFrame(updateStatus);
 }
 
 function disconnecthandler(e) {
-  removegamepad(e.gamepad)
+  removegamepad(e.gamepad);
 }
 
 function removegamepad(gamepad) {
-  var d = document.getElementById('controller' + gamepad.index)
-  document.body.removeChild(d)
-  delete controllers[gamepad.index]
+  var d = document.getElementById("controller" + gamepad.index);
+  document.body.removeChild(d);
+  delete controllers[gamepad.index];
 }
 
 function updateStatus() {
   if (!haveEvents) {
-    scangamepads()
+    scangamepads();
   }
 
-  var i = 0
-  var j
+  var i = 0;
+  var j;
 
   for (j in controllers) {
-    var controller = controllers[j]
-    var d = document.getElementById('controller' + j)
-    var buttons = d.getElementsByClassName('button')
+    var controller = controllers[j];
+    var d = document.getElementById("controller" + j);
+    var buttons = d.getElementsByClassName("button");
 
     for (i = 0; i < controller.buttons.length; i++) {
-      var b = buttons[i]
-      var val = controller.buttons[i]
-      var pressed = val == 1.0
-      if (typeof val == 'object') {
-        pressed = val.pressed
-        val = val.value
+      var b = buttons[i];
+      var val = controller.buttons[i];
+      var pressed = val == 1.0;
+      if (typeof val == "object") {
+        pressed = val.pressed;
+        val = val.value;
       }
 
-      var pct = Math.round(val * 100) + '%'
-      b.style.backgroundSize = pct + ' ' + pct
+      var pct = Math.round(val * 100) + "%";
+      b.style.backgroundSize = pct + " " + pct;
 
       if (pressed) {
-        b.className = 'button pressed'
+        b.className = "button pressed";
       } else {
-        b.className = 'button'
+        b.className = "button";
       }
     }
 
-    var axes = d.getElementsByClassName('axis')
+    var axes = d.getElementsByClassName("axis");
     for (i = 0; i < controller.axes.length; i++) {
-      var a = axes[i]
-      a.innerHTML = i + ': ' + controller.axes[i].toFixed(4)
-      a.setAttribute('value', controller.axes[i] + 1)
+      var a = axes[i];
+      a.innerHTML = i + ": " + controller.axes[i].toFixed(4);
+      a.setAttribute("value", controller.axes[i] + 1);
     }
   }
 
-  requestAnimationFrame(updateStatus)
+  requestAnimationFrame(updateStatus);
 }
 
 function scangamepads() {
   var gamepads = navigator.getGamepads
     ? navigator.getGamepads()
     : navigator.webkitGetGamepads
-    ? navigator.webkitGetGamepads()
-    : []
+      ? navigator.webkitGetGamepads()
+      : [];
   for (var i = 0; i < gamepads.length; i++) {
     if (gamepads[i]) {
       if (gamepads[i].index in controllers) {
-        controllers[gamepads[i].index] = gamepads[i]
+        controllers[gamepads[i].index] = gamepads[i];
       } else {
-        addgamepad(gamepads[i])
+        addgamepad(gamepads[i]);
       }
     }
   }
 }
 
-window.addEventListener('gamepadconnected', connecthandler)
-window.addEventListener('gamepaddisconnected', disconnecthandler)
+window.addEventListener("gamepadconnected", connecthandler);
+window.addEventListener("gamepaddisconnected", disconnecthandler);
 
 if (!haveEvents) {
-  setInterval(scangamepads, 500)
+  setInterval(scangamepads, 500);
 }
 ```
 
@@ -252,14 +252,14 @@ Here's the first version I came up with using React functional components and ho
 [react-gamepad](https://codesandbox.io/s/react-gamepad-3bujg)
 
 ```jsx
-import React, { useContext, useEffect, useRef, useState } from 'react'
-import useInterval from '../hooks/useInterval'
+import React, { useContext, useEffect, useRef, useState } from "react";
+import useInterval from "../hooks/useInterval";
 
 export default function GamepadController() {
-  const [gamepads, setGamepads] = useState({})
-  const requestRef = useRef()
+  const [gamepads, setGamepads] = useState({});
+  const requestRef = useRef();
 
-  var haveEvents = 'ongamepadconnected' in window
+  var haveEvents = "ongamepadconnected" in window;
 
   const addGamepad = (gamepad) => {
     // console.log(
@@ -276,7 +276,7 @@ export default function GamepadController() {
         id: gamepad.id,
         axes: gamepad.axes,
       },
-    })
+    });
 
     setGamepads({
       ...gamepads,
@@ -285,17 +285,17 @@ export default function GamepadController() {
         id: gamepad.id,
         axes: gamepad.axes,
       },
-    })
-  }
+    });
+  };
 
   /**
    * Adds game controllers during connection event listener
    * @param {object} e
    */
   const connectGamepadHandler = (e) => {
-    addGamepad(e.gamepad)
+    addGamepad(e.gamepad);
     // console.log("connecting gamepads", e, e.gamepad);
-  }
+  };
 
   /**
    * Finds all gamepads and adds them to context
@@ -305,39 +305,42 @@ export default function GamepadController() {
     var detectedGamepads = navigator.getGamepads
       ? navigator.getGamepads()
       : navigator.webkitGetGamepads
-      ? navigator.webkitGetGamepads()
-      : []
+        ? navigator.webkitGetGamepads()
+        : [];
 
     // Loop through all detected controllers and add if not already in state
     for (var i = 0; i < detectedGamepads.length; i++) {
       if (detectedGamepads[i]) {
-        addGamepad(detectedGamepads[i])
+        addGamepad(detectedGamepads[i]);
       }
     }
-  }
+  };
 
   // Add event listener for gamepad connecting
   useEffect(() => {
-    window.addEventListener('gamepadconnected', connectGamepadHandler)
+    window.addEventListener("gamepadconnected", connectGamepadHandler);
 
-    return window.removeEventListener('gamepadconnected', connectGamepadHandler)
-  })
+    return window.removeEventListener(
+      "gamepadconnected",
+      connectGamepadHandler
+    );
+  });
 
   // Update each gamepad's status on each "tick"
   const animate = (time) => {
-    if (!haveEvents) scanGamepads()
-    requestRef.current = requestAnimationFrame(animate)
-  }
+    if (!haveEvents) scanGamepads();
+    requestRef.current = requestAnimationFrame(animate);
+  };
 
   useEffect(() => {
-    requestRef.current = requestAnimationFrame(animate)
-    return () => cancelAnimationFrame(requestRef.current)
-  })
+    requestRef.current = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(requestRef.current);
+  });
 
   // Check for new gamepads regularly
   useInterval(() => {
-    if (!haveEvents) scanGamepads()
-  }, 1000)
+    if (!haveEvents) scanGamepads();
+  }, 1000);
 
   // console.log("component rendering", gamepads);
 
@@ -349,12 +352,12 @@ export default function GamepadController() {
         {globalGamepads[gamepadId].buttons &&
           globalGamepads[gamepadId].buttons.map((button, index) => (
             <div>
-              {index}: {button.pressed ? 'True' : 'False'}
+              {index}: {button.pressed ? "True" : "False"}
             </div>
           ))}
       </div>
-    )
-  })
+    );
+  });
 
   // console.log(globalGamepads);
   return (
@@ -362,7 +365,7 @@ export default function GamepadController() {
       <h1>Gamepads</h1>
       {gamepadDisplay}
     </div>
-  )
+  );
 }
 ```
 
@@ -382,15 +385,15 @@ If you want a better breakdown of how to use `requestAnimationFrame` in React, c
 To create a context provider with the same functionality, I just had to take my component logic and lift it up to the context provider itself:
 
 ```jsx
-import React, { createContext, useEffect, useRef, useState } from 'react'
-import useInterval from '../hooks/useInterval'
-const GamepadsContext = createContext()
+import React, { createContext, useEffect, useRef, useState } from "react";
+import useInterval from "../hooks/useInterval";
+const GamepadsContext = createContext();
 
 const GamepadsProvider = ({ children }) => {
-  const [gamepads, setGamepads] = useState({})
-  const requestRef = useRef()
+  const [gamepads, setGamepads] = useState({});
+  const requestRef = useRef();
 
-  var haveEvents = 'ongamepadconnected' in window
+  var haveEvents = "ongamepadconnected" in window;
 
   const addGamepad = (gamepad) => {
     setGamepads({
@@ -400,16 +403,16 @@ const GamepadsProvider = ({ children }) => {
         id: gamepad.id,
         axes: gamepad.axes,
       },
-    })
-  }
+    });
+  };
 
   /**
    * Adds game controllers during connection event listener
    * @param {object} e
    */
   const connectGamepadHandler = (e) => {
-    addGamepad(e.gamepad)
-  }
+    addGamepad(e.gamepad);
+  };
 
   /**
    * Finds all gamepads and adds them to context
@@ -419,48 +422,51 @@ const GamepadsProvider = ({ children }) => {
     var detectedGamepads = navigator.getGamepads
       ? navigator.getGamepads()
       : navigator.webkitGetGamepads
-      ? navigator.webkitGetGamepads()
-      : []
+        ? navigator.webkitGetGamepads()
+        : [];
 
     // Loop through all detected controllers and add if not already in state
     for (var i = 0; i < detectedGamepads.length; i++) {
       if (detectedGamepads[i]) {
-        addGamepad(detectedGamepads[i])
+        addGamepad(detectedGamepads[i]);
       }
     }
-  }
+  };
 
   // Add event listener for gamepad connecting
   useEffect(() => {
-    window.addEventListener('gamepadconnected', connectGamepadHandler)
+    window.addEventListener("gamepadconnected", connectGamepadHandler);
 
-    return window.removeEventListener('gamepadconnected', connectGamepadHandler)
-  })
+    return window.removeEventListener(
+      "gamepadconnected",
+      connectGamepadHandler
+    );
+  });
 
   // Update each gamepad's status on each "tick"
   const animate = (time) => {
-    if (!haveEvents) scanGamepads()
-    requestRef.current = requestAnimationFrame(animate)
-  }
+    if (!haveEvents) scanGamepads();
+    requestRef.current = requestAnimationFrame(animate);
+  };
 
   useEffect(() => {
-    requestRef.current = requestAnimationFrame(animate)
-    return () => cancelAnimationFrame(requestRef.current)
-  }, [])
+    requestRef.current = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(requestRef.current);
+  }, []);
 
   // Check for new gamepads regularly
   useInterval(() => {
-    if (!haveEvents) scanGamepads()
-  }, 1000)
+    if (!haveEvents) scanGamepads();
+  }, 1000);
 
   return (
     <GamepadsContext.Provider value={{ gamepads, setGamepads }}>
       {children}
     </GamepadsContext.Provider>
-  )
-}
+  );
+};
 
-export { GamepadsProvider, GamepadsContext }
+export { GamepadsProvider, GamepadsContext };
 ```
 
 [Here's an example app](https://codesandbox.io/s/react-gamepad-context-with-options-cuwdh) using this context provider to show each game controller and set actions based on button keys (like confirm = `button[4]`). You can also use the `useContext` hook to grab the gamepad input, instead of using the context consumer and render prop method.
@@ -474,13 +480,13 @@ The context worked great, but I had some questions about it's scalability and pe
 I started to migrate the logic from above into a hook, here's what I came up with at first:
 
 ```jsx
-import React, { createContext, useEffect, useRef, useState } from 'react'
+import React, { createContext, useEffect, useRef, useState } from "react";
 
 export default function useGamepads(callback) {
-  const gamepads = useRef({})
-  const requestRef = useRef()
+  const gamepads = useRef({});
+  const requestRef = useRef();
 
-  var haveEvents = 'ongamepadconnected' in window
+  var haveEvents = "ongamepadconnected" in window;
 
   const addGamepad = (gamepad) => {
     gamepads.current = {
@@ -490,20 +496,20 @@ export default function useGamepads(callback) {
         id: gamepad.id,
         axes: gamepad.axes,
       },
-    }
+    };
 
     // Send data to external callback (like React state)
-    callback(gamepads.current)
-  }
+    callback(gamepads.current);
+  };
 
   /**
    * Adds game controllers during connection event listener
    * @param {object} e
    */
   const connectGamepadHandler = (e) => {
-    addGamepad(e.gamepad)
+    addGamepad(e.gamepad);
     // console.log("connecting gamepads", e, e.gamepad);
-  }
+  };
 
   /**
    * Finds all gamepads and adds them to context
@@ -513,36 +519,39 @@ export default function useGamepads(callback) {
     var detectedGamepads = navigator.getGamepads
       ? navigator.getGamepads()
       : navigator.webkitGetGamepads
-      ? navigator.webkitGetGamepads()
-      : []
+        ? navigator.webkitGetGamepads()
+        : [];
 
     // Loop through all detected controllers and add if not already in state
     for (var i = 0; i < detectedGamepads.length; i++) {
       if (detectedGamepads[i]) {
-        addGamepad(detectedGamepads[i])
+        addGamepad(detectedGamepads[i]);
       }
     }
-  }
+  };
 
   // Add event listener for gamepad connecting
   useEffect(() => {
-    window.addEventListener('gamepadconnected', connectGamepadHandler)
+    window.addEventListener("gamepadconnected", connectGamepadHandler);
 
-    return window.removeEventListener('gamepadconnected', connectGamepadHandler)
-  })
+    return window.removeEventListener(
+      "gamepadconnected",
+      connectGamepadHandler
+    );
+  });
 
   // Update each gamepad's status on each "tick"
   const animate = (time) => {
-    if (!haveEvents) scanGamepads()
-    requestRef.current = requestAnimationFrame(animate)
-  }
+    if (!haveEvents) scanGamepads();
+    requestRef.current = requestAnimationFrame(animate);
+  };
 
   useEffect(() => {
-    requestRef.current = requestAnimationFrame(animate)
-    return () => cancelAnimationFrame(requestRef.current)
-  })
+    requestRef.current = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(requestRef.current);
+  });
 
-  return gamepads.current
+  return gamepads.current;
 }
 ```
 
@@ -554,10 +563,10 @@ Components will still be required to set their own state (or ref) based on gamep
 
 ```jsx
 export default function App() {
-  const [gamepads, setGamepads] = useState({})
-  useGamepads((gamepads) => setGamepads(gamepads))
+  const [gamepads, setGamepads] = useState({});
+  useGamepads((gamepads) => setGamepads(gamepads));
 
-  return <div>{gamepads[0].buttons[4].pressed}</div>
+  return <div>{gamepads[0].buttons[4].pressed}</div>;
 }
 ```
 
@@ -588,8 +597,8 @@ To reduce this, I tried implementing a check before updating the controller inpu
 Ideally, you should only track what buttons you need for the component. For example, the "Press Start" screen should only update state when the "start button" is changed. And it should only contain the state of the button press, not the entire gamepad input.
 
 ```jsx
-import React, { useState, useEffect } from 'react'
-import useGamepads from '../hooks/useGamepads'
+import React, { useState, useEffect } from "react";
+import useGamepads from "../hooks/useGamepads";
 
 export default function StartScreen({ setGameStarted }) {
   useGamepads((gamepads) => {
@@ -598,13 +607,13 @@ export default function StartScreen({ setGameStarted }) {
       // Go through each button and check for pressed
       gamepads[0].buttons.forEach((button) => {
         if (button.pressed) {
-          setGameStarted(true)
+          setGameStarted(true);
         }
-      })
+      });
     }
-  })
+  });
 
-  return <div>Press any button to start</div>
+  return <div>Press any button to start</div>;
 }
 ```
 
@@ -617,34 +626,34 @@ For more advanced components that require all button input (even things like ana
 // Not good because it leaves buttons pressed, and doesn't
 // handle when button is "unpressed"
 const buttonPressed =
-  gamepads[0].buttons.filter((button) => button.pressed).length > 0
-const buttonPressed = isEqual(gamepads, newGamepads)
+  gamepads[0].buttons.filter((button) => button.pressed).length > 0;
+const buttonPressed = isEqual(gamepads, newGamepads);
 if (!buttonPressed) {
-  setGamepads(newGamepads)
+  setGamepads(newGamepads);
 }
 ```
 
 I ended up using Lodash and it's `isEqual` method to compare the deeply nested objects of gamepad input. Ideally you'd use the comparison on a single gamepad at a time, so the object is less complex, but it's condensed here for clarity:
 
 ```jsx
-import React, { useState } from 'react'
-import useGamepads from '../hooks/useGamepads'
-import GamepadSvg from './GamepadSvg'
-import { isEqual } from 'lodash'
+import React, { useState } from "react";
+import useGamepads from "../hooks/useGamepads";
+import GamepadSvg from "./GamepadSvg";
+import { isEqual } from "lodash";
 
 export default function GamepadController() {
-  const [gamepads, setGamepads] = useState({})
+  const [gamepads, setGamepads] = useState({});
   useGamepads((newGamepads) => {
     // Detect changes, if so, re-render component
-    const buttonPressed = isEqual(gamepads, newGamepads)
+    const buttonPressed = isEqual(gamepads, newGamepads);
     if (!buttonPressed) {
-      setGamepads(newGamepads)
+      setGamepads(newGamepads);
     }
-  })
+  });
   return (
     <div
       className="Gamepads"
-      style={{ position: 'fixed', bottom: 0, right: 0 }}
+      style={{ position: "fixed", bottom: 0, right: 0 }}
     >
       <small>Gamepads</small>
       {/* {gamepadDisplay} */}
@@ -678,16 +687,16 @@ export default function GamepadController() {
         </>
       )}
     </div>
-  )
+  );
 }
 ```
 
 This didn't work for some reason, even targeting really specific parts of the gamepad (like only buttons of player 1) didn't work? Kept getting true/false flashing in console, despite no button being pressed. Maybe because gamepad object uses special classes (like GamepadButtonInput) to define properties, which can't be compared by lodash?
 
 ```jsx
-const buttonPressed = isEqual(gamepads[0].buttons, newGamepads[0].buttons)
+const buttonPressed = isEqual(gamepads[0].buttons, newGamepads[0].buttons);
 if (!buttonPressed) {
-  setGamepads(newGamepads)
+  setGamepads(newGamepads);
 }
 ```
 
@@ -706,13 +715,13 @@ I was having an issue with some apps where I would run a function inside the gam
 ```jsx
 const increasePosition = useCallback(() => {
   // console.log("increasing");
-  setPosition((prevPosition) => prevPosition + PLAYER_POSITION_ADJUST)
-}, [setPosition])
+  setPosition((prevPosition) => prevPosition + PLAYER_POSITION_ADJUST);
+}, [setPosition]);
 
 const increasePositionDebounced = useMemo(
   () => throttle(increasePosition, 100),
   [increasePosition]
-)
+);
 
 useGamepads((gamepads) => {
   if (started) {
@@ -722,17 +731,17 @@ useGamepads((gamepads) => {
       if (gamepads[0].buttons[12].pressed) {
         // AwesomeDebouncePromise(() => increasePosition, 20000);
         // throttle(increasePosition, 10000);
-        increasePositionDebounced()
+        increasePositionDebounced();
       }
       // Pressed Down
       if (gamepads[0].buttons[13].pressed) {
         // AwesomeDebouncePromise(() => decreasePosition, 20000);
         // throttle(decreasePosition, 10000);
-        decreasePositionDebounced()
+        decreasePositionDebounced();
       }
     }
   }
-})
+});
 ```
 
 # Packaging the Project
@@ -758,39 +767,39 @@ Using the controller:
 The controller component:
 
 ```jsx
-import React, { useState } from 'react'
-import useGamepads from '../hooks/useGamepads'
-import GamepadSvg from './GamepadSvg'
+import React, { useState } from "react";
+import useGamepads from "../hooks/useGamepads";
+import GamepadSvg from "./GamepadSvg";
 
 export default function GamepadController() {
-  const [gamepads, setGamepads] = useState({})
-  useGamepads((gamepads) => setGamepads(gamepads))
+  const [gamepads, setGamepads] = useState({});
+  useGamepads((gamepads) => setGamepads(gamepads));
 
   const calcDirectionVertical = (axe) => {
     // Up
     if (axe < -0.2) {
-      return 'up'
+      return "up";
     }
     // Down
     if (axe > 0.2) {
-      return 'down'
+      return "down";
     }
-  }
+  };
 
   const calcDirectionHorizontal = (axe) => {
     // Left
     if (axe < -0.2) {
-      return 'left'
+      return "left";
     }
     // Right
     if (axe > 0.2) {
-      return 'right'
+      return "right";
     }
-  }
+  };
   return (
     <div
       className="Gamepads"
-      style={{ position: 'fixed', bottom: 0, right: 0 }}
+      style={{ position: "fixed", bottom: 0, right: 0 }}
     >
       <small>Gamepads</small>
       {/* {gamepadDisplay} */}
@@ -832,7 +841,7 @@ export default function GamepadController() {
         </>
       )}
     </div>
-  )
+  );
 }
 ```
 
@@ -847,33 +856,33 @@ Each analog stick is represented by two axes (top/down and left/right), so for a
 If you want to display a cursor on the screen, you can use the gamepad input to check if the directional buttons are pressed (in this case 12-15 for a PS4 controller) and change the cursor position via React state:
 
 ```jsx
-import React, { useContext, useEffect, useLayoutEffect, useState } from 'react'
-import { GamepadsContext } from '../context/GamepadsContext'
-import Cursor from '../components/Cursor'
+import React, { useContext, useEffect, useLayoutEffect, useState } from "react";
+import { GamepadsContext } from "../context/GamepadsContext";
+import Cursor from "../components/Cursor";
 
 const GameCursor = () => {
-  const [top, setTop] = useState(Math.round(window.innerHeight / 2))
-  const [left, setLeft] = useState(Math.round(window.innerWidth / 2))
-  const { gamepads } = useContext(GamepadsContext)
+  const [top, setTop] = useState(Math.round(window.innerHeight / 2));
+  const [left, setLeft] = useState(Math.round(window.innerWidth / 2));
+  const { gamepads } = useContext(GamepadsContext);
 
   useLayoutEffect(() => {
-    const defaultGamepad = Object.keys(gamepads).length > 0 ? gamepads[0] : {}
-    if ('buttons' in defaultGamepad) {
+    const defaultGamepad = Object.keys(gamepads).length > 0 ? gamepads[0] : {};
+    if ("buttons" in defaultGamepad) {
       // Up
-      defaultGamepad.buttons[12].pressed && setTop((prevTop) => prevTop - 1)
+      defaultGamepad.buttons[12].pressed && setTop((prevTop) => prevTop - 1);
       // Down
-      defaultGamepad.buttons[13].pressed && setTop((prevTop) => prevTop + 1)
+      defaultGamepad.buttons[13].pressed && setTop((prevTop) => prevTop + 1);
       // Left
-      defaultGamepad.buttons[14].pressed && setLeft((prevLeft) => prevLeft - 1)
+      defaultGamepad.buttons[14].pressed && setLeft((prevLeft) => prevLeft - 1);
       // Right
-      defaultGamepad.buttons[15].pressed && setLeft((prevLeft) => prevLeft + 1)
+      defaultGamepad.buttons[15].pressed && setLeft((prevLeft) => prevLeft + 1);
     }
-  }, [gamepads])
+  }, [gamepads]);
 
-  return <Cursor top={top} left={left} />
-}
+  return <Cursor top={top} left={left} />;
+};
 
-export default GameCursor
+export default GameCursor;
 ```
 
 The game cursor is set to `position: fixed` and accepts the top and left property, set it as CSS properties.
@@ -893,31 +902,31 @@ To navigate through them, we have a state of `selectedItem` that stores the inde
 To make it clickable, we also create an array of "refs" in the state. We update the "refs" state with a `useEffect` to sync it with the length of the array, creating a new "ref" as needed (using the `createRef` method React provides). Then when we're detecting gamepad input, we can check for a button press, and then run the `click()` method on the currently selected item's "ref".
 
 ```jsx
-import React, { createRef, useState, useEffect, useContext } from 'react'
-import AwesomeDebouncePromise from 'awesome-debounce-promise'
+import React, { createRef, useState, useEffect, useContext } from "react";
+import AwesomeDebouncePromise from "awesome-debounce-promise";
 
-import { GamepadsContext } from '../context/GamepadsContext'
-import useGamepads from '../hooks/useGamepads'
+import { GamepadsContext } from "../context/GamepadsContext";
+import useGamepads from "../hooks/useGamepads";
 
 const Menu = ({ items }) => {
-  const [gamepads, setGamepads] = useState({})
-  const [itemRefs, setItemRefs] = React.useState([])
-  const [selectedItem, setSelectedItem] = useState(0)
-  useGamepads((gamepads) => setGamepads(gamepads))
+  const [gamepads, setGamepads] = useState({});
+  const [itemRefs, setItemRefs] = React.useState([]);
+  const [selectedItem, setSelectedItem] = useState(0);
+  useGamepads((gamepads) => setGamepads(gamepads));
 
   useEffect(() => {
     if (gamepads && gamepads[0]) {
       // Pressed Up
       if (gamepads[0].buttons[12].pressed) {
-        let increment = selectedItem - 1
-        if (increment < 0) increment = items.length - 1
-        return AwesomeDebouncePromise(() => setSelectedItem(increment), 300)
+        let increment = selectedItem - 1;
+        if (increment < 0) increment = items.length - 1;
+        return AwesomeDebouncePromise(() => setSelectedItem(increment), 300);
       }
       // Pressed down
       if (gamepads[0].buttons[13].pressed) {
-        let increment = selectedItem + 1
-        if (increment > items.length - 1) increment = 0
-        return AwesomeDebouncePromise(() => setSelectedItem(increment), 300)
+        let increment = selectedItem + 1;
+        if (increment > items.length - 1) increment = 0;
+        return AwesomeDebouncePromise(() => setSelectedItem(increment), 300);
       }
       // Pressed down
       if (
@@ -926,10 +935,10 @@ const Menu = ({ items }) => {
         gamepads[0].buttons[2].pressed ||
         gamepads[0].buttons[3].pressed
       ) {
-        itemRefs[selectedItem].current.click()
+        itemRefs[selectedItem].current.click();
       }
     }
-  }, [gamepads, items, selectedItem])
+  }, [gamepads, items, selectedItem]);
 
   useEffect(() => {
     // add or remove refs
@@ -937,8 +946,8 @@ const Menu = ({ items }) => {
       Array(items.length)
         .fill()
         .map((_, i) => elRefs[i] || createRef())
-    )
-  }, [items.length])
+    );
+  }, [items.length]);
 
   return (
     <div>
@@ -948,16 +957,16 @@ const Menu = ({ items }) => {
             ref={itemRefs[index]}
             key={index}
             href={item.link}
-            className={index === selectedItem && 'focused'}
+            className={index === selectedItem && "focused"}
           >
             {item.title}
           </a>
         ))}
     </div>
-  )
-}
+  );
+};
 
-export default Menu
+export default Menu;
 ```
 
 [**Menu on CodeSandbox**](https://codesandbox.io/s/react-gamepad-menu-w-controller-ui-perf-testing-state-version-throttled-brlml?file=/src/components/GameScreen.jsx:0-4254)

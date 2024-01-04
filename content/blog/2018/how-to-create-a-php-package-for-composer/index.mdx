@@ -3,39 +3,37 @@ title: How to create a PHP package for Composer
 date: "2018-07-20"
 section: blog
 cover_image: "./how-to-create-a-php-package-for-composer-1920px.png"
-tags: [ 'composer', 'php', 'open source', 'github', 'tips', 'tutorial' ]
-
-layout: "@/layouts/BlogLayout.astro"
+tags: ["composer", "php", "open source", "github", "tips", "tutorial"]
 ---
 
-Recently, I've recently been trying my best to upload as much code to open source repositories like [**Github**](http://github.com/whoisryosuke) and [**Codepen**](http://codepen.io/whoisryosuke). It makes bootstrapping new projects much simpler when I can `git clone` a boilerplate from my Github, or *copypasta* a CSS/JS snippet from CodePen. But what happens when I need to include a library or module into several projects? Cloning and copy paste just don't cut it at that point.
+Recently, I've recently been trying my best to upload as much code to open source repositories like [**Github**](http://github.com/whoisryosuke) and [**Codepen**](http://codepen.io/whoisryosuke). It makes bootstrapping new projects much simpler when I can `git clone` a boilerplate from my Github, or _copypasta_ a CSS/JS snippet from CodePen. But what happens when I need to include a library or module into several projects? Cloning and copy paste just don't cut it at that point.
 
-Cut to [**NPM**](http://npmjs.com) and [**Composer**](http://getcomposer.com) ( or really [Packagist](http://packagist.com). NPM is a package manager for Javascript using Node, and Composer does the same for PHP. 
+Cut to [**NPM**](http://npmjs.com) and [**Composer**](http://getcomposer.com) ( or really [Packagist](http://packagist.com). NPM is a package manager for Javascript using Node, and Composer does the same for PHP.
 
 Today we'll be looking into submitting a PHP "package" to Composer through the Packagist, so we can use `composer require` to install our package into any project!
 
 ## The simple steps
 
-It's as easy as 4 steps (*minus the part where you code a reusable package in PHP*) -- I was surprised too. Make sure before starting you've created a git repository in your project and committed your code. It's also required to have an account on [Github](http://github.com) and [Packagist](http://packagist).
+It's as easy as 4 steps (_minus the part where you code a reusable package in PHP_) -- I was surprised too. Make sure before starting you've created a git repository in your project and committed your code. It's also required to have an account on [Github](http://github.com) and [Packagist](http://packagist).
 
 1. Create a `composer.json` in your project:
 
 ```json
 {
-    "name": "your-brand-name/your-project",
-    "type": "library",
-    "description": "Your package description goes here",
-    "keywords": ["relevant","tags","go","here"],
-    "homepage": "https://yourcompany.com",
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "Jordi Boggiano",
-            "email": "j.boggiano@seld.be",
-            "homepage": "http://seld.be",
-            "role": "Developer"
-        }
-    ],
+  "name": "your-brand-name/your-project",
+  "type": "library",
+  "description": "Your package description goes here",
+  "keywords": ["relevant", "tags", "go", "here"],
+  "homepage": "https://yourcompany.com",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Jordi Boggiano",
+      "email": "j.boggiano@seld.be",
+      "homepage": "http://seld.be",
+      "role": "Developer"
+    }
+  ]
 }
 ```
 
@@ -49,9 +47,9 @@ It's as easy as 4 steps (*minus the part where you code a reusable package in PH
 
 ## So easy, there's no excuse
 
-One of the biggest principles of programming I try to apply is **DRY**, *don't repeat yourself*. When your code is probably already hosted on Github, it's only a two step process to get your code in a place where it's version controlled. 
+One of the biggest principles of programming I try to apply is **DRY**, _don't repeat yourself_. When your code is probably already hosted on Github, it's only a two step process to get your code in a place where it's version controlled.
 
-Rather than relying on `git clone` or submodules, it's much more efficient for your codebase to use a composer dependency. 
+Rather than relying on `git clone` or submodules, it's much more efficient for your codebase to use a composer dependency.
 
 ## Take my code for a test run
 

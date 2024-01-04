@@ -3,20 +3,29 @@ title: NextJS and Authentication using OAuth2 and JWT
 date: "2018-07-05"
 section: blog
 cover_image: "./nextjs-authentication-using-oauth2-jwt-1920.jpg"
-tags: [ 'oauth2', 'api', 'laravel', 'react', 'nextjs', 'ssr', 'full stack', 'backend', 'frontend' ]
-
-layout: "@/layouts/BlogLayout.astro"
+tags:
+  [
+    "oauth2",
+    "api",
+    "laravel",
+    "react",
+    "nextjs",
+    "ssr",
+    "full stack",
+    "backend",
+    "frontend",
+  ]
 ---
 
 We'll be using the OAuth2 process to authenticate our NextJS app users with our Laravel API (thanks to Passport). If you aren't using Laravel, the process should be fairly similar in concept to 3rd party API's like Twitter.
 
-> *This guide assumes you know a bit of React, what a HOC is and how to use it, and the basics of things like NextJS, Express, or OAuth2.*
+> _This guide assumes you know a bit of React, what a HOC is and how to use it, and the basics of things like NextJS, Express, or OAuth2._
 
 ## How it works
 
 Say you need an app where a user can login and access private pages only for registered users. You could create a login form that accepts a username and password, and send that to the API. But that's a lot of code to write for every small app you want authenticated. That's where OAuth2 comes in.
 
-With OAuth2, we can have the user click on a login link, like a "Sign in with Twitter" button. This redirects the user to Twitter, where they login with their Twitter account, and accept your app. Twitter then sends you a special "access token" that lets you use the Twitter API on the user's behalf. 
+With OAuth2, we can have the user click on a login link, like a "Sign in with Twitter" button. This redirects the user to Twitter, where they login with their Twitter account, and accept your app. Twitter then sends you a special "access token" that lets you use the Twitter API on the user's behalf.
 
 Now instead of Twitter, imagine that it's your own API. The user gets sent to a login server you create, and you get an access token that works for your own API. That way, you can allow developers to create apps that use your API as a user, as opposed to direct access. This way you can limit API access based on user permissions you set.
 
@@ -28,13 +37,16 @@ First and foremost, we need an authentication API to use so we can use it in our
 
 OAuth2 might seem daunting at first, but since every major platform (Twitter, Facebook, Google, and countless more) use it for accessing authenticated sections of their API, you'll get to know it quick. The process to login a user through your app is very simple:
 
-<img src="./OAuth2-Process.min.png" alt="OAuth 2.0 Authentication Process with NextJS App" />
+<img
+  src="./OAuth2-Process.min.png"
+  alt="OAuth 2.0 Authentication Process with NextJS App"
+/>
 
 1. You login to the API you want to use for authentication and create a new **"client"** with a callback URL. This callback URL is the page on your app the API redirects the user after they login. On Twitter, is this the "Apps" page.
 
 > Creating the **"client"** generates a API client ID and secret, which you use to authenticate your own app with the API. Save them for later. The ID is public (anyone can see it), while the secret is well, secret. You never let the user see your secret or access it, it stays in server-side code.
 
-2. You create a button in your app, or redirect your user, to a specific URL that contains query parameters with your client ID, callback URL, and a response type ("code" by default). It should something like this: 
+2. You create a button in your app, or redirect your user, to a specific URL that contains query parameters with your client ID, callback URL, and a response type ("code" by default). It should something like this:
 
 http://127.0.0.1/oauth/authorize/?**client_id**=2&**redirect_uri**=http://127.0.0.1:3000/token&**response_type**=code&**scope**=access-user-account
 
@@ -48,7 +60,7 @@ http://127.0.0.1/oauth/authorize/?**client_id**=2&**redirect_uri**=http://127.0.
 
 ## Creating the API
 
-Now that you understand what kind of API we're creating, we can actually make it. 
+Now that you understand what kind of API we're creating, we can actually make it.
 
 I have [a guide on creating a quick authentication API using Laravel and the Passport package](http://stayregular.net/blog/deploy-laravel-on-heroku-to-create-oauth2-0-api). Try spinning up that project and using it alongside this one. It'll create a separate server with an API you can access to login users and get tokens back.
 
@@ -151,9 +163,9 @@ We'll also be utilizing React's Context API to wrap our authorized page componen
 
 #### But what about production?
 
-In production, best practice is to never show anyone the access token (JWT). But because of the fairly secure nature of OAuth2, and the need to run authenticated client-side requests, developers often throw an unencrypted JWT in the cookies, or worse, `localStorage`. 
+In production, best practice is to never show anyone the access token (JWT). But because of the fairly secure nature of OAuth2, and the need to run authenticated client-side requests, developers often throw an unencrypted JWT in the cookies, or worse, `localStorage`.
 
-Ideally, you should store the JWT in a server-side session, where an encrypted ID is kept in a cookie, and the JWT is stored in a server-side data store (like Redis or Memcached). Whenever you need the token, you'd send a POST request to your app's Express server with the encrypted cookie ID and a CSRF token (generated by the server to ensure it came from a `<form>` created by the server -- not a random POST request). The Express server checks data store for the cookie's ID, grabs the token, and uses it to make an API request, then returns the API's response. 
+Ideally, you should store the JWT in a server-side session, where an encrypted ID is kept in a cookie, and the JWT is stored in a server-side data store (like Redis or Memcached). Whenever you need the token, you'd send a POST request to your app's Express server with the encrypted cookie ID and a CSRF token (generated by the server to ensure it came from a `<form>` created by the server -- not a random POST request). The Express server checks data store for the cookie's ID, grabs the token, and uses it to make an API request, then returns the API's response.
 
 You can see that your app's server acts as a "middleman" to ensure secure transmissions between the client and the API. This way no one can do something like trying to login by creating fake cookies with tokens. The tokens have to be stored server-side, and they'd need the appropriate key to access any currently in the data store. I cover this method below if you're interested.
 
@@ -163,7 +175,7 @@ For the HOC, we load our props containing our token in `getInitialProps()`, whic
 
 > Feel free to replace the "LOADING" text with a real loading component, or a page with a loader.
 
-Now we'd normally grab the token using cookies, but I'll show you how to do it server-side as well so you can see why it's *not* the best option.
+Now we'd normally grab the token using cookies, but I'll show you how to do it server-side as well so you can see why it's _not_ the best option.
 
 #### Server side
 
@@ -175,37 +187,36 @@ server.js
 // A JSON error checking function since fetch()
 // won't let us know if it failed or not
 function jsonErrorCheck(data) {
-  if('error' in data)
-  {
-    return error
+  if ("error" in data) {
+    return error;
   }
-  return data
+  return data;
 }
 
 // The middleware
 function getUser(req, res, next) {
-  if (req.cookies['kushyFToken']) {
+  if (req.cookies["kushyFToken"]) {
     const credentials = {
-      method: 'get',
+      method: "get",
       headers: {
-        'Authorization': 'Bearer ' + req.cookies['kushyFToken'],
-        'Content-Type': 'application/x-www-form-urlencoded'
-      }
-    }
+        Authorization: "Bearer " + req.cookies["kushyFToken"],
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+    };
 
     const fetchUser = async () => {
-      await fetch('http://localhost/api/user/', credentials)
-        .then(r => r.json())
-        .then(data => jsonErrorCheck(data))
-        .then(data => {
-          res.locals.token = req.cookies['kushyFToken']
-          res.locals.user = data
-          next()        
+      await fetch("http://localhost/api/user/", credentials)
+        .then((r) => r.json())
+        .then((data) => jsonErrorCheck(data))
+        .then((data) => {
+          res.locals.token = req.cookies["kushyFToken"];
+          res.locals.user = data;
+          next();
         });
-      }
-      fetchUser();
+    };
+    fetchUser();
   } else {
-    next()
+    next();
   }
 }
 
@@ -213,11 +224,14 @@ function getUser(req, res, next) {
 
 // Apply middleware to your route
 // You basically stack middleware after the page string
-// and before your page render 
+// and before your page render
 // otherwise the middleware would never get called
-server.get('/dashboard', getUser, (req, res) => {
-    return app.render(req, res, '/dashboard', { token: res.locals.token, user: res.locals.user })
-})
+server.get("/dashboard", getUser, (req, res) => {
+  return app.render(req, res, "/dashboard", {
+    token: res.locals.token,
+    user: res.locals.user,
+  });
+});
 ```
 
 ```js
@@ -231,7 +245,7 @@ export default function withAuth(AuthComponent) {
         // Check if Page has a `getInitialProps`; if so, call it.
         const pageProps = AuthComponent.getInitialProps && await AuthComponent.getInitialProps(ctx);
         // Return props.
-        return { 
+        return {
           ...pageProps,
           token: ctx.query.token
           user: ctx.query.user
@@ -272,13 +286,13 @@ export default function withAuth(AuthComponent) {
 }
 ```
 
-This is tedious since it requires you to place the token in every request. And if a page loads client-side, without making a server request, we have no way to access the `ctx` variable that contains our token. 
+This is tedious since it requires you to place the token in every request. And if a page loads client-side, without making a server request, we have no way to access the `ctx` variable that contains our token.
 
 So **we're forced to use a client-side data store**, preferably a secure one like **cookies** or IndexDB.
 
 #### Using Cookies
 
-Since we use [cookie-parser](https://www.npmjs.com/package/cookie-parser) middleware for Express, we can access the cookies server-side using the `req` variable in the `getInitialProps` state: `ctx.req.headers.cookie`. This returns a giant string of all the cookies separated by & symbols (like query parameters). If we parse the string and find the cookie by key name, we'll have our cookie. 
+Since we use [cookie-parser](https://www.npmjs.com/package/cookie-parser) middleware for Express, we can access the cookies server-side using the `req` variable in the `getInitialProps` state: `ctx.req.headers.cookie`. This returns a giant string of all the cookies separated by & symbols (like query parameters). If we parse the string and find the cookie by key name, we'll have our cookie.
 
 Or if we're in the browser (like if a user clicks an internal `<Link />` in the app), we can use the [js-cookie](https://github.com/js-cookie/js-cookie) library to grab cookies from the client-side (`cookie.get('token')`).
 
@@ -290,102 +304,103 @@ utils/Cookies.js
 import cookie from "js-cookie";
 
 export const setCookie = (key, value) => {
-    if (process.browser) {
-        cookie.set(key, value, {
-            expires: 1,
-            path: "/"
-        });
-    }
+  if (process.browser) {
+    cookie.set(key, value, {
+      expires: 1,
+      path: "/",
+    });
+  }
 };
 
-export const removeCookie = key => {
-    if (process.browser) {
-        cookie.remove(key, {
-            expires: 1
-        });
-    }
+export const removeCookie = (key) => {
+  if (process.browser) {
+    cookie.remove(key, {
+      expires: 1,
+    });
+  }
 };
 
 export const getCookie = (key, req) => {
-    return process.browser ?
-        getCookieFromBrowser(key) :
-        getCookieFromServer(key, req);
+  return process.browser
+    ? getCookieFromBrowser(key)
+    : getCookieFromServer(key, req);
 };
 
-const getCookieFromBrowser = key => {
-    console.log('grabbing key from browser')
-    return cookie.get(key);
+const getCookieFromBrowser = (key) => {
+  console.log("grabbing key from browser");
+  return cookie.get(key);
 };
 
 const getCookieFromServer = (key, req) => {
-    console.log('grabbing key from server')
-    if (!req.headers.cookie) {
-        return undefined;
-    }
-    const rawCookie = req.headers.cookie
-        .split(";")
-        .find(c => c.trim().startsWith(`${key}=`));
-    if (!rawCookie) {
-        return undefined;
-    }
-    return rawCookie.split("=")[1];
+  console.log("grabbing key from server");
+  if (!req.headers.cookie) {
+    return undefined;
+  }
+  const rawCookie = req.headers.cookie
+    .split(";")
+    .find((c) => c.trim().startsWith(`${key}=`));
+  if (!rawCookie) {
+    return undefined;
+  }
+  return rawCookie.split("=")[1];
 };
 ```
 
 withAuth.js
 
 ```js
-import React, {Component} from 'react'
-import Router from 'next/router'
-import TokenContext from '../context/TokenContext'
-import { getCookie } from '../utils/Cookies'
+import React, { Component } from "react";
+import Router from "next/router";
+import TokenContext from "../context/TokenContext";
+import { getCookie } from "../utils/Cookies";
 
 export default function withAuth(AuthComponent) {
-    return class Authenticated extends Component {
-
-      static async getInitialProps(ctx) {
-        const token = getCookie('kushyFToken', ctx.req)
-        // Check if Page has a `getInitialProps`; if so, call it.
-        const pageProps = AuthComponent.getInitialProps && await AuthComponent.getInitialProps(ctx);
-        // Return props.
-        return { ...pageProps, token }
-      }
-
-      constructor(props) {
-        super(props)
-        this.state = {
-          isLoading: true
-        };
-      }
-
-      componentDidMount () {
-        console.log('checking auth')
-        if (!this.props.token) {
-          Router.push('/')
-        }
-        this.setState({ isLoading: false })
-      }
-
-      render() {
-        return (
-          <div>
-          {this.state.isLoading ? (
-              <div>LOADING....</div>
-            ) : (
-              <TokenContext.Provider value={this.props.token}>
-                <AuthComponent {...this.props} />
-              </TokenContext.Provider>
-            )}
-          </div>
-        )
-      }
+  return class Authenticated extends Component {
+    static async getInitialProps(ctx) {
+      const token = getCookie("kushyFToken", ctx.req);
+      // Check if Page has a `getInitialProps`; if so, call it.
+      const pageProps =
+        AuthComponent.getInitialProps &&
+        (await AuthComponent.getInitialProps(ctx));
+      // Return props.
+      return { ...pageProps, token };
     }
+
+    constructor(props) {
+      super(props);
+      this.state = {
+        isLoading: true,
+      };
+    }
+
+    componentDidMount() {
+      console.log("checking auth");
+      if (!this.props.token) {
+        Router.push("/");
+      }
+      this.setState({ isLoading: false });
+    }
+
+    render() {
+      return (
+        <div>
+          {this.state.isLoading ? (
+            <div>LOADING....</div>
+          ) : (
+            <TokenContext.Provider value={this.props.token}>
+              <AuthComponent {...this.props} />
+            </TokenContext.Provider>
+          )}
+        </div>
+      );
+    }
+  };
 }
 ```
 
 This is a better approach, since you get the safety of cookies for both the server and client.
 
-> Protip: You might want to take advantage of the Context API and wrap the Authorized component in a Provider with the token data, so any part of the app can easily access the token without doing any prop-drilling! Your other option is to use the Cookies helper/utility functions and grab the cookie again inside any component you need it in like above. *Or you know, Redux.*
+> Protip: You might want to take advantage of the Context API and wrap the Authorized component in a Provider with the token data, so any part of the app can easily access the token without doing any prop-drilling! Your other option is to use the Cookies helper/utility functions and grab the cookie again inside any component you need it in like above. _Or you know, Redux._
 
 ### Secret 3rd Option: API Endpoints
 
@@ -430,23 +445,23 @@ Does a HOC look like overkill? Do you want something thats more functional? Rath
 Your page component:
 
 ```js
-static async getInitialProps(ctx) { 
+static async getInitialProps(ctx) {
   // If it does not exist session, it gets redirected
   if (redirectIfNotAuthenticated(ctx)) {
-    return {}; 
-  } 
+    return {};
+  }
 ```
 
 And the magic behind the "middleware":
 
 ```js
-export const getJwt = ctx => {
+export const getJwt = (ctx) => {
   return getCookie("jwt", ctx.req);
 };
 
-export const isAuthenticated = ctx => !!getJwt(ctx);
+export const isAuthenticated = (ctx) => !!getJwt(ctx);
 
-export const redirectIfAuthenticated = ctx => {
+export const redirectIfAuthenticated = (ctx) => {
   if (isAuthenticated(ctx)) {
     redirect("/user", ctx);
     return true;
@@ -459,7 +474,7 @@ It's basically what we do in our HOC, but broken down into separate functions. M
 
 ## To Redux or Not?
 
-**You don't technically need Redux**, since you can access cookies from the client-side using js-cookie, or wrap your app in a token Provider. But I found that I started to reach for Redux when I needed to start managing more complex state in my app, and particularly **persisting state**. You can use the Context API all day, but if you don't write a fallback and retrieval system from `localStorage`, your app's state will get wiped on every refresh. Which requires dynamic data requests to run again, *and again*, ***and again***.
+**You don't technically need Redux**, since you can access cookies from the client-side using js-cookie, or wrap your app in a token Provider. But I found that I started to reach for Redux when I needed to start managing more complex state in my app, and particularly **persisting state**. You can use the Context API all day, but if you don't write a fallback and retrieval system from `localStorage`, your app's state will get wiped on every refresh. Which requires dynamic data requests to run again, _and again_, **_and again_**.
 
 ### Data Peristence
 
@@ -475,9 +490,9 @@ Imagine an app where you have components that needs to access 3 (or more) differ
 // Impractical code that doesn't work
 const SomeComponent = () => (
     <ThemeContext.Consumer>
-        { theme => 
+        { theme =>
             <TokenContext.Consumer theme={theme}>
-                { token => 
+                { token =>
                     ...etc
                 }
             </TokenContext.Consumer>
@@ -490,26 +505,26 @@ With Redux, you'd create a container component for your component. The container
 
 ### So...Redux?
 
-You'd be surprised how far you can get *without* Redux, *then again,* it's all about making the ride *smoother*. Do whatever **you** think is best for your app. [*Obligatory link to the creator of Redux saying you might not need it*](https://medium.com/@dan_abramov/you-might-not-need-redux-be46360cf367)
+You'd be surprised how far you can get _without_ Redux, _then again,_ it's all about making the ride _smoother_. Do whatever **you** think is best for your app. [_Obligatory link to the creator of Redux saying you might not need it_](https://medium.com/@dan_abramov/you-might-not-need-redux-be46360cf367)
 
 ## Simple as that
 
-Since NextJS is capable of server-side tasks - and even utilizing other frameworks like Express - it makes it very simple to extend a frontend application with the necessary routes to authenticate users via OAuth2. This tutorial used the Laravel API as an example, but the code for implementing other OAuth2-based APIs (like Twitter) is very similar. 
+Since NextJS is capable of server-side tasks - and even utilizing other frameworks like Express - it makes it very simple to extend a frontend application with the necessary routes to authenticate users via OAuth2. This tutorial used the Laravel API as an example, but the code for implementing other OAuth2-based APIs (like Twitter) is very similar.
 
-If my guide was confusing at all, I'd recommend checking out [this video from the NextJS conference](https://www.youtube.com/watch?v=bo4BbGwZsWo) that explains the NextJS user auth process in under 15 minutes. 
+If my guide was confusing at all, I'd recommend checking out [this video from the NextJS conference](https://www.youtube.com/watch?v=bo4BbGwZsWo) that explains the NextJS user auth process in under 15 minutes.
 
 [Download the project on Github here](https://github.com/whoisryosuke/nextjs-oauth2-cookie-auth)
 
 Kanpai 🍻
 Ryo
 
-***
+---
 
 **References**:
 
-* [Prosper Otemuyiwa: Authentication and Authorization in Next.js](https://www.youtube.com/watch?v=bo4BbGwZsWo)
-* [Encrypt your cookies](http://blog.teamtreehouse.com/encrypting-cookies-in-the-browser)
-* [js-cookie](https://github.com/js-cookie/js-cookie)
-* [Cookies helper functions](https://github.com/carlos-peru/next-with-api/blob/master/lib/session.js)
-* [Creating authentication middleware for getInitialProps](https://medium.com/@positivecarlos/authentication-on-universal-react-with-next-js-b441ef458046)
-* [OAuth 2.0 - Official](https://oauth.net/2/)
+- [Prosper Otemuyiwa: Authentication and Authorization in Next.js](https://www.youtube.com/watch?v=bo4BbGwZsWo)
+- [Encrypt your cookies](http://blog.teamtreehouse.com/encrypting-cookies-in-the-browser)
+- [js-cookie](https://github.com/js-cookie/js-cookie)
+- [Cookies helper functions](https://github.com/carlos-peru/next-with-api/blob/master/lib/session.js)
+- [Creating authentication middleware for getInitialProps](https://medium.com/@positivecarlos/authentication-on-universal-react-with-next-js-b441ef458046)
+- [OAuth 2.0 - Official](https://oauth.net/2/)

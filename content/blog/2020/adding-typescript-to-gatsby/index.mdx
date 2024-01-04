@@ -1,10 +1,8 @@
 ---
 title: Adding Typescript to Gatsby
-date: '2020-01-08'
+date: "2020-01-08"
 section: blog
-tags: ['typescript', 'gatsby', 'javascript', 'react']
-
-layout: "@/layouts/BlogLayout.astro"
+tags: ["typescript", "gatsby", "javascript", "react"]
 ---
 
 I've been on a Typescript kick lately and integrating it into all of my projects and workflows. With Gatsby it's honestly as simple as installing a plugin, but I thought I'd document the minimal nuances there are in the process.
@@ -23,7 +21,7 @@ npm install --save-dev @types/react @types/react-dom @types/node eslint eslint-c
 module.exports = {
   // ...,
   plugins: [...`gatsby-plugin-typescript`],
-}
+};
 ```
 
 1. Add linting and type checking scripts to your `package.json`:

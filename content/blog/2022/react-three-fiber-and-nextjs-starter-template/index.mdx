@@ -1,11 +1,9 @@
 ---
 title: React Three Fiber and NextJS Starter Template
-date: '2022-05-19'
+date: "2022-05-19"
 section: blog
-tags: ['r3f', 'react', '3d', 'nextjs']
-cover_image: './React_Three_Fiber__NextJS_Starter_Template.png'
-
-layout: "@/layouts/BlogLayout.astro"
+tags: ["r3f", "react", "3d", "nextjs"]
+cover_image: "./React_Three_Fiber__NextJS_Starter_Template.png"
 ---
 
 I’ve been really getting into 3D and game development, from Blender and Maya to Unity and Unreal Engine to even custom programmed C++ game engines using OpenGL or DirectX. The deeper you go, the more you tend to work with languages like Python or C. But what if there was a way to do a lot of the things you do in a software like Unity — but on the web...with JavaScript?
@@ -58,60 +56,60 @@ There were a lot of nice things happening in this template (mostly from create-r
 When you create a new page, you don't need to wrap anything in a canvas. This automatically happens in the `_app.jsx` file. The `partition` script in `_app.jsx` checks for `<Dom>` and `<R3f>`, and wraps your R3F components in a canvas.
 
 ```tsx
-import type { AppProps } from 'next/app'
-import { useRouter } from 'next/router'
-import useStore from '@/helpers/store'
-import { useEffect } from 'react'
-import Header from '@/config'
-import Dom from '@/components/layout/dom'
-import partition from '@/helpers/partition'
-import dynamic from 'next/dynamic'
-import '@/styles/index.css'
+import type { AppProps } from "next/app";
+import { useRouter } from "next/router";
+import useStore from "@/helpers/store";
+import { useEffect } from "react";
+import Header from "@/config";
+import Dom from "@/components/layout/dom";
+import partition from "@/helpers/partition";
+import dynamic from "next/dynamic";
+import "@/styles/index.css";
 
 // We dynamically import the canvas (required of any R3F component in NextJS-land)
-const LCanvas = dynamic(() => import('@/components/layout/canvas'), {
+const LCanvas = dynamic(() => import("@/components/layout/canvas"), {
   ssr: false,
-})
+});
 
 // This component takes it's children and finds the R3F and DOM
 // and splits them up into their own space
 const Balance = ({ child }) => {
-  const [r3f, dom] = partition(child, (c) => c.props.r3f === true)
+  const [r3f, dom] = partition(child, (c) => c.props.r3f === true);
 
   return (
     <>
       <Dom>{dom}</Dom>
       <LCanvas>{r3f}</LCanvas>
     </>
-  )
-}
+  );
+};
 
 // The wrapper around the entire app
 // Standard NextJS process/API
-function App({ Component, pageProps = { title: 'index' } }: AppProps) {
+function App({ Component, pageProps = { title: "index" } }: AppProps) {
   // We grab the children whatever page we're rendering
   // and make sure we run any initialProps from NextJS to hydrate the component
-  const child = Component(pageProps).props.children
+  const child = Component(pageProps).props.children;
 
   return (
     <>
       <Header title={pageProps.title} />
       <Balance child={child} />
     </>
-  )
+  );
 }
 
-export default App
+export default App;
 ```
 
 Each page should export `<DOM />` and `<R3f r3f />` components in a JSX fragment (so you can have 2 children without a parent):
 
 ```tsx
-import dynamic from 'next/dynamic'
+import dynamic from "next/dynamic";
 
-const Shader = dynamic(() => import('@/components/canvas/Shader/Shader'), {
+const Shader = dynamic(() => import("@/components/canvas/Shader/Shader"), {
   ssr: false,
-})
+});
 
 // dom components goes here
 const DOM = () => {
@@ -119,8 +117,8 @@ const DOM = () => {
     <>
       <p>420 blaze it</p>
     </>
-  )
-}
+  );
+};
 
 // canvas components goes here
 const R3F = ({ r3f = true }) => {
@@ -128,8 +126,8 @@ const R3F = ({ r3f = true }) => {
     <>
       <Shader />
     </>
-  )
-}
+  );
+};
 
 // The page component that gets "split up" by the `_app.js` file above
 const Page = () => {
@@ -138,17 +136,17 @@ const Page = () => {
       <DOM />
       <R3F r3f />
     </>
-  )
-}
+  );
+};
 
-export default Page
+export default Page;
 
 export async function getStaticProps() {
   return {
     props: {
-      title: 'Index',
+      title: "Index",
     },
-  }
+  };
 }
 ```
 
@@ -185,14 +183,14 @@ The first major change was converting everything to Typescript. The create-r3f-a
 
 ```tsx
 // shader.d.ts
-declare module '*.vtx' {
-  const content: string
-  export default content
+declare module "*.vtx" {
+  const content: string;
+  export default content;
 }
 
-declare module '*.frg' {
-  const content: string
-  export default content
+declare module "*.frg" {
+  const content: string;
+  export default content;
 }
 ```
 

@@ -4,11 +4,9 @@ date: "2023-01-03"
 section: blog
 tags: ["productivity", "ai", "c++", "rust", "graphics"]
 cover_image: "./Letting_AI_write_my_notes_and_code.png"
-
-layout: "@/layouts/BlogLayout.astro"
 ---
 
-I recently got access to [the Notion AI alpha test](https://www.notion.so/product/ai), where Notion is integrating AI features into their note-taking app. I’ve seen a lot of people talking about AI recently on my feed, particularly “chat-bot” style AI programs (like ChatGPT) that take a “prompt” and return text results. I thought this would be a great way for me to experiment with the new(*ish*) technology others are using.
+I recently got access to [the Notion AI alpha test](https://www.notion.so/product/ai), where Notion is integrating AI features into their note-taking app. I’ve seen a lot of people talking about AI recently on my feed, particularly “chat-bot” style AI programs (like ChatGPT) that take a “prompt” and return text results. I thought this would be a great way for me to experiment with the new(_ish_) technology others are using.
 
 So I asked went into the experiment to answer a few questions:
 
@@ -19,13 +17,13 @@ So I asked went into the experiment to answer a few questions:
 
 # What is Notion AI?
 
-Once you get access, the Notion command menu gets new AI commands. 
+Once you get access, the Notion command menu gets new AI commands.
 
 ![Screenshot of the Notion AI commands menu](./Untitled.png)
 
 Just looking at this list though, we get an idea of what kind of content we could be generating with AI. From poems to social media posts complete with hashtags — it’s a wide range.
 
-These commands pop open a textbox and request a prompt. 
+These commands pop open a textbox and request a prompt.
 
 ![Screenshot of the Notion AI prompt textbox modal](./Untitled%201.png)
 
@@ -51,7 +49,7 @@ Surprisingly it handled every topic pretty well and was fairly accurate with eac
 
 **You bet.** It doesn’t technically plagiarize content, but you can clearly see where the AI takes a certain source, copies it, and replaces a few words with synonyms. It’s not as bad as I make it sound, it does a better job of paraphrasing things, but sometimes it’s fairly clear that only 1 source had this info.
 
-For this reason, combined with the fact **the AI *doesn’t* give you reference links to where it sourced the data**, I’d never use it directly for production content. 
+For this reason, combined with the fact **the AI _doesn’t_ give you reference links to where it sourced the data**, I’d never use it directly for production content.
 
 It’s a great tool for personal use, bootstrapping, etc — but never going directly from AI to public use. One could argue that if you release the information open source it’s not infringing, but it feels like a disservice to real humans who put in the work to discover and document this only to be forgotten. And besides any ego, it makes information useless. Who said this? Has this source been verified? The AI could be copying lies and passing it off as truth.
 
@@ -65,7 +63,7 @@ I asked the AI to compare some APIs and it started inventing API functions that 
 
 It seems to operate almost contextually, so if you ask it something and get results back, they’ll often “pollute” the next prompts — even if they’re significantly different.
 
-Or it just didn’t perform as well as I wanted. I tried asking “Article listing the best C++ starter templates” and it was giving me fake links and projects (”One popular starter template is the [CPPTemplate](https://github.com/cpptemplate/cpptemplate)” — links to a Github that never existed). That’s really bad. I expected it to just grab the top 10 templates from an “awesome C++ README” or something, but it was just inventing fallacies. 
+Or it just didn’t perform as well as I wanted. I tried asking “Article listing the best C++ starter templates” and it was giving me fake links and projects (”One popular starter template is the [CPPTemplate](https://github.com/cpptemplate/cpptemplate)” — links to a Github that never existed). That’s really bad. I expected it to just grab the top 10 templates from an “awesome C++ README” or something, but it was just inventing fallacies.
 
 # So what’s it useful for?
 
@@ -80,7 +78,7 @@ I found a couple use cases that make the AI fairly useful, and something that ac
 
 I had an issue with a wgpu renderer I was writing in Rust and I had a bug I couldn’t figure out. I asked the AI generally about the topic and it gave me a code snippet that gave me context I needed to solve the problem.
 
-Did it solve the bug for me? No. Did I type the bug directly in as a prompt? Nope. It still took a my own investigation and critical thinking to work around the issue, but the AI proved to be an invaluable source, especially after using search engines and having StackOverflow fail on me. 
+Did it solve the bug for me? No. Did I type the bug directly in as a prompt? Nope. It still took a my own investigation and critical thinking to work around the issue, but the AI proved to be an invaluable source, especially after using search engines and having StackOverflow fail on me.
 
 I could almost liken it to the experience of pair programming and being able to ask someone (possibly more knowledgeable than you) how things work. It lets you check yourself and gives you more personalized insight (rather than digging through docs or something).
 
@@ -95,7 +93,7 @@ I ran a test where I asked the AI to show me how to do different 3D graphic tech
 - Level of distance rendering in [insert backend here] with C++
 - Particles rendering in [insert backend here] with C++
 
-I ran each prompt 3 times, one for each backend (OpenGL, DirectX, and Vulkan). 
+I ran each prompt 3 times, one for each backend (OpenGL, DirectX, and Vulkan).
 
 Here were the results for the “fog effect”:
 

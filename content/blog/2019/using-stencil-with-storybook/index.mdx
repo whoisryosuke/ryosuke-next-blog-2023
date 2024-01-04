@@ -1,10 +1,8 @@
 ---
 title: Using StencilJS with Storybook
-date: '2019-12-04'
+date: "2019-12-04"
 section: blog
-tags: ['web components', 'design system', 'storybook', 'tutorial']
-
-layout: "@/layouts/BlogLayout.astro"
+tags: ["web components", "design system", "storybook", "tutorial"]
 ---
 
 I've been diving deep recently into the world of Web Components using StencilJS. As a developer with plenty of experience designing React components, I wanted to try my hand at the native equivalent. And when I'm working with component libraries and design systems, I prefer to use StorybookJS, an isolated development environment, to receive instant feedback from my code (visuals, testing, and more).
@@ -73,11 +71,11 @@ I followed [the guide on the Storybook docs for a manual setup.](https://storybo
 Here's a sample config that looks inside your `./src` folder (where Stencil keeps components) for any file appended with the `.stories.tsx` extension:
 
 ```js
-const req = require.context('../src', true, /\.stories\.tsx$/)
+const req = require.context("../src", true, /\.stories\.tsx$/);
 function loadStories() {
-  req.keys().forEach(filename => req(filename))
+  req.keys().forEach((filename) => req(filename));
 }
-configure(loadStories, module)
+configure(loadStories, module);
 ```
 
 ## ⚙️ Setting up Storybook for Web Components
@@ -109,62 +107,62 @@ npm-run-all --parallel start storybook
 3. Create a Webpack config to copy your distribution component bundle and each component's JS/CSS distribution file in `/.storybook/webpack.config.js`:
 
 ```js
-const fs = require('fs')
-const path = require('path')
-const CopyPlugin = require('copy-webpack-plugin')
-const WriteFilePlugin = require('write-file-webpack-plugin')
+const fs = require("fs");
+const path = require("path");
+const CopyPlugin = require("copy-webpack-plugin");
+const WriteFilePlugin = require("write-file-webpack-plugin");
 
 module.exports = async ({ config }) => {
   // Replace pure-web-components with your web component libary name
-  config.entry.push(path.join(__dirname, '../dist/pure-web-components.js'))
-  fs.readdirSync(path.join(__dirname, '../dist/collection/components')).map(
-    function(file) {
+  config.entry.push(path.join(__dirname, "../dist/pure-web-components.js"));
+  fs.readdirSync(path.join(__dirname, "../dist/collection/components")).map(
+    function (file) {
       jsFilePath = path.join(
         __dirname,
         `../dist/collection/components/${file}/${file}.js`
-      )
+      );
       try {
         if (fs.existsSync(jsFilePath)) {
-          config.entry.push(jsFilePath)
+          config.entry.push(jsFilePath);
         }
       } catch (err) {
-        console.error(err)
+        console.error(err);
       }
 
       cssFilePath = path.join(
         __dirname,
         `../dist/collection/components/${file}/${file}.css`
-      )
+      );
       try {
         if (fs.existsSync(cssFilePath)) {
-          config.entry.push(cssFilePath)
+          config.entry.push(cssFilePath);
         }
       } catch (err) {
-        console.error(err)
+        console.error(err);
       }
     }
-  )
+  );
 
   config.plugins.push(
     new CopyPlugin([
       {
-        from: '**/*',
-        to: './',
-        context: 'dist',
+        from: "**/*",
+        to: "./",
+        context: "dist",
       },
     ])
-  )
+  );
 
-  config.plugins.push(new WriteFilePlugin())
+  config.plugins.push(new WriteFilePlugin());
 
-  return config
-}
+  return config;
+};
 ```
 
 4. Then import your stories inside `/.storybook/config.js` (I keep my stories co-located inside component folders with a `.stories.tsx` filename). This also includes configs for common plugins as well (make sure to also import and register them in `/.storybook/addons.js`):
 
 ```js
-import { configure, addDecorator } from '@storybook/html'
+import { configure, addDecorator } from "@storybook/html";
 // import { withKnobs } from "@storybook/addon-knobs";
 // import { withA11y } from "@storybook/addon-a11y";
 // import { withTests } from "@storybook/addon-jest";
@@ -183,24 +181,24 @@ import { configure, addDecorator } from '@storybook/html'
 // Add knobs to all stories
 // addDecorator(withKnobs);
 
-const req = require.context('../src', true, /\.stories\.tsx$/)
+const req = require.context("../src", true, /\.stories\.tsx$/);
 function loadStories() {
-  req.keys().forEach(filename => req(filename))
+  req.keys().forEach((filename) => req(filename));
 }
-configure(loadStories, module)
+configure(loadStories, module);
 ```
 
 5. The `/.storybook/addons.js` for reference:
 
 ```js
-import '@storybook/addon-a11y/register'
-import '@storybook/addon-actions/register'
-import '@storybook/addon-backgrounds/register'
-import '@storybook/addon-jest/register'
-import '@storybook/addon-knobs/register'
-import '@storybook/addon-notes/register'
-import '@storybook/addon-options/register'
-import '@storybook/addon-viewport/register'
+import "@storybook/addon-a11y/register";
+import "@storybook/addon-actions/register";
+import "@storybook/addon-backgrounds/register";
+import "@storybook/addon-jest/register";
+import "@storybook/addon-knobs/register";
+import "@storybook/addon-notes/register";
+import "@storybook/addon-options/register";
+import "@storybook/addon-viewport/register";
 ```
 
 And you should be good to go! Storybook setup with a standard Stencil project — ready to design, test, and showcase web components in isolation!

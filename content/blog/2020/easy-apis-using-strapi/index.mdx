@@ -1,10 +1,8 @@
 ---
 title: Easy APIs using Strapi - a NodeJS Headless CMS
-date: '2020-05-20'
+date: "2020-05-20"
 section: blog
-tags: ['api', 'backend', 'cms', 'nodejs', 'js']
-
-layout: "@/layouts/BlogLayout.astro"
+tags: ["api", "backend", "cms", "nodejs", "js"]
 ---
 
 Recently while watching [Jason Lengstorf's Twitch](https://www.youtube.com/watch?v=8Mkh8S66SZY), he featured [Chris Sevilleja](https://twitter.com/chrisoncode?ref_src=twsrc%5Egoogle%7Ctwcamp%5Eserp%7Ctwgr%5Eauthor) (aka Scotch.io) who presented a headless NodeJS CMS and API called [StrapiJS](https://strapi.io/). I've had experience with headless CMS in the past in PHP world ([Wordpress](https://www.smashingmagazine.com/2018/10/headless-wordpress-decoupled/), [Directus](https://directus.io/), etc), and I was pumped by the prospect of having a JavaScript based solution that would blend better in a React stack.
@@ -114,15 +112,15 @@ Once you have generated the JWT using the `/auth/local/` endpoint, you can use t
 Here's an example of a GET request using `fetch()` with the JWT (or "token") attached to the headers:
 
 ```jsx
-const token = Cookies.get('your-cookie-key')
+const token = Cookies.get("your-cookie-key");
 
-fetch('http://localhost:1337/clients', {
-  method: 'get',
+fetch("http://localhost:1337/clients", {
+  method: "get",
   headers: new Headers({
-    Authorization: 'Bearer ' + token,
-    'Content-Type': 'application/json',
+    Authorization: "Bearer " + token,
+    "Content-Type": "application/json",
   }),
-})
+});
 ```
 
 This works great, but I feel like with every API you end up writing a wrapper around fetch to handle these repetitive operations (like regular vs authenticated requests, hitting common endpoints, etc). In my search I found that [Strapi has a SDK for JavaScript](https://github.com/strapi/strapi-sdk-javascript) that offers this kind of functionality with an easy to use API.
@@ -131,16 +129,16 @@ If you already have a JWT token, you get use the `setToken` method on the `Strap
 
 ```jsx
 // Grab token from cookies
-const token = Cookies.get(TOKEN_COOKIES_KEY)
+const token = Cookies.get(TOKEN_COOKIES_KEY);
 
 // Create a new instance of Strapi with the API URL
-const strapi = new Strapi('http://localhost:1337/')
+const strapi = new Strapi("http://localhost:1337/");
 
 // Set the JWT token for headers
-strapi.setToken(token)
+strapi.setToken(token);
 
 // Fetch any content that requires auth
-const posts = strapi.getEntries('table-name')
+const posts = strapi.getEntries("table-name");
 ```
 
 ## Creating Authorization Component
@@ -148,67 +146,67 @@ const posts = strapi.getEntries('table-name')
 We need a component that can wrap any private pages, check if the user is logged in, and redirect any unauthorized users away (or show content if authorized). Ideally you should validate the token, but for sake of simplicity, we let the user in if they have a token at all (if they don't, the private API requests will still fail):
 
 ```jsx
-import { useEffect, useState } from 'react'
-import { useRouter } from 'next/router'
-import Cookies from 'js-cookie'
-import { TOKEN_COOKIES_KEY } from '../constants'
+import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import Cookies from "js-cookie";
+import { TOKEN_COOKIES_KEY } from "../constants";
 
 export default function AuthGuard({ children }) {
-  const [loggedIn, setLoggedIn] = useState(false)
-  const router = useRouter()
-  const token = Cookies.get(TOKEN_COOKIES_KEY)
+  const [loggedIn, setLoggedIn] = useState(false);
+  const router = useRouter();
+  const token = Cookies.get(TOKEN_COOKIES_KEY);
 
   // Grab JWT from cookies
   // If no cookie, redirect to login page
   useEffect(() => {
     if (token && !loggedIn) {
       // Validate token here
-      return setLoggedIn(true)
+      return setLoggedIn(true);
     }
 
-    if (!loggedIn) router.push('/login')
-  }, [loggedIn])
+    if (!loggedIn) router.push("/login");
+  }, [loggedIn]);
 
-  if (loggedIn) return children
-  return <div>Not authorized, redirecting to login</div>
+  if (loggedIn) return children;
+  return <div>Not authorized, redirecting to login</div>;
 }
 ```
 
 In order for this to work, we need a way for the user to login and store the token in cookies. I made a basic login form using Chakra UI. It submits the user data to authorization endpoint in the Strapi API:
 
 ```jsx
-import { useState } from 'react'
-import Link from 'next/link'
-import Head from 'next/head'
-import { useRouter } from 'next/router'
-import Cookies from 'js-cookie'
-import Strapi from 'strapi-sdk-javascript'
-import { motion } from 'framer-motion'
-import { Box, Button, Input, Stack } from '@chakra-ui/core'
-import { TOKEN_COOKIES_KEY } from '../constants'
-import { useUser } from '../context/UserContext'
-import BaseLayout from '../layouts/BaseLayout'
+import { useState } from "react";
+import Link from "next/link";
+import Head from "next/head";
+import { useRouter } from "next/router";
+import Cookies from "js-cookie";
+import Strapi from "strapi-sdk-javascript";
+import { motion } from "framer-motion";
+import { Box, Button, Input, Stack } from "@chakra-ui/core";
+import { TOKEN_COOKIES_KEY } from "../constants";
+import { useUser } from "../context/UserContext";
+import BaseLayout from "../layouts/BaseLayout";
 
 const Login = () => {
   const [formData, setFormData] = useState({
-    identifier: '',
-    password: '',
-  })
-  const router = useRouter()
-  const { updateUser } = useUser()
+    identifier: "",
+    password: "",
+  });
+  const router = useRouter();
+  const { updateUser } = useUser();
 
   const onChange = ({ currentTarget: { name, value } }) => {
-    setFormData(prevState => ({ ...prevState, [name]: value }))
-  }
+    setFormData((prevState) => ({ ...prevState, [name]: value }));
+  };
 
-  const submitForm = async e => {
-    e.preventDefault()
+  const submitForm = async (e) => {
+    e.preventDefault();
 
-    const strapi = new Strapi('http://localhost:1337/')
+    const strapi = new Strapi("http://localhost:1337/");
 
-    let response
+    let response;
     try {
-      response = await strapi.login(formData.identifier, formData.password)
+      response = await strapi.login(formData.identifier, formData.password);
     } catch (e) {
       // Login failed
     }
@@ -216,15 +214,15 @@ const Login = () => {
     // Login succeeded
     if (response) {
       // Save JWT in cookies
-      Cookies.set(TOKEN_COOKIES_KEY, response.jwt)
+      Cookies.set(TOKEN_COOKIES_KEY, response.jwt);
 
       // Save user info to context
-      updateUser(response.user)
+      updateUser(response.user);
 
       // Redirect user to dashboard
-      router.push('/')
+      router.push("/");
     }
-  }
+  };
 
   return (
     <BaseLayout>
@@ -256,10 +254,10 @@ const Login = () => {
         </form>
       </Box>
     </BaseLayout>
-  )
-}
+  );
+};
 
-export default Login
+export default Login;
 ```
 
 Ideally you should use a library like Yup to validate the form beyond relying on the HTML5 validation attributes.
@@ -267,40 +265,40 @@ Ideally you should use a library like Yup to validate the form beyond relying on
 And then to get the user data across the app, we create a context provider that queries the user API and pass it to the context. Ideally here if the user check fails, we could invalidate the user logged in status (if it was in context, or we combined the AuthGuard and this provider):
 
 ```jsx
-import React, { createContext, useContext, useEffect, useState } from 'react'
-import Strapi from 'strapi-sdk-javascript'
-import Cookies from 'js-cookie'
-import { TOKEN_COOKIES_KEY } from '../constants'
+import React, { createContext, useContext, useEffect, useState } from "react";
+import Strapi from "strapi-sdk-javascript";
+import Cookies from "js-cookie";
+import { TOKEN_COOKIES_KEY } from "../constants";
 
-export const UserContext = createContext()
+export const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
-  const [user, updateUser] = useState({})
-  const token = Cookies.get(TOKEN_COOKIES_KEY)
+  const [user, updateUser] = useState({});
+  const token = Cookies.get(TOKEN_COOKIES_KEY);
 
   useEffect(() => {
     const fetchUser = async () => {
-      const strapi = new Strapi('http://localhost:1337/')
-      strapi.setToken(token)
+      const strapi = new Strapi("http://localhost:1337/");
+      strapi.setToken(token);
 
-      const profile = await strapi.getEntries('users/me')
-      if (profile) updateUser(profile)
-    }
+      const profile = await strapi.getEntries("users/me");
+      if (profile) updateUser(profile);
+    };
     if (Object.keys(user).length === 0) {
-      fetchUser()
+      fetchUser();
     }
-  }, [user, token])
+  }, [user, token]);
 
   return (
     <UserContext.Provider value={{ user, updateUser }}>
       {children}
     </UserContext.Provider>
-  )
-}
+  );
+};
 
 export const useUser = () => {
-  return useContext(UserContext)
-}
+  return useContext(UserContext);
+};
 ```
 
 # Working with Dates
@@ -317,11 +315,11 @@ When filtering collections with the SDK, you can use the `getEntries()` method, 
 In this case, I grab `hours` between two dates:
 
 ```jsx
-const latestHours = await strapi.getEntries('hours', {
+const latestHours = await strapi.getEntries("hours", {
   // Column name (and _filtertype): filter/search value
   start_gte: formatISO(dateRange.start),
   end_lte: formatISO(dateRange.end),
-})
+});
 ```
 
 # What broke for me
@@ -361,32 +359,32 @@ To test out the GraphQL API with a React app, I spun up a quick NextJS app with 
 Wrap `_app.js` in a `<ApolloProvider>` and pass it an instantiated Apollo client:
 
 ```jsx
-import React from 'react'
-import ApolloClient from 'apollo-boost'
-import { ApolloProvider } from '@apollo/react-hooks'
+import React from "react";
+import ApolloClient from "apollo-boost";
+import { ApolloProvider } from "@apollo/react-hooks";
 
-const token = 'JWT-token-here'
+const token = "JWT-token-here";
 
 const client = new ApolloClient({
-  uri: 'http://localhost:1337/graphql',
+  uri: "http://localhost:1337/graphql",
   headers: {
-    authorization: token ? `Bearer ${token}` : '',
+    authorization: token ? `Bearer ${token}` : "",
   },
-})
+});
 
 export default ({ Component, pageProps }) => (
   <ApolloProvider client={client}>
     <Component {...pageProps} />
   </ApolloProvider>
-)
+);
 ```
 
 Create a component that uses Apollo and queries GraphQL using a React hook:
 
 ```jsx
-import React from 'react'
-import { useQuery } from '@apollo/react-hooks'
-import { gql } from 'apollo-boost'
+import React from "react";
+import { useQuery } from "@apollo/react-hooks";
+import { gql } from "apollo-boost";
 
 const GET_CLIENTS = gql`
   {
@@ -396,15 +394,15 @@ const GET_CLIENTS = gql`
       Color
     }
   }
-`
+`;
 
 export default function Clients() {
-  const { loading, error, data } = useQuery(GET_CLIENTS)
+  const { loading, error, data } = useQuery(GET_CLIENTS);
 
-  if (loading) return <p>Loading...</p>
-  if (error) return <p>Error :(</p>
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error :(</p>;
 
-  return <div>{JSON.stringify(data)}</div>
+  return <div>{JSON.stringify(data)}</div>;
 }
 ```
 

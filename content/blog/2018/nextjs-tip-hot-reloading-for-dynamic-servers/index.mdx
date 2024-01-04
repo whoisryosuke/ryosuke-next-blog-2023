@@ -3,18 +3,16 @@ title: "NextJS Tip: Hot reloading for dynamic servers"
 date: "2018-07-25"
 section: blog
 cover_image: "./NextJS-Tips-Nodemon-1920px.jpg"
-tags: [ 'nextjs', 'express', 'js', 'es6', 'tips' ]
-
-layout: "@/layouts/BlogLayout.astro"
+tags: ["nextjs", "express", "js", "es6", "tips"]
 ---
 
 Have you been developing a [NextJS](http://nextjs.org) app with dynamic routing (using maybe Express), and found that every time you make a change you have to do the tedious process of shutting down the server (CTRL+C) and restarting it? (`npm run dev`).
 
 If you're used to working with [NodeJS](http://nodejs.org), or [ExpressJS](https://expressjs.com/), you've probably come across [nodemon](https://github.com/remy/nodemon). It's a utility that enables hot reloading on Node-based servers, so that whenever you make a change to a server file and save -- it instantly starts to restart without any prompt from your part.
 
-But **nodemon doesn't work out of the box with NextJS** and requires a *small amount* of configuration. If you try running nodemon without a config or the proper CLI params, you'll find that your server will start acting *real wonky*. My server started restarting infinitely, because it was detecting changes each time NextJS compiled, triggering an infinite loop of compilations.
+But **nodemon doesn't work out of the box with NextJS** and requires a _small amount_ of configuration. If you try running nodemon without a config or the proper CLI params, you'll find that your server will start acting _real wonky_. My server started restarting infinitely, because it was detecting changes each time NextJS compiled, triggering an infinite loop of compilations.
 
-> This guide assumes you have a NextJS project with dynamic routing setup. You can find a few in [the examples section of the NextJS repo](https://github.com/zeit/next.js/tree/master/examples) 
+> This guide assumes you have a NextJS project with dynamic routing setup. You can find a few in [the examples section of the NextJS repo](https://github.com/zeit/next.js/tree/master/examples)
 
 ## The solution?
 
@@ -32,10 +30,10 @@ Create a `nodemon.json` file in the project root and paste the following into it
 
 ```json
 {
-    "verbose": true,
-    "ignore": ["node_modules", ".next"],
-    "watch": ["server/**/*", "server.js"],
-    "ext": "js json"
+  "verbose": true,
+  "ignore": ["node_modules", ".next"],
+  "watch": ["server/**/*", "server.js"],
+  "ext": "js json"
 }
 ```
 
@@ -60,9 +58,9 @@ I found this solution on [the NextJS Github issues](https://github.com/zeit/next
 Hope that helps ✌️
 Ryo
 
-***
+---
 
 **References**:
 
-* [nodemon](https://github.com/remy/nodemon)
-* [NextJS Github issue - hot reloading](https://github.com/zeit/next.js/issues/791)
+- [nodemon](https://github.com/remy/nodemon)
+- [NextJS Github issue - hot reloading](https://github.com/zeit/next.js/issues/791)

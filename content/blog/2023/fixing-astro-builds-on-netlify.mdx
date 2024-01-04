@@ -4,8 +4,6 @@ date: "2023-02-08"
 section: blog
 tags: ["astrojs", "netlify", "devops"]
 cover_image: "./fixing-astro-builds-on-netlify.png"
-
-layout: "@/layouts/BlogLayout.astro"
 ---
 
 I had a pretty big blog meltdown recently after I went to push a new post and the build failed with a mysterious “out of memory” error. I’ve had issues locally with AstroJS running a bit slow when building pages in development, so I can imagine it was probably doing heavy lifting during production builds. I was able to build locally - but I’m assuming the Netlify build servers didn’t have 32GB of RAM to kick around.

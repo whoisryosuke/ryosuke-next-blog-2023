@@ -1,22 +1,20 @@
 ---
 title: Setting up a React Native Component Library
-date: '2020-09-29'
+date: "2020-09-29"
 section: blog
 tags:
   [
-    'react native',
-    'react',
-    'design systems',
-    'devops',
-    'project management',
-    'storybook',
-    'typescript',
-    'expo',
-    'eslint',
+    "react native",
+    "react",
+    "design systems",
+    "devops",
+    "project management",
+    "storybook",
+    "typescript",
+    "expo",
+    "eslint",
   ]
-cover_image: './Setting_up_a_React_Native_Component_Library.png'
-
-layout: "@/layouts/BlogLayout.astro"
+cover_image: "./Setting_up_a_React_Native_Component_Library.png"
 ---
 
 Recently I created a small React Native component library using Restyle, Shopify's new native styling library. I thought I'd document the process of creating a React Native specific component library, and the _intricacies_ behind the going from **component code** to a **distribution build** with **automated versioning** using **a CI/CD.**
@@ -48,7 +46,7 @@ Then there's native Storybook. The "Storybook app" itself is run through Expo, m
 Currently the Storybook config (`.storybook/config.js`) grabs stories from `/stories/` in the root of the repo, but you can set it up to grab from the component folder instead:
 
 ```tsx
-configure(require.context('../components', true, /\.stories\.[tj]sx$/), module)
+configure(require.context("../components", true, /\.stories\.[tj]sx$/), module);
 ```
 
 ## Typescript
@@ -186,13 +184,13 @@ You should be good to go! Stage some files in Git (`git add .`) and run `yarn co
 3. Create a configuration file for the commit linter in the project root as `commitlint.config.js`:
 
    ```jsx
-   module.exports = { extends: ['@commitlint/config-conventional'] }
+   module.exports = { extends: ["@commitlint/config-conventional"] };
    ```
 
    Instead of creating a new file, you can add this to your `package.json`:
 
    ```yaml
-   'commitlint': { 'extends': ['@commitlint/config-conventional'] }
+   "commitlint": { "extends": ["@commitlint/config-conventional"] }
    ```
 
 4. Add the husky hook to your `package.json`:

@@ -1,10 +1,8 @@
 ---
 title: Automatic Web Component Documentation using StencilJS and GatsbyJS
-date: '2019-12-03'
+date: "2019-12-03"
 section: blog
-tags: ['web components', 'design system', 'gatsby', 'documentation', 'tutorial']
-
-layout: "@/layouts/BlogLayout.astro"
+tags: ["web components", "design system", "gatsby", "documentation", "tutorial"]
 ---
 
 I recently created a web component based design system using StencilJS. Afterwards, I wanted to find a solution to create a documentation site based on the auto-generated component docs from StencilJS.
@@ -72,13 +70,13 @@ If you prefer a more React orientated solution, you can also import components a
 import {
   applyPolyfills,
   defineCustomElements,
-} from 'pure-web-components/dist/loader'
+} from "pure-web-components/dist/loader";
 
 // This applies polyfills (if necessary)
 // Then registers the new "custom element" or web component
 applyPolyfills().then(() => {
-  defineCustomElements(window)
-})
+  defineCustomElements(window);
+});
 ```
 
 You'd include this in `gatsby-browser.js` and `gatsby-ssr.js` to apply it across the entire client-side app, as well as when Gatsby prerenders for SSR. Here's an [example of this in action on CodeSandbox](https://codesandbox.io/s/bulmil-bulma-web-components-qb3kd) using the Bulmil (Bulma CSS) Web Components.
@@ -296,56 +294,56 @@ Then we take the components (via the props) and loop through it in the Sidebar, 
 const Sidebar = ({ components, currentPage }) => {
   const pages = [
     {
-      name: 'Getting Started',
-      url: '/getting-started',
+      name: "Getting Started",
+      url: "/getting-started",
     },
     {
-      name: 'Components',
-      url: '/components/pure-button',
+      name: "Components",
+      url: "/components/pure-button",
     },
     {
-      name: 'Theming',
-      url: '/theming',
+      name: "Theming",
+      url: "/theming",
     },
-  ]
-  const componentList = components.map(component => {
+  ];
+  const componentList = components.map((component) => {
     const {
       node: {
         fields: { section, slug, filename },
       },
-    } = component
-    if (section === 'components') {
+    } = component;
+    if (section === "components") {
       // Set active depending on currentPage vs slug
       return (
         <li
           className={`pure-menu-item ${
-            currentPage.includes(slug.slice(0, -1)) ? `pure-menu-selected` : ''
+            currentPage.includes(slug.slice(0, -1)) ? `pure-menu-selected` : ""
           }`}
         >
           <Link to={slug} className="pure-menu-link">
             {`<`}
-            {filename.replace('/', '')}
+            {filename.replace("/", "")}
             {`>`}
           </Link>
         </li>
-      )
+      );
     }
-  })
+  });
 
-  const pageList = pages.map(page => {
+  const pageList = pages.map((page) => {
     // Set active depending on currentPage vs slug
     return (
       <li
         className={`pure-menu-item ${
-          currentPage.includes(page.url) ? `pure-menu-selected` : ''
+          currentPage.includes(page.url) ? `pure-menu-selected` : ""
         }`}
       >
         <Link to={page.url} className="pure-menu-link">
           {page.name}
         </Link>
       </li>
-    )
-  })
+    );
+  });
   return (
     <nav
       id="PrimarySidebar"
@@ -357,10 +355,10 @@ const Sidebar = ({ components, currentPage }) => {
         <ul className="pure-menu-list">{componentList}</ul>
       </pure-menu>
     </nav>
-  )
-}
+  );
+};
 
-export default Sidebar
+export default Sidebar;
 ```
 
 We loop through each array (components and custom pages) and generate a list of links. Nothing fancy here.
@@ -374,12 +372,12 @@ Usually you just query the parsed HTML from the Markdown GraphQL endpoint, but i
 The Gatsby plugin that handles Markdown (gatsby-transformer-remark) [recommends that you use](https://using-remark.gatsbyjs.org/custom-components/) a library called [rehype-react](https://github.com/rehypejs/rehype-react) to alter the AST provided by the Gatsby Markdown parser:
 
 ```js
-import React from 'react'
-import { graphql } from 'gatsby'
-import rehypeReact from 'rehype-react'
-import DocsLayout from '../layouts/documentation'
-import SEO from '../components/seo'
-import PageHeader from '../components/pageHeader'
+import React from "react";
+import { graphql } from "gatsby";
+import rehypeReact from "rehype-react";
+import DocsLayout from "../layouts/documentation";
+import SEO from "../components/seo";
+import PageHeader from "../components/pageHeader";
 
 export default function Template({
   data, // this prop will be injected by the GraphQL query below.
@@ -391,19 +389,19 @@ export default function Template({
   const renderAst = new rehypeReact({
     createElement: React.createElement,
     components: {
-      table: 'pure-table',
-      'page-header': PageHeader,
+      table: "pure-table",
+      "page-header": PageHeader,
     },
-  }).Compiler
+  }).Compiler;
 
-  const { markdownRemark } = data
-  const { fields, frontmatter, htmlAst } = markdownRemark
+  const { markdownRemark } = data;
+  const { fields, frontmatter, htmlAst } = markdownRemark;
 
-  return <DocsLayout location={location}>{renderAst(htmlAst)}</DocsLayout>
+  return <DocsLayout location={location}>{renderAst(htmlAst)}</DocsLayout>;
 }
 // Make sure to query the htmlAst instead of html
 export const pageQuery = graphql`
-  query($id: String!) {
+  query ($id: String!) {
     markdownRemark(id: { eq: $id }) {
       htmlAst
       frontmatter {
@@ -416,7 +414,7 @@ export const pageQuery = graphql`
       }
     }
   }
-`
+`;
 ```
 
 It's a bit of "magic" since it all happens using two different libraries APIs, but I can't complain about how easy it is to accomplish (especially if you've done AST work before).
@@ -432,48 +430,48 @@ To make authoring documentation easier, I setup Gatsby to grab any Markdown file
 To distinguish component documentation from custom pages, I added new fields to the Markdown's GraphQL endpoint that included a "section" (component or page) and the filename (to use for component titles):
 
 ```js
-const path = require(`path`)
-const { createFilePath } = require(`gatsby-source-filesystem`)
+const path = require(`path`);
+const { createFilePath } = require(`gatsby-source-filesystem`);
 exports.onCreateNode = ({ node, getNode, actions }) => {
-  const { createNodeField } = actions
+  const { createNodeField } = actions;
   if (node.internal.type === `MarkdownRemark`) {
-    const markdownPath = createFilePath({ node, getNode, basePath: `pages` })
-    const isComponent = markdownPath.includes('readme')
-    let section
+    const markdownPath = createFilePath({ node, getNode, basePath: `pages` });
+    const isComponent = markdownPath.includes("readme");
+    let section;
     if (isComponent) {
-      section = 'components'
+      section = "components";
     } else {
-      section = 'page'
+      section = "page";
     }
     // Generate page titles and slugs from file name
     // Remove slashes and readme from component filenames
-    const slug = markdownPath.replace('readme/', '')
-    const fileName = slug.replace('/', '')
+    const slug = markdownPath.replace("readme/", "");
+    const fileName = slug.replace("/", "");
     if (isComponent) {
       createNodeField({
         node,
         name: `slug`,
         value: `components${slug}`,
-      })
+      });
     } else {
       createNodeField({
         node,
         name: `slug`,
         value: slug,
-      })
+      });
     }
     createNodeField({
       node,
       name: `filename`,
       value: fileName,
-    })
+    });
     createNodeField({
       node,
       name: `section`,
       value: section,
-    })
+    });
   }
-}
+};
 ```
 
 This function runs when Gatsby is generating the GraphQL server (`gatsby-node.js`), and adds any new fields we need to it.
@@ -539,18 +537,18 @@ The sidebar is made of 3 parts. A list of custom pages, an automatically generat
 ```js
 const pages = [
   {
-    name: 'Getting Started',
-    url: '/getting-started',
+    name: "Getting Started",
+    url: "/getting-started",
   },
   {
-    name: 'Components',
-    url: '/components/pure-button',
+    name: "Components",
+    url: "/components/pure-button",
   },
   {
-    name: 'Theming',
-    url: '/theming',
+    name: "Theming",
+    url: "/theming",
   },
-]
+];
 ```
 
 You can also edit the manual links in the return statement of the Sidebar component:
@@ -613,7 +611,7 @@ const data = useStaticQuery(graphql`
       }
     }
   }
-`)
+`);
 ```
 
 ## Building and deploying

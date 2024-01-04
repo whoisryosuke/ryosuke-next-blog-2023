@@ -3,9 +3,18 @@ title: Creating an event ticketing service (Laravel API + ReactJS + NextJS + Mat
 date: "2018-06-02"
 section: blog
 cover_image: "./Laravel-API-ReactJS-NextJS-Material-UI-1920px.jpg"
-tags: [ 'api', 'laravel', 'react', 'nextjs', 'material ui', 'ssr', 'full stack', 'backend', 'frontend' ]
-
-layout: "@/layouts/BlogLayout.astro"
+tags:
+  [
+    "api",
+    "laravel",
+    "react",
+    "nextjs",
+    "material ui",
+    "ssr",
+    "full stack",
+    "backend",
+    "frontend",
+  ]
 ---
 
 Laravel makes it incredibly easy to quickly create powerful backend application and APIs. Today we'll be creating an API for an event directory and ticketing platform (like Eventbrite). This API could be used by any frontend or backend application, and in the next part of the tutorial, we'll be creating a ReactJS based admin dashboard that uses this API to browse, create, edit, and delete posts.
@@ -18,42 +27,43 @@ I started by outlining features we'd want for the MVP - or minimum viable produc
 
 ### Directory
 
-* Events searchable by date
-* Events shown by location or category
-* User profiles for event organizers
-* Calendar view with events
-* List/card view
-* List of all cities, states, etc + archive pages
+- Events searchable by date
+- Events shown by location or category
+- User profiles for event organizers
+- Calendar view with events
+- List/card view
+- List of all cities, states, etc + archive pages
 
 ### E-Commerce
 
-* Buy free or paid tickets
-* Generate PDF of ticket
-* Email PDF to user
-* Email business about new purchase
-* Mobile-friendly web-app to scan tickets at event
+- Buy free or paid tickets
+- Generate PDF of ticket
+- Email PDF to user
+- Email business about new purchase
+- Mobile-friendly web-app to scan tickets at event
 
 ### Organizer Tools
 
-* Dashboard for managing events
-* Create events
-* Edit event
-* Delete event
-* Create ticket types for specific events (free, VIP, etc)
-* See (+ print) list of event attendeees
-* See (+ print) list of orders
+- Dashboard for managing events
+- Create events
+- Edit event
+- Delete event
+- Create ticket types for specific events (free, VIP, etc)
+- See (+ print) list of event attendeees
+- See (+ print) list of orders
 
 Now that we know what we want out of our API, let's start coding it!
 
 ## Setup a Laravel project with Docker
 
-Here's how I spin up a new Laravel project and use Docker for local development -- *without pulling all my hair out*:
+Here's how I spin up a new Laravel project and use Docker for local development -- _without pulling all my hair out_:
 
 1. `composer create-project --prefer-dist laravel/laravel seshsource-api`
 2. `git clone https://github.com/Laradock/laradock.git`
 3. `cd laradock`
 4. Copy the example environment file into a real one: `cp env-example .env`
-5. Change the Laravel root ENV to use Laradock as host (*Laravel uses localhost, but Laradock accesses each service inside the Docker container using the service name*):
+5. Change the Laravel root ENV to use Laradock as host (_Laravel uses localhost, but Laradock accesses each service inside the Docker container using the service name_):
+
 ```
 DB_HOST=mysql
 DB_DATABASE=default
@@ -61,9 +71,10 @@ DB_USERNAME=default
 REDIS_HOST=redis
 QUEUE_HOST=beanstalkd
 ```
+
 6. `docker-compose up -d nginx mysql phpmyadmin redis workspace`
 
-You should have your Laravel project deployed locally on a Docker development server! *Pretty simple right? 😁*
+You should have your Laravel project deployed locally on a Docker development server! _Pretty simple right? 😁_
 
 ## OAuth2.0 Server in 4 steps or less
 
@@ -75,7 +86,6 @@ Let's setup Laravel with authentication and add OAuth2.0 support using the Passp
 4. Follow [the guide in Laravel docs for adding traits to User class](https://laravel.com/docs/5.6/passport)
 5. `docker-compose exec workspace php artisan make:auth`
 6. `docker-compose exec workspace php artisan app:name SeshSource` - Here is where you'd set your application's name. It'll be used across the entire app's 'namespace', so referencing models will look like: `use SeshSource\Events`.
-
 
 ## UUIDs
 
@@ -164,7 +174,6 @@ class User extends Authenticatable
 use Uuids;
 ```
 
-
 ## Migrations and Models
 
 Laravel makes it simple in a single command to create **models**, which help us interact with data, as well as the **migrations** - PHP statements that create the database tables for us (no SQL required!). We'll create 10 models and DB tables that will store all our website's data.
@@ -224,7 +233,7 @@ class CreateEventMetaTable extends Migration
     public function up()
     {
         Schema::create('event_meta', function (Blueprint $table) {
-            $table->uuid('id'); 
+            $table->uuid('id');
             $table->primary('id');
             $table->timestamps();
         });
@@ -248,7 +257,7 @@ If you noticed in the migrations we added a 'type' to the user table (`database/
      *
      * @return boolean
      */
-    public function isAdmin() 
+    public function isAdmin()
     {
         if($this->type == 'admin')
         {
@@ -263,7 +272,7 @@ If you noticed in the migrations we added a 'type' to the user table (`database/
      *
      * @return boolean
      */
-    public function isOrganizer() 
+    public function isOrganizer()
     {
         if($this->type == 'organizer')
         {
@@ -337,11 +346,11 @@ class StoreEvents extends FormRequest
 
 ## Passport doesn't support UUID user IDs
 
-Here's a quick fix if you have any issues with creating Client IDs for OAuth2.0 authenticated apps using Passport. 
+Here's a quick fix if you have any issues with creating Client IDs for OAuth2.0 authenticated apps using Passport.
 
 Since we swapped the user ID for a UUID instead of incrementing integer, Passport creates a table called `oauth_access_tokens` that references an incrementing ID, instead of UUID. To get it working, we have to create a new migration that drops the column and creates a new column.
 
-> Normally we'd just update the column, but the `doctrine\dbal` library used by Laravel doesn't support UUIDs. 
+> Normally we'd just update the column, but the `doctrine\dbal` library used by Laravel doesn't support UUIDs.
 
 1. Drop the user id column (since Laravel's dbal dependency doesn't support changing columns to uuid) `php artisan make:migration drop_user_id_on_oauth_access_tokens`:
 
@@ -425,29 +434,29 @@ Reset the database (again) and migrate the new structure:
 
 ## [Enable CORS](https://github.com/barryvdh/laravel-cors)
 
-Install CORS dependency and add to Kernel.php. This will allow you to create an app on the same server and enable communication to the API. When we run this API, it'll deploy to `http://localhost/`. And when we create a React app for the frontend (to display data), it'll deploy to `http://localhost:3000`. Since it's on the same server, but different ports, you'll receive a cross-domain reference error. 
+Install CORS dependency and add to Kernel.php. This will allow you to create an app on the same server and enable communication to the API. When we run this API, it'll deploy to `http://localhost/`. And when we create a React app for the frontend (to display data), it'll deploy to `http://localhost:3000`. Since it's on the same server, but different ports, you'll receive a cross-domain reference error.
 
 > Enabling CORS on the API endpoints allows us anyone to access the API on any server. So if you're going to deploy to production, make sure to limit the hosts to servers you trust (unless your API is public).
 
 ## API in a day
 
-And that's about it, your API is ready for consumption by another application! 
+And that's about it, your API is ready for consumption by another application!
 
 In the next part of this series we'll explore how to create a server-side rendered ReactJS admin dashboard using NextJS, styled with Material UI, and authenticated using our OAuth2 API. That's a lot of words and tech in one sentence, and the article itself be more than a mouthful to swallow, but I'll try my best to make it as simple as possible! 👍
 
 Stay tuned! 🙈
 Ryo
 
-***
+---
 
 **References**:
 
-* [Laravel installation](https://laravel.com/docs/5.6/installation)
-* http://laradock.io/documentation/
-* https://medium.com/@steveazz/setting-up-uuids-in-laravel-5-552412db2088
-* https://github.com/webpatser/laravel-uuid
-* [Naming your Laravel application](https://laravel.com/docs/5.0/configuration#after-installation)
-* [Quickly creating JWT tokens using Laravel Passport](https://stackoverflow.com/questions/41376928/laravel-5-3-passport-jwt-authentication)
-* [Doctrine doesn't support changing MySQL columns to UUID](https://laracasts.com/discuss/channels/eloquent/uuid-type-change-to-nullable-through-migrations-not-working)
-* [Enable CORS](https://github.com/barryvdh/laravel-cors)
-* [NextJS login with protected routes example](https://github.com/zeit/next.js/issues/153#issuecomment-257924301)
+- [Laravel installation](https://laravel.com/docs/5.6/installation)
+- http://laradock.io/documentation/
+- https://medium.com/@steveazz/setting-up-uuids-in-laravel-5-552412db2088
+- https://github.com/webpatser/laravel-uuid
+- [Naming your Laravel application](https://laravel.com/docs/5.0/configuration#after-installation)
+- [Quickly creating JWT tokens using Laravel Passport](https://stackoverflow.com/questions/41376928/laravel-5-3-passport-jwt-authentication)
+- [Doctrine doesn't support changing MySQL columns to UUID](https://laracasts.com/discuss/channels/eloquent/uuid-type-change-to-nullable-through-migrations-not-working)
+- [Enable CORS](https://github.com/barryvdh/laravel-cors)
+- [NextJS login with protected routes example](https://github.com/zeit/next.js/issues/153#issuecomment-257924301)

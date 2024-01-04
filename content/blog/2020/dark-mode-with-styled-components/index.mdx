@@ -1,10 +1,8 @@
 ---
 title: Adding Dark Mode to Styled Components
-date: '2020-01-15'
+date: "2020-01-15"
 section: blog
-tags: ['css in js', 'design systems', 'gatsby', 'javascript', 'react']
-
-layout: "@/layouts/BlogLayout.astro"
+tags: ["css in js", "design systems", "gatsby", "javascript", "react"]
 ---
 
 I've been bitten by the dark mode bug, and I'm here to inevitably add theming to my website and let users swap between a light and dark variation. My website is a Gatsby and React-based blog that uses a small, custom design system that's built on Styled System and Styled Components. Using Styled Components, I already implement a theme file to organize and access my design tokens across all components (and avoid duplicate logic). This was my process adding a dark mode to my site using React's Context API and Styled Components theme API.
@@ -13,17 +11,17 @@ I thought I'd share what happened along the way, and what mistakes when establis
 
 # The Result
 
-<div style={{display: 'flex'}}>
-  <div style={{width: '50%'}}>
+<div style={{ display: "flex" }}>
+  <div style={{ width: "50%" }}>
     <img src="./frontpage-light.png" alt="Frontpage (Light Mode)" />
   </div>
-  <div style={{width: '50%'}}>
+  <div style={{ width: "50%" }}>
     <img src="./frontpage-dark.png" alt="Frontpage (Dark Mode)" />
   </div>
-  <div style={{width: '50%'}}>
+  <div style={{ width: "50%" }}>
     <img src="./projects-light.png" alt="Projects (Light Mode)" />
   </div>
-  <div style={{width: '50%'}}>
+  <div style={{ width: "50%" }}>
     <img src="./projects-dark.png" alt="Projects (Dark Mode)" />
   </div>
 </div>
@@ -40,7 +38,7 @@ To use this theme with Styled Components, I have to pass it to a `<ThemeProvider
 
 To accomplish a dark mode, I need to create a new component that will replace the current instance of the `<ThemeProvider>`. This new component, `<ThemeSwitcher>`, will handle the state of the theme (dark or light) and pass the current theme selection to the `<ThemeProvider>`.
 
-Here is where I have a choice to make: 
+Here is where I have a choice to make:
 
 - Do I create **a new context provider** to hold the state of the theme selection?
 - Or do I **handle the state in the new wrapper**, and pass that to the current `<ThemeProvider>`, which will notify any themeable components of the change?
@@ -51,35 +49,35 @@ The only reason I would need to have the theme selection as a separate context, 
 
 ### Creating the Context provider
 
-I made a new Context provider that is Redux-like, using **reducers** and a "**dispatch**" method. This will allow us to run or ***dispatch*** commands like "toggle" or theme-specific names, and each case will be handled by a ***reducer*** (basically a giant switch statement). Rather than using a regular context object, reducers allow us to set a strict structure for our theming (only dark/light — and we provide the values). The entire theme is placed in the context, rather than importing it separately in each component (maybe a little overkill).
+I made a new Context provider that is Redux-like, using **reducers** and a "**dispatch**" method. This will allow us to run or **_dispatch_** commands like "toggle" or theme-specific names, and each case will be handled by a **_reducer_** (basically a giant switch statement). Rather than using a regular context object, reducers allow us to set a strict structure for our theming (only dark/light — and we provide the values). The entire theme is placed in the context, rather than importing it separately in each component (maybe a little overkill).
 
 I also export an easy to use hook so I can worry about importing one less method (in this case, `useContext` from React).
 
 `ThemeContext.js`:
 
 ```jsx
-import React, { createContext, useContext, useReducer } from 'react'
-export const ThemeContext = createContext()
+import React, { createContext, useContext, useReducer } from "react";
+export const ThemeContext = createContext();
 export const ThemeProvider = ({ reducer, initialState, children }) => (
   <ThemeContext.Provider value={useReducer(reducer, initialState)}>
     {children}
   </ThemeContext.Provider>
-)
-export const useThemeValue = () => useContext(ThemeContext)
+);
+export const useThemeValue = () => useContext(ThemeContext);
 ```
 
 `providers.js` (or `<ThemeSwitcher>` mentioned above):
 
 ```jsx
-import React from 'react'
-import { ThemeProvider } from './ThemeContext'
-import { ThemeOptions, THEME_OPTIONS } from '../layouts/Theme'
+import React from "react";
+import { ThemeProvider } from "./ThemeContext";
+import { ThemeOptions, THEME_OPTIONS } from "../layouts/Theme";
 
 export default ({ children }) => {
   const initialState = {
     theme: ThemeOptions.light,
-    selectedTheme: 'light',
-  }
+    selectedTheme: "light",
+  };
   const reducer = (state, action) => {
     switch (action.type) {
       case THEME_OPTIONS.DARK:
@@ -87,77 +85,77 @@ export default ({ children }) => {
           ...state,
           theme: ThemeOptions[THEME_OPTIONS.DARK],
           selectedTheme: THEME_OPTIONS.DARK,
-        }
+        };
       case THEME_OPTIONS.LIGHT:
         return {
           ...state,
           theme: ThemeOptions[THEME_OPTIONS.LIGHT],
           selectedTheme: THEME_OPTIONS.LIGHT,
-        }
+        };
 
       default:
-        return state
+        return state;
     }
-  }
+  };
   return (
     <ThemeProvider initialState={initialState} reducer={reducer}>
       {children}
     </ThemeProvider>
-  )
-}
+  );
+};
 ```
 
 Using the context inside a component:
 
 ```jsx
-import { useThemeValue, THEME_OPTIONS } from "../context/ThemeContext"
+import { useThemeValue, THEME_OPTIONS } from "../context/ThemeContext";
 
 const Header = ({ siteTitle }) => {
-  const [{ theme, selectedTheme }, dispatch] = useThemeValue()
+  const [{ theme, selectedTheme }, dispatch] = useThemeValue();
   const toggleTheme =
     selectedTheme == THEME_OPTIONS.DARK
       ? THEME_OPTIONS.LIGHT
-      : THEME_OPTIONS.DARK
+      : THEME_OPTIONS.DARK;
 
   return (
-      <button
-        onClick={() =>
-          dispatch({
-            type: toggleTheme,
-          })
-        }
-      >
-        {selectedTheme == THEME_OPTIONS.DARK && `De-`}Activate Dark Mode (
-        {selectedTheme})
-      </button>
-  )
-}
+    <button
+      onClick={() =>
+        dispatch({
+          type: toggleTheme,
+        })
+      }
+    >
+      {selectedTheme == THEME_OPTIONS.DARK && `De-`}Activate Dark Mode (
+      {selectedTheme})
+    </button>
+  );
+};
 ```
 
-I created a new constant (`THEME_OPTIONS`) which will act as an object to access the names of themes (dark, light, rainbow, etc). This ensures that the theme names stay the same across the app without worrying about typing issues, and makes re-assigning values as easy as changing the main constant. 
+I created a new constant (`THEME_OPTIONS`) which will act as an object to access the names of themes (dark, light, rainbow, etc). This ensures that the theme names stay the same across the app without worrying about typing issues, and makes re-assigning values as easy as changing the main constant.
 
-I also created a `ThemeOptions` object that uses the constant values as keys, and the actual theme as the value. 
+I also created a `ThemeOptions` object that uses the constant values as keys, and the actual theme as the value.
 
 And finally, we use a hook to access the theme context and pass the current theme to the Styled Components provider (from one context to another 😂).
 
 `theme.ts`:
 
 ```js
-import { DarkTheme, LightTheme } from "../assets/themes/"
-import { useThemeValue } from '../context/ThemeContext'
+import { DarkTheme, LightTheme } from "../assets/themes/";
+import { useThemeValue } from "../context/ThemeContext";
 
 export const THEME_OPTIONS = {
-  DARK: 'dark',
-  LIGHT: 'light'
-}
+  DARK: "dark",
+  LIGHT: "light",
+};
 
 export const ThemeOptions = {
   [THEME_OPTIONS.DARK]: DarkTheme,
-  [THEME_OPTIONS.LIGHT]: LightTheme
-}
+  [THEME_OPTIONS.LIGHT]: LightTheme,
+};
 
 export const Theme = ({ children }) => {
-  const [{ theme, selectedTheme }, dispatch] = useThemeValue()
+  const [{ theme, selectedTheme }, dispatch] = useThemeValue();
   return (
     <ThemeProvider theme={theme}>
       <Fragment>
@@ -165,8 +163,8 @@ export const Theme = ({ children }) => {
         {children}
       </Fragment>
     </ThemeProvider>
-  )
-}
+  );
+};
 ```
 
 And with that, I was able to get a button that switched the theme on my website from dark to light and vice versa.
@@ -175,7 +173,7 @@ And with that, I was able to get a button that switched the theme on my website 
 
 The second I was able to activate the theme swap, I noticed a lot of the variables weren't working as intended. I set the background to black, and nothing happened. It made me think something was broken before I realized I just never used that variable in my code 😅.
 
-I also noticed I was abusing the Styled System's `sx` prop to handle some inline styling, but it didn't change colors with the theme. This was because I used a `borderBottom` property to set multiple values (in this case: `1px solid black`). Usually, Styled System is smart enough to take your color properties in the `sx` prop and replace any names with actual themed properties. For instance, if I do `<Box sx={{color: 'black'}}>` and I have a property `theme.colors.black`, it'll grab from there, instead of the standard HTML "black" (which converts to `#000`). 
+I also noticed I was abusing the Styled System's `sx` prop to handle some inline styling, but it didn't change colors with the theme. This was because I used a `borderBottom` property to set multiple values (in this case: `1px solid black`). Usually, Styled System is smart enough to take your color properties in the `sx` prop and replace any names with actual themed properties. For instance, if I do `<Box sx={{color: 'black'}}>` and I have a property `theme.colors.black`, it'll grab from there, instead of the standard HTML "black" (which converts to `#000`).
 
 But because I was using a property that's more complex, Styled System didn't kick in, and I wasn't getting my colors swapped with my theme change. To fix this, I had to just add another property to each `sx` prop with a `borderColor: 'black'`. This one gets swapped by Styled System, and takes precedence over the previous one-liner. This allows me to keep the simplicity of one-liners like `borderBottom` without having to break it out into the 3 separate properties it actually contains (`borderBottomWidth`, `borderBottomStyle`, `borderBottomColor`).
 
@@ -187,36 +185,41 @@ I also had issues with the way I named my variables. When I need to use a light,
 
 Don't exist. I have an SVG image I use as a background image for my `<Featured>` card. It's an SVG pattern of black triangles on a transparent background. Because of the way things work together, you can't have a Styled Component wrapped SVG work inside a Styled Component CSS block. This is because the `background-image` property leverages Webpack's build process to convert SVG elements into URI encoded data (long string prefixed by `data:image/svg+xml;base64,` with escaped HTML characters).
 
-
-<div style={{display: 'flex'}}>
-  <div style={{width: '50%'}}>
-    <img src="./featured-card-light.png" alt="Featured Card with SVG background (Light Mode)" />
+<div style={{ display: "flex" }}>
+  <div style={{ width: "50%" }}>
+    <img
+      src="./featured-card-light.png"
+      alt="Featured Card with SVG background (Light Mode)"
+    />
   </div>
-  <div style={{width: '50%'}}>
-    <img src="./featured-card-dark.png" alt="Featured Card with SVG background (Dark Mode)" />
+  <div style={{ width: "50%" }}>
+    <img
+      src="./featured-card-dark.png"
+      alt="Featured Card with SVG background (Dark Mode)"
+    />
   </div>
 </div>
 
-Since I was only using a single SVG element, I just created a "dark" version, duplicating the SVG file and replacing the fill colors with lighter versions. Then in Styled Components, I used a `selectedTheme` prop to check for a "dark" theme and swap out the other BG. 
+Since I was only using a single SVG element, I just created a "dark" version, duplicating the SVG file and replacing the fill colors with lighter versions. Then in Styled Components, I used a `selectedTheme` prop to check for a "dark" theme and swap out the other BG.
 
 ```js
-import TriangleBG from '@assets/svg/bg-triangle.svg'
-import TriangleBGDark from '@assets/svg/bg-triangle-dark.svg'
+import TriangleBG from "@assets/svg/bg-triangle.svg";
+import TriangleBGDark from "@assets/svg/bg-triangle-dark.svg";
 
 const StyledBox = styled(Box)`
-  box-shadow:none;
-  border-bottom:1px solid ${(props) => props.theme.colors.black};
-  background:url(${TriangleBG});
-  background-size:200px 200px;
-  position:relative;
-  z-index:10;
+  box-shadow: none;
+  border-bottom: 1px solid ${(props) => props.theme.colors.black};
+  background: url(${TriangleBG});
+  background-size: 200px 200px;
+  position: relative;
+  z-index: 10;
 
-  ${props =>
-    props.selectedTheme === 'dark' &&
+  ${(props) =>
+    props.selectedTheme === "dark" &&
     `
   background-image:url(${TriangleBGDark});
   `}
-`
+`;
 ```
 
 I found [an answer on StackOverflow](https://stackoverflow.com/a/53315430/10097916) that swaps the fill color using a utility function. The utility function searches the SVG text and swaps your color, and then encodes it properly. Not sure if this technique works, but I'd consider it if I had more than one SVG to work with.
@@ -302,8 +305,8 @@ Ryo
 
 ### Software Requirements
 
-| Software                 | Version |
-| ------------------------ | ------- |
-| styled-components        | 4.4.0   |
-| gatsby                   | 2.15.28 |
-| react                    | 16.10.1 |
+| Software          | Version |
+| ----------------- | ------- |
+| styled-components | 4.4.0   |
+| gatsby            | 2.15.28 |
+| react             | 16.10.1 |

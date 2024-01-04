@@ -1,11 +1,9 @@
 ---
 title: Using NodeJS APIs in Electron with React
-date: '2022-01-04'
+date: "2022-01-04"
 section: blog
-tags: ['nodejs', 'react', 'javascript', 'electron']
-cover_image: './using-nodejs-apis-in-electron-with-react.png'
-
-layout: "@/layouts/BlogLayout.astro"
+tags: ["nodejs", "react", "javascript", "electron"]
+cover_image: "./using-nodejs-apis-in-electron-with-react.png"
 ---
 
 Looking how to use NodeJS modules (like `exec` to execute CLI commands) or Electron APIs (like `dialog` to open the native PC’s file dialog to select files)?
@@ -50,18 +48,18 @@ Inside the **main** process (or `main.js`), we add a `handle()` method from IPC 
 
 ```jsx
 // src/main/main.ts
-ipcMain.handle('blender:version', async (_, args) => {
-  console.log('running cli', _, args)
-  let result
+ipcMain.handle("blender:version", async (_, args) => {
+  console.log("running cli", _, args);
+  let result;
   if (args) {
-    const blenderExecutable = checkMacBlender(args)
+    const blenderExecutable = checkMacBlender(args);
     // If MacOS, we need to change path to make executable
-    const checkVersionCommand = `${blenderExecutable} -v`
+    const checkVersionCommand = `${blenderExecutable} -v`;
 
-    result = execSync(checkVersionCommand).toString()
+    result = execSync(checkVersionCommand).toString();
   }
-  return result
-})
+  return result;
+});
 ```
 
 Also inside the **main** process, we pass in a `preload.js` script to load alongside the **renderer** process. This is included with **electron-react-boilerplate**:
@@ -152,18 +150,18 @@ You can see [an example of this file here](https://github.com/whoisryosuke/blend
 This method when run, opens the native “**Open File...**” dialog. You’d assign this to a button, then use the `filePaths` returned as needed.
 
 ```jsx
-ipcMain.handle('dialog:open', async (_, args) => {
-  const result = await dialog.showOpenDialog({ properties: ['openFile'] })
-  return result
-})
+ipcMain.handle("dialog:open", async (_, args) => {
+  const result = await dialog.showOpenDialog({ properties: ["openFile"] });
+  return result;
+});
 ```
 
 Inside the `preload.js`:
 
 ```tsx
-contextBridge.exposeInMainWorld('electron', {
-  showDialog: async () => ipcRenderer.invoke('dialog:open'),
-})
+contextBridge.exposeInMainWorld("electron", {
+  showDialog: async () => ipcRenderer.invoke("dialog:open"),
+});
 ```
 
 Inside React you access the method we exposed using `window.electron`:
@@ -177,15 +175,15 @@ export type DialogFileData = {
   /**
    * Did user cancel dialog?
    */
-  cancelled: boolean
+  cancelled: boolean;
   /**
    * Array of file paths that user selected
    */
-  filePaths: string[]
-}
+  filePaths: string[];
+};
 
-const files: DialogFileData = await window.electron.showDialog()
-console.log('user files', files)
+const files: DialogFileData = await window.electron.showDialog();
+console.log("user files", files);
 ```
 
 ## Create an extra window
@@ -225,17 +223,17 @@ Then we create a method on the IPC bridge to connect the frontend (React) to bac
 
 ```jsx
 // src/main/preload.js
-const { contextBridge, ipcRenderer } = require('electron')
+const { contextBridge, ipcRenderer } = require("electron");
 
-contextBridge.exposeInMainWorld('electron', {
-  newWindow: async (windowUrl) => ipcRenderer.invoke('new:window', windowUrl),
-})
+contextBridge.exposeInMainWorld("electron", {
+  newWindow: async (windowUrl) => ipcRenderer.invoke("new:window", windowUrl),
+});
 ```
 
 And then in React, we can just use:
 
 ```jsx
-window.electron.newWindow('second.html')
+window.electron.newWindow("second.html");
 ```
 
 There’s one problem with this: unless we edit the Webpack config of the project, we only generate 1 HTML file - `index.html`.
@@ -249,13 +247,13 @@ We can work around this by passing query parameters instead of a whole new file.
 So rather than call to a new HTML file, we add a query parameter to `index.html` file:
 
 ```jsx
-window.electron.newWindow('index.html?window=settings')
+window.electron.newWindow("index.html?window=settings");
 ```
 
 Then inside our React app, we check for the query parameter [using a global variable Electron exposes to browser:](https://stackoverflow.com/a/38401579)
 
 ```jsx
-console.log(global.location.search)
+console.log(global.location.search);
 // Returns:
 // ?window=settings
 ```
@@ -263,33 +261,33 @@ console.log(global.location.search)
 Then we can parse this using a library like [query-string](npmjs.com/package/query-string):
 
 ```jsx
-import queryString from 'query-string'
+import queryString from "query-string";
 
-const parsed = queryString.parse(global.location.search)
-console.log('Window Name', parsed.window)
+const parsed = queryString.parse(global.location.search);
+console.log("Window Name", parsed.window);
 ```
 
 Using this, inside our `App.tsx`, we can render different windows:
 
 ```jsx
-import queryString from 'query-string'
-import React from 'react'
-import SettingsWindow from './settings'
-import MainWindow from './settings'
+import queryString from "query-string";
+import React from "react";
+import SettingsWindow from "./settings";
+import MainWindow from "./settings";
 
 const App = () => {
-  const parsed = queryString.parse(global.location.search)
-  let route
+  const parsed = queryString.parse(global.location.search);
+  let route;
   switch (parsed.window) {
-    case 'settings':
-      route = <Settings />
-      break
+    case "settings":
+      route = <Settings />;
+      break;
     default:
-      route = <MainWindow />
-      break
+      route = <MainWindow />;
+      break;
   }
-  return route
-}
+  return route;
+};
 ```
 
 And with the magic of React, you can put a real router (like React Router) inside each window, and each would have it’s own navigation.

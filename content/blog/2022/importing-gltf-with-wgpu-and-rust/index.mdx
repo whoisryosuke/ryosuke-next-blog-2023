@@ -4,8 +4,6 @@ date: "2022-12-13"
 section: blog
 tags: ["rust", "3d", "game dev", "wgpu", "webgpu", "graphics"]
 cover_image: "./GLTF-Animations-in-wgpu-and-Rust.gif"
-
-layout: "@/layouts/BlogLayout.astro"
 ---
 
 I recently followed [a wgpu tutorial](https://sotrh.github.io/learn-wgpu/) that walks you through creating a WebGPU based 3D renderer using Rust. By the end, you’re rendering a 3D model ([bananas](https://twitter.com/whoisryosuke/status/1598444609390399488?s=20&t=u2P7ajcGTeXpK_nWSDQUtg) in my case), along with a camera and light. The tutorial only has a parser for OBJ files, so I thought I’d figure out the process for parsing GLTF files. This would allow for a broader range of models to be imported, and even enable more features like animation!

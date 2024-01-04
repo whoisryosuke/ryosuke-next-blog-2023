@@ -1,11 +1,9 @@
 ---
 title: Sharing Hooks Between React and Web Components
-date: '2020-06-29'
+date: "2020-06-29"
 section: blog
-tags: ['web components', 'react', 'js', 'design systems', 'hauntedjs']
-cover_image: './Sharing_Hooks_Between_React_and_Web_Components.png'
-
-layout: "@/layouts/BlogLayout.astro"
+tags: ["web components", "react", "js", "design systems", "hauntedjs"]
+cover_image: "./Sharing_Hooks_Between_React_and_Web_Components.png"
 ---
 
 Hooks were a _huge_ movement for React that radically changed the way developers compose their components. They allow for [a lot of functionality](https://reactjs.org/docs/hooks-intro.html) to be dropped in as a single line function, like fetching data or [handling event listeners](https://usehooks.com/useEventListener/). This all accomplished using **React's built-in hooks** that **replicate features** you get **from class-based components** such as state with `useState()` or hooking into lifecycles with `useEffect()`.
@@ -14,18 +12,16 @@ These hooks are framework specific to React, but libraries like [**HauntedJS**](
 
 ```jsx
 // @see: Example from https://usehooks.com/useEventListener/
-import { html } from 'lit-html'
-import { component, useState } from 'haunted'
+import { html } from "lit-html";
+import { component, useState } from "haunted";
 
 function Counter() {
-  const [count, setCount] = useState(0)
+  const [count, setCount] = useState(0);
 
   return html`
     <div id="count">${count}</div>
-    <button type="button" @click=${() => setCount(count + 1)}>
-      Increment
-    </button>
-  `
+    <button type="button" @click=${() => setCount(count + 1)}>Increment</button>
+  `;
 }
 ```
 
@@ -39,13 +35,13 @@ Before we delve into the process of sharing hooks, let's briefly take a look at 
 
 ```jsx
 // @see: Example from StackBlitz (see link in References)
-import { LitElement, html, property } from 'lit-element'
+import { LitElement, html, property } from "lit-element";
 
 class XCounter extends LitElement {
   static get properties() {
     return {
       value: { type: Number },
-    }
+    };
   }
 
   // Alternative syntax, if using TypeScript or Babel experimental decorators and field assignments are available
@@ -53,21 +49,19 @@ class XCounter extends LitElement {
   // value = 0;
 
   constructor() {
-    super()
-    this.value = 0
+    super();
+    this.value = 0;
   }
 
   render() {
     return html`
       <div id="count">${this.value}</div>
-      <button type="button" @click=${() => this.increment()}>
-        Increment
-      </button>
-    `
+      <button type="button" @click=${() => this.increment()}>Increment</button>
+    `;
   }
 
   increment() {
-    this.value++
+    this.value++;
   }
 }
 ```
@@ -81,27 +75,33 @@ Before I dove too deep, I decided to create **2 simple tests** for Haunted and R
 ```tsx
 // ES6 Version
 const useDisclosure = (useState, useCallback, defaultIsOpen) => {
-  const [isOpen, setIsOpen] = useState(Boolean(defaultIsOpen))
-  const onClose = useCallback(() => setIsOpen(false), [])
-  const onOpen = useCallback(() => setIsOpen(true), [])
-  const onToggle = useCallback(() => setIsOpen((prevIsOpen) => !prevIsOpen), [])
-  return { isOpen, onOpen, onClose, onToggle }
-}
+  const [isOpen, setIsOpen] = useState(Boolean(defaultIsOpen));
+  const onClose = useCallback(() => setIsOpen(false), []);
+  const onOpen = useCallback(() => setIsOpen(true), []);
+  const onToggle = useCallback(
+    () => setIsOpen((prevIsOpen) => !prevIsOpen),
+    []
+  );
+  return { isOpen, onOpen, onClose, onToggle };
+};
 
-export default useDisclosure
+export default useDisclosure;
 ```
 
 ```tsx
 // Functional version
 function useDisclosure(useState, useCallback, defaultIsOpen) {
-  const [isOpen, setIsOpen] = useState(Boolean(defaultIsOpen))
-  const onClose = useCallback(() => setIsOpen(false), [])
-  const onOpen = useCallback(() => setIsOpen(true), [])
-  const onToggle = useCallback(() => setIsOpen((prevIsOpen) => !prevIsOpen), [])
-  return { isOpen, onOpen, onClose, onToggle }
+  const [isOpen, setIsOpen] = useState(Boolean(defaultIsOpen));
+  const onClose = useCallback(() => setIsOpen(false), []);
+  const onOpen = useCallback(() => setIsOpen(true), []);
+  const onToggle = useCallback(
+    () => setIsOpen((prevIsOpen) => !prevIsOpen),
+    []
+  );
+  return { isOpen, onOpen, onClose, onToggle };
 }
 
-export default useDisclosure
+export default useDisclosure;
 ```
 
 Then I created **Haunted** and **React** components that used the `useDisclosure` hook to show/hide a `<div>`:
@@ -114,22 +114,22 @@ import {
   component,
   useState,
   useCallback,
-} from 'https://unpkg.com/haunted/haunted.js'
-import useDisclosure from './useDisclosure'
+} from "https://unpkg.com/haunted/haunted.js";
+import useDisclosure from "./useDisclosure";
 
 function App() {
-  const { isOpen, onToggle } = useDisclosure(useState, useCallback, false)
+  const { isOpen, onToggle } = useDisclosure(useState, useCallback, false);
   return html`
     <div className="App">
       <h1>Hello CodeSandbox</h1>
       <h2>Start editing to see some magic happen!</h2>
-      <div style=${{ display: isOpen ? 'block' : 'none' }}>Hidden content</div>
+      <div style=${{ display: isOpen ? "block" : "none" }}>Hidden content</div>
       <button @onClick=${onToggle}>Toggle</button>
     </div>
-  `
+  `;
 }
 
-customElements.define('my-app', component(App))
+customElements.define("my-app", component(App));
 ```
 
 [Haunted - React Hooks Example - Toggle](https://codesandbox.io/s/haunted-react-hooks-example-toggle-ex31h)
@@ -137,24 +137,24 @@ customElements.define('my-app', component(App))
 ### React Version
 
 ```jsx
-import React, { useState, useCallback } from 'react'
-import './styles.css'
-import useDisclosure from './hooks/useDisclosure'
+import React, { useState, useCallback } from "react";
+import "./styles.css";
+import useDisclosure from "./hooks/useDisclosure";
 
 export default function App() {
   const { isOpen, onOpen, onClose, onToggle } = useDisclosure(
     useState,
     useCallback,
     false
-  )
+  );
   return (
     <div className="App">
       <h1>Hello CodeSandbox</h1>
       <h2>Start editing to see some magic happen!</h2>
-      <div style={{ display: isOpen ? 'block' : 'none' }}>Hidden content</div>
+      <div style={{ display: isOpen ? "block" : "none" }}>Hidden content</div>
       <button onClick={onToggle}>Toggle</button>
     </div>
-  )
+  );
 }
 ```
 
@@ -171,7 +171,7 @@ You can create a hook that can be shared between libraries with a similar API by
 ```jsx
 // hooks/useDisclosure.js
 function createUseDiscloureHook(useState, useCallback) {
-  return (defaultValue) => useDisclosure(useState, useCallback, defaultValue)
+  return (defaultValue) => useDisclosure(useState, useCallback, defaultValue);
 }
 
 function useDisclosure(useState, useCallback, defaultValue) {
@@ -183,16 +183,16 @@ This allows you to separate the hook logic from the API-separation logic. You co
 
 ```jsx
 // hooks/react.js
-import { useState, useCallback } from 'react'
+import { useState, useCallback } from "react";
 
-export const useDisclosure = createUseDiscloureHook(useState, useCallback)
+export const useDisclosure = createUseDiscloureHook(useState, useCallback);
 
 // components/react/Accordion.js
-import React from 'react'
-import { useDisclosure } from '../hooks/react'
+import React from "react";
+import { useDisclosure } from "../hooks/react";
 
 function Accordion() {
-  const { isOpen, onToggle } = useDisclosure(false)
+  const { isOpen, onToggle } = useDisclosure(false);
 }
 ```
 
@@ -200,9 +200,9 @@ Then ideally you could create a hook for Haunted components by using:
 
 ```jsx
 // hooks/haunted.js
-import { useState, useCallback } from 'haunted'
+import { useState, useCallback } from "haunted";
 
-export const useDisclosure = createUseDisclosureHook(useState, useCallback)
+export const useDisclosure = createUseDisclosureHook(useState, useCallback);
 ```
 
 It's nothing huge, just more of a convenience thing. It does add a bit of extra sugar code that could be circumvented by just using the original hook. But the factory function also allows you to more easily swap out the hook with another (or your own custom) since it follows the [dependency inversion principle](https://en.wikipedia.org/wiki/Dependency_inversion_principle).

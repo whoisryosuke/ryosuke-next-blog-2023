@@ -1,11 +1,9 @@
 ---
 title: Ditch the DOM with SolidJS and Skia CanvasKit
-date: '2022-08-05'
+date: "2022-08-05"
 section: blog
-tags: ['solidjs', 'skia', 'wasm', 'javascript', 'graphics']
-cover_image: './Ditch_the_DOM_with_SolidJS_and_Skia_CanvasKit.png'
-
-layout: "@/layouts/BlogLayout.astro"
+tags: ["solidjs", "skia", "wasm", "javascript", "graphics"]
+cover_image: "./Ditch_the_DOM_with_SolidJS_and_Skia_CanvasKit.png"
 ---
 
 Recently I’ve become fascinated with cross-platform rendering of UI and approaching the problem from a lower level layer (usually some graphics API, ideally speaking to a GPU). I discovered [Skia’s CanvasKit](https://skia.org/docs/user/modules/canvaskit/), which is a [WASM](https://webassembly.org/) module for using their Skia API on the web.
@@ -62,9 +60,9 @@ With this basis in place, I started to create the renderer. It was honestly a ve
 
 ```jsx
 // example custom dom renderer
-import { createRenderer } from 'solid-js/universal'
+import { createRenderer } from "solid-js/universal";
 
-const PROPERTIES = new Set(['className', 'textContent'])
+const PROPERTIES = new Set(["className", "textContent"]);
 
 export const {
   render,
@@ -80,39 +78,39 @@ export const {
   mergeProps,
 } = createRenderer({
   createElement(string) {
-    return document.createElement(string)
+    return document.createElement(string);
   },
   createTextNode(value) {
-    return document.createTextNode(value)
+    return document.createTextNode(value);
   },
   replaceText(textNode, value) {
-    textNode.data = value
+    textNode.data = value;
   },
   setProperty(node, name, value) {
-    if (name === 'style') Object.assign(node.style, value)
-    else if (name.startsWith('on')) node[name.toLowerCase()] = value
-    else if (PROPERTIES.has(name)) node[name] = value
-    else node.setAttribute(name, value)
+    if (name === "style") Object.assign(node.style, value);
+    else if (name.startsWith("on")) node[name.toLowerCase()] = value;
+    else if (PROPERTIES.has(name)) node[name] = value;
+    else node.setAttribute(name, value);
   },
   insertNode(parent, node, anchor) {
-    parent.insertBefore(node, anchor)
+    parent.insertBefore(node, anchor);
   },
   isTextNode(node) {
-    return node.type === 3
+    return node.type === 3;
   },
   removeNode(parent, node) {
-    parent.removeChild(node)
+    parent.removeChild(node);
   },
   getParentNode(node) {
-    return node.parentNode
+    return node.parentNode;
   },
   getFirstChild(node) {
-    return node.firstChild
+    return node.firstChild;
   },
   getNextSibling(node) {
-    return node.nextSibling
+    return node.nextSibling;
   },
-})
+});
 ```
 
 My first order of action was to take each method and `console.log` out the parameters. It’d give me an idea of when things ran, and what was needed when.
@@ -126,26 +124,26 @@ createElement(string) {
 I quickly discovered my monorepo wasn’t configured appropriately, and I needed to [define a custom Babel config](https://github.com/whoisryosuke/solid-canvaskit-renderer/blob/e6d43313d1723096f599eb6d6e5e391124eeeeeb/packages/demo/vite.config.js#L8-L17) that pointed Solid to my custom renderer. Shoutout to the [**SolidJS** Discord community](https://discord.com/invite/solidjs) for the protip:
 
 ```jsx
-import { defineConfig } from 'vite'
-import solidPlugin from 'vite-plugin-solid'
+import { defineConfig } from "vite";
+import solidPlugin from "vite-plugin-solid";
 
 export default defineConfig({
   plugins: [
     solidPlugin({
       solid: {
-        generate: 'universal',
+        generate: "universal",
 
         renderers: [
           {
-            name: 'universal',
-            moduleName: 'solid-canvaskit-renderer',
+            name: "universal",
+            moduleName: "solid-canvaskit-renderer",
             elements: [],
           },
         ],
       },
     }),
   ],
-})
+});
 ```
 
 Without this config, **SolidJS** kept using the DOM, so when I created `<testelement>` - the DOM actually made one (instead of calling my `createElement` method in my custom renderer).
@@ -160,7 +158,7 @@ function App() {
     <skCanvas>
       <skGradient />
     </skCanvas>
-  )
+  );
 }
 ```
 
@@ -254,14 +252,14 @@ export class SkNode implements SkBase {
 Very simple getter/setter methods using a `Map` to store the props. And with that, I was able to set properties with the renderer `setProperty` method, and then access them in the component class using `this.props.get(propName)`:
 
 ```jsx
-import store from '../store'
-import { SkNode } from './SkNode'
+import store from "../store";
+import { SkNode } from "./SkNode";
 
 export default class SkGradient extends SkNode {
   render() {
     // ...code cut out...
 
-    const colors = this.props.get('color') ?? ['RED', 'GREEN', 'BLUE']
+    const colors = this.props.get("color") ?? ["RED", "GREEN", "BLUE"];
 
     // ...code cut out...
   }

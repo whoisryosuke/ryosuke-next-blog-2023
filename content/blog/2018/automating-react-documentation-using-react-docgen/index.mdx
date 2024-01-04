@@ -3,12 +3,10 @@ title: "Automating React Documentation using React-Docgen ⚛⚙️📚"
 date: "2018-09-24"
 section: blog
 cover_image: "./Automating-React-Documentation-using-React-Docgen-1900w.jpg"
-tags: [ 'react', 'documentation', 'node', 'tips' ]
-
-layout: "@/layouts/BlogLayout.astro"
+tags: ["react", "documentation", "node", "tips"]
 ---
 
-In my neverending quest for making the documentation as painless and seamless as possible, I started experimenting with a library by the Facebook team called [**react-docgen**](https://github.com/reactjs/react-docgen). 
+In my neverending quest for making the documentation as painless and seamless as possible, I started experimenting with a library by the Facebook team called [**react-docgen**](https://github.com/reactjs/react-docgen).
 
 It's a CLI and API that reads your React component files, grabs any documentation left in comments, and pumps out an object with all the docs and props:
 
@@ -42,7 +40,7 @@ It's a CLI and API that reads your React component files, grabs any documentatio
 }
 ```
 
-A few design systems and frameworks use *react-docgen* as part of their process to generate documentation. Usually you take the object that's output by the CLI and save it to a JSON file to use in other scripts/tools. Great for generating content / Markdown files using SSGs (static site generators) like GatsbyJS, Jekyll, or Slate.
+A few design systems and frameworks use _react-docgen_ as part of their process to generate documentation. Usually you take the object that's output by the CLI and save it to a JSON file to use in other scripts/tools. Great for generating content / Markdown files using SSGs (static site generators) like GatsbyJS, Jekyll, or Slate.
 
 I tested out **two ways to use react-docgen** to document React code. My goal was to use GatsbyJS as my static site generator, and build a documentation site off the CLI's data.
 
@@ -50,7 +48,7 @@ I tested out **two ways to use react-docgen** to document React code. My goal wa
 
 Let's get started ⚡️
 
-*** 
+---
 
 ## The process
 
@@ -144,7 +142,7 @@ function filewalker(dir, done) {
 
     if (!pending) return done(null, results);
 
-    list.forEach(file => {
+    list.forEach((file) => {
       file = path.resolve(dir, file);
 
       fs.stat(file, async (err, stat) => {
@@ -162,7 +160,7 @@ function filewalker(dir, done) {
             !file.endsWith(".story.js") &&
             !file.endsWith(".test.js")
           ) {
-            await new Promise(resolve => {
+            await new Promise((resolve) => {
               loadComponent(file, resolve);
             });
             await results.push(file);
@@ -183,7 +181,7 @@ filewalker(componentFolder, (err, data) => {
 });
 ```
 
-We use a function I found on Github called `firewalker()` that loads a folder and "walks" through each file. When we walk through each file, we check if it's a JS file (and not a test or Storybook JS file), and then run the `loadComponent()` function, which is a wrapper for Node's API for loading files. 
+We use a function I found on Github called `firewalker()` that loads a folder and "walks" through each file. When we walk through each file, we check if it's a JS file (and not a test or Storybook JS file), and then run the `loadComponent()` function, which is a wrapper for Node's API for loading files.
 
 Once the component file is actually loaded, we run the `parseComponent()` function that actually runs **react-docgen** on our file. Finally, we "push" the generated docs data to an array. After all the files load, our `firewalker()` function has a callback that runs a `createComponentFile()` function, which outputs the actual JSON file.
 
@@ -220,41 +218,41 @@ module.exports = {
     // and creates a GraphQL node with the output
     `gatsby-transformer-react-docgen`,
   ],
-}
+};
 ```
 
 And then displaying our data is as simple as querying GraphQL:
 
 ```js
-import React, { Component } from 'react'
-import { graphql } from 'gatsby'
-import Layout from '../components/layout'
+import React, { Component } from "react";
+import { graphql } from "gatsby";
+import Layout from "../components/layout";
 
-import PropsTable from '../components/propstable'
+import PropsTable from "../components/propstable";
 
 export default class ComponentPage extends Component {
   render() {
-    const { children, data, tableOfContents } = this.props
-    console.log('mdx', data.mdx)
-    console.log('component metadata', data.componentMetadata)
+    const { children, data, tableOfContents } = this.props;
+    console.log("mdx", data.mdx);
+    console.log("component metadata", data.componentMetadata);
     return (
       <Layout>
         <div className="content">
           {children}
           <h1>{data.componentMetadata.displayName}</h1>
           <p>{data.componentMetadata.docblock}</p>
-          <h2 style={{ marginTop: '2rem' }}>Props:</h2>
+          <h2 style={{ marginTop: "2rem" }}>Props:</h2>
           <PropsTable
             propMetaData={data.componentMetadata.childrenComponentProp}
           />
         </div>
       </Layout>
-    )
+    );
   }
 }
 
 export const pageQuery = graphql`
-  query($name: String!) {
+  query ($name: String!) {
     componentMetadata(displayName: { eq: $name }) {
       id
       displayName
@@ -278,7 +276,7 @@ export const pageQuery = graphql`
       composes
     }
   }
-`
+`;
 ```
 
 ### Bonus: Props Table
@@ -286,17 +284,17 @@ export const pageQuery = graphql`
 In order to display all the data from our props (the description, default value, is it required?, etc), we create a component that accepts our props from the react-docgen CLI and outputs a table. [I found this on Github](https://github.com/episodeyang/react-component-props-table/) and altered it work with the Gatsby version of react-docgen:
 
 ```js
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
+import React, { Component } from "react";
+import PropTypes from "prop-types";
 
 /**
  * Table for React props generated by react-docgen
  *
  * @see https://github.com/episodeyang/react-component-props-table/
  */
-const PropsTable = props => {
-  let { className = '', propMetaData = [], ..._props } = props
-  if (className) className += ' component-props-table'
+const PropsTable = (props) => {
+  let { className = "", propMetaData = [], ..._props } = props;
+  if (className) className += " component-props-table";
   return (
     <table className={className} {..._props}>
       <thead>
@@ -309,49 +307,52 @@ const PropsTable = props => {
         </tr>
       </thead>
       <tbody>
-        {Object.keys(propMetaData).map(key => {
-          const prop = propMetaData[key]
+        {Object.keys(propMetaData).map((key) => {
+          const prop = propMetaData[key];
           return (
             <tr key={key}>
-              <td style={{ color: 'rgb(17, 147, 154)' }}>{prop.name}</td>
-              <td>{prop.parentType ? prop.parentType.name : ''}</td>
+              <td style={{ color: "rgb(17, 147, 154)" }}>{prop.name}</td>
+              <td>{prop.parentType ? prop.parentType.name : ""}</td>
               {prop.required ? (
-                <td style={{ color: 'rgb(255, 76, 34)' }}>required</td>
+                <td style={{ color: "rgb(255, 76, 34)" }}>required</td>
               ) : (
-                <td style={{ color: '#c6c6c6' }}>optional</td>
+                <td style={{ color: "#c6c6c6" }}>optional</td>
               )}
               {prop.defaultValue ? (
-                <td style={{ color: 'rgb(236, 171, 32)' }}>
+                <td style={{ color: "rgb(236, 171, 32)" }}>
                   {prop.defaultValue.value}
                 </td>
               ) : (
-                <td style={{ color: '#c6c6c6' }}>none</td>
+                <td style={{ color: "#c6c6c6" }}>none</td>
               )}
               {prop.docblock ? <td>{prop.docblock}</td> : <td />}
             </tr>
-          )
+          );
         })}
       </tbody>
     </table>
-  )
-}
+  );
+};
 
 PropsTable.propTypes = {
   /** this is the `metadata.props` field of what metadata you get from the react-docgen-loader.  */
   propMetaData: PropTypes.object,
-}
+};
 PropsTable.defaultProps = {
   propMetaData: {},
-}
+};
 
-export default PropsTable
+export default PropsTable;
 ```
 
-Much more efficient as it runs react-docgen on build, rather than requiring us to run the script separately (or hook it into our build process). 
+Much more efficient as it runs react-docgen on build, rather than requiring us to run the script separately (or hook it into our build process).
 
-Also imports the documentation as a GraphQL endpoint, allowing us to query the data -- instead of hard-importing a *(potentially giant)* JSON file -- or using the `gatsby-transformer-json` plugin (which doesn't format the data for GraphQL as well as the specific react-docgen plugin).
+Also imports the documentation as a GraphQL endpoint, allowing us to query the data -- instead of hard-importing a _(potentially giant)_ JSON file -- or using the `gatsby-transformer-json` plugin (which doesn't format the data for GraphQL as well as the specific react-docgen plugin).
 
-<img src="./screenshot.png" alt="Gatsby Documentation Starter using gatsby-transformer-react-docgen" />
+<img
+  src="./screenshot.png"
+  alt="Gatsby Documentation Starter using gatsby-transformer-react-docgen"
+/>
 
 You can download the final "pure Gatsby" version on Github here: [Gatsby Documentation Starter](https://github.com/whoisryosuke/gatsby-documentation-starter).
 
@@ -359,18 +360,18 @@ You can download the final "pure Gatsby" version on Github here: [Gatsby Documen
 
 I hope this helped you understand the process behind documentation, or specifically React component docs. Using the react-docgen CLI or API makes the process as simple as loading component files and feeding them through the library, pumping out structured data perfect for frontend interfaces.
 
-There are plenty of out-of-the-box solutions out there, but it's always beneficial understanding how their work (demystifying the *magic* ✨), particularly if you're looking to create something new and fresh *(frameworks only go so far)*.
+There are plenty of out-of-the-box solutions out there, but it's always beneficial understanding how their work (demystifying the _magic_ ✨), particularly if you're looking to create something new and fresh _(frameworks only go so far)_.
 
 Cheers,
 Ryo
 
-***
+---
 
 **References**:
 
-* [react-docgen](https://github.com/reactjs/react-docgen)
-* [react-docgen Official Example](https://github.com/reactjs/react-docgen/blob/master/example/buildDocs.sh)
-* [See how react-styleguidist uses react-docgen](https://github.com/styleguidist/react-styleguidist/search?q=docgen&unscoped_q=docgen)
-* [gatsby-transformer-react-docgen](https://github.com/gatsbyjs/gatsby/tree/master/packages/gatsby-transformer-react-docgen)
-* [React Component Props Table](https://github.com/episodeyang/react-component-props-table/)
-* [Gatsby Documentation Starter](https://github.com/whoisryosuke/gatsby-documentation-starter)
+- [react-docgen](https://github.com/reactjs/react-docgen)
+- [react-docgen Official Example](https://github.com/reactjs/react-docgen/blob/master/example/buildDocs.sh)
+- [See how react-styleguidist uses react-docgen](https://github.com/styleguidist/react-styleguidist/search?q=docgen&unscoped_q=docgen)
+- [gatsby-transformer-react-docgen](https://github.com/gatsbyjs/gatsby/tree/master/packages/gatsby-transformer-react-docgen)
+- [React Component Props Table](https://github.com/episodeyang/react-component-props-table/)
+- [Gatsby Documentation Starter](https://github.com/whoisryosuke/gatsby-documentation-starter)

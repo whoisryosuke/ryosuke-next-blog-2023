@@ -1,10 +1,8 @@
 ---
 title: Utility CSS Props with Web Components
-date: '2020-01-24'
+date: "2020-01-24"
 section: blog
-tags: ['design systems', 'web components', 'css', 'component library']
-
-layout: "@/layouts/BlogLayout.astro"
+tags: ["design systems", "web components", "css", "component library"]
 ---
 
 I've been getting into design systems, component design, and theming recently — and one of the pinnacles of contemporary styling in web applications that has caught my eye is prop-based design. It's similar to utility CSS frameworks like Tachyons, Basscss, or Tailwind, which use shorthand CSS class names to apply properties to components (`<div class="w-50">` for setting 50% width). Rather than using CSS class names, we use the component's props to provide the values (`<Box width="50%">`).
@@ -129,9 +127,9 @@ Meaning to make a component that has a width of 33% on tablet, 50% on desktop, a
 
 ```js
 // Breakpoints
-const breakpoints = ['widescreen', 'desktop', 'tablet', 'mobile']
+const breakpoints = ["widescreen", "desktop", "tablet", "mobile"];
 // Component
-;<my-component width={[1 / 3, 1 / 2, 1]} />
+<my-component width={[1 / 3, 1 / 2, 1]} />;
 ```
 
 I'm using the Styled System approach for responsive width props, which I prefer over other libraries that use objects to explicitly set responsive width (`<Box width={{'small': '33%', 'tablet': '50%' }}>`). It's less verbose. But if you wanted this method, it'd actually be similar to implement.

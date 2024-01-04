@@ -1,11 +1,9 @@
 ---
 title: Creating a design system using Vanilla Extract CSS
-date: '2022-02-21'
+date: "2022-02-21"
 section: blog
-tags: ['css', 'react', 'typescript', 'design system']
-cover_image: './creating-a-design-system-using-vanilla-extract-css.png'
-
-layout: "@/layouts/BlogLayout.astro"
+tags: ["css", "react", "typescript", "design system"]
+cover_image: "./creating-a-design-system-using-vanilla-extract-css.png"
 ---
 
 I had some time recently to check out Vanilla Extract CSS. It’s styling library that’s similar to CSS-in-JS projects like Styled Components or Emotion, but generates bundled CSS for production — similar to libraries like Stylex (Meta) or Stitches. And of course, it can also generate atomic CSS, so you can essentially make your own Tailwind library.
@@ -22,15 +20,15 @@ You create styles using the Style API (`style(CSSObject)`) - similar to librarie
 These styles are stored in a variable (e.g. `buttonClass`). The style method returns a CSS class name that can be applied to your HTML element or React component:
 
 ```jsx
-const buttonClass = style({ display: flex })
+const buttonClass = style({ display: flex });
 
-return <Button className={buttonClass} />
+return <Button className={buttonClass} />;
 ```
 
 You can also compose styles by combining the style variables:
 
 ```jsx
-const combinedStyle = style({ buttonClass, backgroundColor: 'red' })
+const combinedStyle = style({ buttonClass, backgroundColor: "red" });
 ```
 
 # Process
@@ -66,19 +64,19 @@ Nx makes it easy to extend the Storybook config:
 // .storybook/main.js
 module.exports = {
   stories: [],
-  addons: ['@storybook/addon-essentials'],
+  addons: ["@storybook/addon-essentials"],
   webpackFinal: async (config, { configType }) => {
     // apply any global webpack configs that might have been specified in .storybook/main.js
     if (rootMain.webpackFinal) {
-      config = await rootMain.webpackFinal(config, { configType })
+      config = await rootMain.webpackFinal(config, { configType });
     }
 
     // Add Vanilla Extract here
-    config.plugins = [...config.plugins, new VanillaExtractPlugin()]
+    config.plugins = [...config.plugins, new VanillaExtractPlugin()];
 
-    return config
+    return config;
   },
-}
+};
 ```
 
 ## Using the library
@@ -89,12 +87,12 @@ You use a `style` method and pass an object of CSS properties. It’s similar to
 
 ```jsx
 // button.css.ts
-import { style } from '@vanilla-extract/css'
+import { style } from "@vanilla-extract/css";
 
 export const buttonStyles = style({
-  display: 'flex',
-  backgroundColor: 'red',
-})
+  display: "flex",
+  backgroundColor: "red",
+});
 ```
 
 ```jsx
@@ -135,49 +133,49 @@ The first theme method is `createTheme`. This one accepts theme properties and v
 
 ```tsx
 // theme.css.ts
-import { createTheme } from '@vanilla-extract/css'
+import { createTheme } from "@vanilla-extract/css";
 
 export const [themeClass, vars] = createTheme({
   color: {
-    brand: 'blue',
+    brand: "blue",
   },
   font: {
-    body: 'arial',
+    body: "arial",
   },
-})
+});
 
 // In your component:
-import { style } from '@vanilla-extract/css'
-import { vars } from '../theme'
+import { style } from "@vanilla-extract/css";
+import { vars } from "../theme";
 
 export const buttonStyles = style({
-  display: 'flex',
+  display: "flex",
   backgroundColor: vars.color.brand,
-})
+});
 
 // Make sure to wrap your app in the `themeClass`
-import { themeClass } from '../theme'
+import { themeClass } from "../theme";
 
 export const App = ({ children }) => (
   <div className={themeClass}>{children}</div>
-)
+);
 ```
 
 The second theme method is `createGlobalTheme` - this does exactly that, it attaches the theme variables to a container (like a `<div id="app">`). When you import your theme into any file, the CSS variables will be injected into the document scope.
 
 ```tsx
-import { createGlobalTheme } from '@vanilla-extract/css'
+import { createGlobalTheme } from "@vanilla-extract/css";
 
 // In this case, we attach variables to global `:root`
 // so you don't need an ID or Class in your DOM
-export const vars = createGlobalTheme(':root', {
+export const vars = createGlobalTheme(":root", {
   color: {
-    brand: 'blue',
+    brand: "blue",
   },
   font: {
-    body: 'arial',
+    body: "arial",
   },
-})
+});
 ```
 
 The third theme method is `createThemeContract` - which basically accepts the “shape” of your theme (only properties) and you literally `null` the values. Then you create other themes using this theme as the basis:
@@ -228,39 +226,39 @@ There are a couple of approaches to handling light/dark mode toggles. Since you�
 
 ```tsx
 // 📁 light.css.ts
-import { createTheme } from '@vanilla-extract/css'
+import { createTheme } from "@vanilla-extract/css";
 
 export const colors = {
-  text: '#111212',
-  background: '#fff',
-  primary: '#005CDD',
-  secondary: '#6D59F0',
-  muted: '#f6f6f9',
-  gray: '#D3D7DA',
-  highlight: 'hsla(205, 100%, 40%, 0.125)',
-  white: '#FFF',
-  black: '#111212',
+  text: "#111212",
+  background: "#fff",
+  primary: "#005CDD",
+  secondary: "#6D59F0",
+  muted: "#f6f6f9",
+  gray: "#D3D7DA",
+  highlight: "hsla(205, 100%, 40%, 0.125)",
+  white: "#FFF",
+  black: "#111212",
 
-  success: 'green',
-  message: 'blue',
-  warning: 'yellow',
-  danger: 'red',
-}
+  success: "green",
+  message: "blue",
+  warning: "yellow",
+  danger: "red",
+};
 
 export const gradients = {
   subtle: `linear-gradient(180deg, ${colors.primary} 0%, ${colors.secondary} 100%)`,
   purple: `linear-gradient(180deg, ${colors.primary} 0%, #A000C4 100%)`,
   blue: `linear-gradient(180deg, #00D2FF 0%, ${colors.secondary} 100%)`,
-}
+};
 
 export const [themeClass, vars] = createTheme({
   colors,
   gradients,
-})
+});
 
 // 📁 dark.css.ts
-import { createTheme } from '@vanilla-extract/css'
-import { vars } from './light.css'
+import { createTheme } from "@vanilla-extract/css";
+import { vars } from "./light.css";
 
 // Redefine all the colors here (except, you know, dark)
 // const colors = { /* ... */ };
@@ -271,15 +269,15 @@ import { vars } from './light.css'
 export const [darkTheme, darkVars] = createTheme(vars, {
   colors,
   gradients,
-})
+});
 ```
 
 Then when we toggle between light and dark modes in our app (using React state usually — or a callback based on the user’s system preferences) — we change the class name that wraps our app from `lightTheme` to `darkTheme`.
 
 ```tsx
-import { ThemeContext, ThemeNames } from '../context/theme'
-import { useState } from 'react'
-import { light, dark, base } from '../theme'
+import { ThemeContext, ThemeNames } from "../context/theme";
+import { useState } from "react";
+import { light, dark, base } from "../theme";
 
 /* eslint-disable-next-line */
 export interface ThemeProviderProps {}
@@ -287,13 +285,13 @@ export interface ThemeProviderProps {}
 export function ThemeProvider({
   children,
 }: React.PropsWithChildren<ThemeProviderProps>) {
-  const [selectedTheme, setSelectedTheme] = useState<ThemeNames>('light')
+  const [selectedTheme, setSelectedTheme] = useState<ThemeNames>("light");
 
   const toggleTheme = () => {
-    setSelectedTheme((prevValue) => (prevValue === 'light' ? 'dark' : 'light'))
-  }
+    setSelectedTheme((prevValue) => (prevValue === "light" ? "dark" : "light"));
+  };
 
-  const colorMode = selectedTheme === 'light' ? light.class : dark.class
+  const colorMode = selectedTheme === "light" ? light.class : dark.class;
   return (
     <ThemeContext.Provider
       value={{
@@ -303,10 +301,10 @@ export function ThemeProvider({
     >
       <div className={`${base.class} ${colorMode}`}>{children}</div>
     </ThemeContext.Provider>
-  )
+  );
 }
 
-export default ThemeProvider
+export default ThemeProvider;
 ```
 
 ### “Base theme”
@@ -350,7 +348,7 @@ export {
   // Each theme class
   light,
   dark,
-}
+};
 ```
 
 This works for only one type of theme, but since I had 2 (a “base” theme and a “color” theme), I needed to have a different structure that combines the tokens (or variables) together:
@@ -413,27 +411,31 @@ Ideally with Vanilla Extract, you can give consumers of the design system a few 
   <Button className={`${buttonStyles} ${buttonOverrides}`} />
   ```
 - Extending styles (they import `buttonStyles` and use as basis for `style()` method).
-  ```tsx
-  import { buttonStyles } from './button.css'
 
-  const newButtonStyles = style([...buttonStyles, { backgroundColor: 'red' }])
+  ```tsx
+  import { buttonStyles } from "./button.css";
+
+  const newButtonStyles = style([...buttonStyles, { backgroundColor: "red" }]);
   ```
+
   But this would also require exporting some sort of primitive button - or providing a prop that swaps component styles with a style override.
+
   ```jsx
   // Primitive button used **outside** design system
-  import { PrimitiveButton } from 'design-system'
+  import { PrimitiveButton } from "design-system";
 
   const Button = (props) => (
     <PrimitiveButton {...props} className={yourButtonStyles}>
       {children}
     </PrimitiveButton>
-  )
+  );
 
   // Override prop **inside** the design system
   const Button = ({ styleOverride }) => (
     <button className={styleOverride ?? buttonStyles}>{children}</button>
-  )
+  );
   ```
+
   And it assumes the component structure is 1 level deep, often you could have “sub” elements that need styling in a component, like an icon.
   **Solution?**: Make a `styles` prop for any component that allows complete override of styling. Also accept a `className` prop that gets merged - so incremental changes can be allotted for. And of course, they could always change the CSS vars in the component scope. It handles the most extreme and simple changes. Reminiscent of old school MUI and the way they handled I think.
 

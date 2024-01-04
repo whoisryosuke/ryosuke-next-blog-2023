@@ -1,11 +1,9 @@
 ---
 title: Drag and Drop Component Builder using React
-date: '2020-10-02'
+date: "2020-10-02"
 section: blog
-tags: ['react native', 'react', 'design systems']
-cover_image: './Drag_and_Drop_Component_Builder_using_React.png'
-
-layout: "@/layouts/BlogLayout.astro"
+tags: ["react native", "react", "design systems"]
+cover_image: "./Drag_and_Drop_Component_Builder_using_React.png"
 ---
 
 Wouldn't it be cool if you could create a website by dragging and dropping pieces of it around? To some it sounds like a _[green-weaved nightmare](https://en.wikipedia.org/wiki/Adobe_Dreamweaver)_, to others it sounds like [a proprietary platform](https://en.wikipedia.org/wiki/Adobe_Dreamweaver) — but this fantasy of freedom is becoming closer to being standardized into modern design and development workflows. With software like [OpenChakra](https://openchakra.app/), [Blocks UI](https://blocks-ui.com/), or even [Playroom](https://github.com/seek-oss/playroom) — we've gotten a taste **today** of what platforms like [Framer](http://framer.io/), [Modulz](https://www.modulz.app/), and other's have promised to use in an _unforeseen_ future: **design to code.**
@@ -100,20 +98,20 @@ I went through the process of adding a custom component to OpenChakra (outlined 
   ```tsx
   const element = useMemo(() => {
     if (!code) {
-      return null
+      return null;
     }
 
     /* eslint-disable */
     const fn = new Function(
-      'React',
+      "React",
       ...Object.keys(scope),
       `${code};
         return React.createElement(BLOCKS_Container)`
-    )
+    );
     /* eslint-enable */
 
-    return fn(React, ...Object.values(scope))
-  }, [code])
+    return fn(React, ...Object.values(scope));
+  }, [code]);
   ```
 
 - Components are created normally, but if you want to make them editable, they require the property-controls package (also part of the monorepo)
@@ -201,18 +199,18 @@ const PreviewComponents = {
   Box,
   Button,
   Input,
-}
+};
 const componentPreview =
   components.length > 0 &&
   components.map((component, index) => {
-    if (typeof PreviewComponents[component.name] !== 'undefined') {
+    if (typeof PreviewComponents[component.name] !== "undefined") {
       return React.createElement(PreviewComponents[component.name], {
         // @TODO: Use a hash here?
         key: index,
         ...component.props,
-      })
+      });
     }
-  })
+  });
 ```
 
 # Prototyping
@@ -223,73 +221,73 @@ From there, I created a context for the components to be stored in, then wired u
 
 ```tsx
 // contexts/ComponentsContext.js
-import React, { createContext, useContext, useState } from 'react'
-const ComponentsContext = createContext([])
+import React, { createContext, useContext, useState } from "react";
+const ComponentsContext = createContext([]);
 
 const ComponentsProvider = ({ children }) => {
-  const [components, setComponents] = useState([])
+  const [components, setComponents] = useState([]);
 
   return (
     <ComponentsContext.Provider value={{ components, setComponents }}>
       {children}
     </ComponentsContext.Provider>
-  )
-}
+  );
+};
 
-const useComponents = () => useContext(ComponentsContext)
+const useComponents = () => useContext(ComponentsContext);
 
-export { ComponentsContext, ComponentsProvider, useComponents }
+export { ComponentsContext, ComponentsProvider, useComponents };
 ```
 
 ```tsx
 // components/Preview.jsx
-import React, { useCallback, useState } from 'react'
-import { Box } from 'rebass/styled-components'
-import { useDrop } from 'react-dnd'
-import { DRAG_TYPES } from '../constants/DragTypes'
-import { useComponents } from '../contexts/ComponentsContext'
-import PreviewComponent from './PreviewComponent'
+import React, { useCallback, useState } from "react";
+import { Box } from "rebass/styled-components";
+import { useDrop } from "react-dnd";
+import { DRAG_TYPES } from "../constants/DragTypes";
+import { useComponents } from "../contexts/ComponentsContext";
+import PreviewComponent from "./PreviewComponent";
 
 export default function Preview() {
-  const [focused, setFocused] = useState(null)
-  const { components, setComponents } = useComponents()
+  const [focused, setFocused] = useState(null);
+  const { components, setComponents } = useComponents();
   const [{ isOver, isOverCurrent }, drop] = useDrop({
     accept: DRAG_TYPES.COMPONENT,
     drop(item, monitor) {
-      const didDrop = monitor.didDrop()
+      const didDrop = monitor.didDrop();
       if (didDrop) {
-        return
+        return;
       }
-      console.log('item dropped on preview!', item, didDrop)
+      console.log("item dropped on preview!", item, didDrop);
       const componentStructure = {
         name: item.id,
         props: {},
         children: [],
-      }
-      setComponents((prevValue) => [...prevValue, componentStructure])
+      };
+      setComponents((prevValue) => [...prevValue, componentStructure]);
     },
     collect: (monitor) => ({
       isOver: monitor.isOver({ shallow: true }),
       isOverCurrent: monitor.isOver({ shallow: true }),
     }),
-  })
+  });
 
-  console.log('the components', components)
+  console.log("the components", components);
   const componentPreview =
     components.length > 0 &&
     components.map((component, index) => (
       <PreviewComponent index={index} component={component} focused={focused} />
-    ))
+    ));
   return (
     <Box
       ref={drop}
       width="400px"
       height="100vh"
-      sx={{ border: '1px solid black' }}
+      sx={{ border: "1px solid black" }}
     >
       {componentPreview}
     </Box>
-  )
+  );
 }
 ```
 
@@ -297,13 +295,13 @@ Then I refactored the preview to use the context state to display the context da
 
 ```tsx
 // components/PreviewComponent.jsx
-import React from 'react'
-import ComponentName from '../components/ComponentName'
-import PreviewContainer from './PreviewContainer'
+import React from "react";
+import ComponentName from "../components/ComponentName";
+import PreviewContainer from "./PreviewContainer";
 
 const PreviewComponents = {
   ComponentName,
-}
+};
 
 export default function PreviewComponent({
   component,
@@ -311,7 +309,7 @@ export default function PreviewComponent({
   focused,
   clickHandler,
 }) {
-  if (typeof PreviewComponents[component.name] !== 'undefined') {
+  if (typeof PreviewComponents[component.name] !== "undefined") {
     const walkChildren = (children) => {
       if (children.length > 0) {
         return children.map((childComponent) => {
@@ -321,7 +319,7 @@ export default function PreviewComponent({
               ...childComponent.props,
               children: walkChildren(childComponent.children),
             }
-          )
+          );
           return React.createElement(
             PreviewContainer,
             {
@@ -330,13 +328,13 @@ export default function PreviewComponent({
               focused: focused === index ? true : false,
             },
             [NewChildComponent]
-          )
-        })
+          );
+        });
       }
-      if (typeof children === 'string') {
-        return children
+      if (typeof children === "string") {
+        return children;
       }
-    }
+    };
     const NewComponent = React.createElement(
       PreviewComponents[component.name],
       {
@@ -345,7 +343,7 @@ export default function PreviewComponent({
         ...component.props,
         children: walkChildren(component.children),
       }
-    )
+    );
     return React.createElement(
       PreviewContainer,
       {
@@ -354,7 +352,7 @@ export default function PreviewComponent({
         focused: focused === index ? true : false,
       },
       [NewComponent]
-    )
+    );
   }
 }
 ```
@@ -363,11 +361,11 @@ Once I was able to display top level components, I worked on nested children. Ea
 
 ```tsx
 // components/PreviewContainer.jsx
-import React, { useCallback } from 'react'
-import { Box } from 'rebass/styled-components'
-import { useDrop } from 'react-dnd'
-import { DRAG_TYPES } from '../constants/DragTypes'
-import { useComponents } from '../contexts/ComponentsContext'
+import React, { useCallback } from "react";
+import { Box } from "rebass/styled-components";
+import { useDrop } from "react-dnd";
+import { DRAG_TYPES } from "../constants/DragTypes";
+import { useComponents } from "../contexts/ComponentsContext";
 
 export default function PreviewContainer({
   index,
@@ -376,52 +374,52 @@ export default function PreviewContainer({
   children,
   ...restProps
 }) {
-  const { components, setComponents } = useComponents()
+  const { components, setComponents } = useComponents();
   // Handle dropping components for nested children
   const [{ isOver, isOverCurrent }, drop] = useDrop({
     accept: DRAG_TYPES.COMPONENT,
     drop(item, monitor) {
-      const didDrop = monitor.didDrop()
-      console.log('item dropped on component!', item, didDrop)
+      const didDrop = monitor.didDrop();
+      console.log("item dropped on component!", item, didDrop);
 
       if (didDrop) {
-        return
+        return;
       }
       setComponents((prevValue) => {
         const childComponent = {
           name: item.id,
           props: {},
           children: [],
-        }
+        };
         const componentStructure = {
           ...prevValue[index],
           children: [...prevValue[index].children, childComponent],
-        }
+        };
         return [
           ...prevValue.slice(0, index),
           componentStructure,
           ...prevValue.slice(index + 1, prevValue.length + 1),
-        ]
-      })
+        ];
+      });
     },
     collect: (monitor) => ({
       isOver: monitor.isOver({ shallow: true }),
       isOverCurrent: monitor.isOver({ shallow: true }),
     }),
-  })
+  });
   const clickHandler = useCallback(() => {
-    onClick(index)
-  }, [onClick])
+    onClick(index);
+  }, [onClick]);
   return (
     <Box
       ref={drop}
       onClick={clickHandler}
-      sx={{ border: focused && '1px solid blue' }}
+      sx={{ border: focused && "1px solid blue" }}
       {...restProps}
     >
       {children}
     </Box>
-  )
+  );
 }
 ```
 

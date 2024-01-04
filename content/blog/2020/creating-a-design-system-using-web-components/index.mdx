@@ -1,10 +1,8 @@
 ---
 title: Creating a Design System using Web Components
-date: '2020-01-29'
+date: "2020-01-29"
 section: blog
-tags: ['design systems', 'web components', 'css', 'component library']
-
-layout: "@/layouts/BlogLayout.astro"
+tags: ["design systems", "web components", "css", "component library"]
 ---
 
 Web Components seem to be trending recently now that the specification is approved and all evergreen browsers support them. Rather than relying on a framework to achieve a componentized architecture, you can create reusable elements that have their own styles and functionality using _only_ vanilla JavaScript. By just including a JS script into your page you can use a web component anywhere, complete with scoped CSS and a shadow DOM (like React or Vue) 🤯
@@ -98,7 +96,7 @@ Keep in mind there's way more to each library for handling things like methods, 
 It's not terrible, but despite using a library and extending another class, we still have a bit of boilerplate to do to accomplish a simple component with props:
 
 ```js
-import { LitElement, html } from 'lit-element'
+import { LitElement, html } from "lit-element";
 
 class MyElement extends LitElement {
   static get properties() {
@@ -108,16 +106,16 @@ class MyElement extends LitElement {
       prop3: { type: Boolean },
       prop4: { type: Array },
       prop5: { type: Object },
-    }
+    };
   }
 
   constructor() {
-    super()
-    this.prop1 = 'Hello World'
-    this.prop2 = 5
-    this.prop3 = false
-    this.prop4 = [1, 2, 3]
-    this.prop5 = { subprop1: 'prop 5 subprop1 value' }
+    super();
+    this.prop1 = "Hello World";
+    this.prop2 = 5;
+    this.prop3 = false;
+    this.prop4 = [1, 2, 3];
+    this.prop5 = { subprop1: "prop 5 subprop1 value" };
   }
 
   render() {
@@ -127,25 +125,25 @@ class MyElement extends LitElement {
       <p>prop3: ${this.prop3}</p>
       <p>prop4[0]: ${this.prop4[0]}</p>
       <p>prop5.subprop1: ${this.prop5.subprop1}</p>
-    `
+    `;
   }
 }
 
-customElements.define('my-element', MyElement)
+customElements.define("my-element", MyElement);
 ```
 
 Here is the same component and props using **decorators** instead. Here you don't have to define the properties in the constructor:
 
 ```js
-import { LitElement, html, customElement, property } from 'lit-element'
+import { LitElement, html, customElement, property } from "lit-element";
 
-@customElement('my-element')
+@customElement("my-element")
 export class MyElement extends LitElement {
-  @property({ type: String }) prop1 = 'Hello World'
-  @property({ type: Number }) prop2 = 5
-  @property({ type: Boolean }) prop3 = true
-  @property({ type: Array }) prop4 = [1, 2, 3]
-  @property({ type: Object }) prop5 = { subprop1: 'prop 5 subprop1 value' }
+  @property({ type: String }) prop1 = "Hello World";
+  @property({ type: Number }) prop2 = 5;
+  @property({ type: Boolean }) prop3 = true;
+  @property({ type: Array }) prop4 = [1, 2, 3];
+  @property({ type: Object }) prop5 = { subprop1: "prop 5 subprop1 value" };
 
   render() {
     return html`
@@ -154,7 +152,7 @@ export class MyElement extends LitElement {
       <p>prop3: ${this.prop3}</p>
       <p>prop4[0]: ${this.prop4[0]}</p>
       <p>prop5.subprop1: ${this.prop5.subprop1}</p>
-    `
+    `;
   }
 }
 ```
@@ -210,32 +208,32 @@ This is another side effect of working in React-land that many of us will be all
 You can see this in action here in this [example from CSS Tricks:](https://css-tricks.com/advanced-tooling-for-web-components/)
 
 ```js
-import React, { Component, createRef } from 'react'
+import React, { Component, createRef } from "react";
 
 export default class MyComponent extends Component {
   constructor(props) {
-    super(props)
+    super(props);
     // Create the ref
-    this.dialog = createRef()
+    this.dialog = createRef();
     // Bind our method to the instance
-    this.onDialogClosed = this.onDialogClosed.bind(this)
+    this.onDialogClosed = this.onDialogClosed.bind(this);
 
     this.state = {
       open: false,
-    }
+    };
   }
 
   componentDidMount() {
     // Once the component mounds, add the event listener
-    this.dialog.current.addEventListener('dialog-closed', this.onDialogClosed)
+    this.dialog.current.addEventListener("dialog-closed", this.onDialogClosed);
   }
 
   componentWillUnmount() {
     // When the component unmounts, remove the listener
     this.dialog.current.removeEventListener(
-      'dialog-closed',
+      "dialog-closed",
       this.onDialogClosed
-    )
+    );
   }
 
   onDialogClosed(event) {
@@ -252,7 +250,7 @@ export default class MyComponent extends Component {
           </div>
         </one-dialog>
       </div>
-    )
+    );
   }
 }
 ```
@@ -312,11 +310,11 @@ The nuances don't end there with styling I'm afraid. Things get very mucky when 
 When you're using components, you'll often want to override styles on them using the style HTML attribute (`<pure-button style="color:red">`). It works on Web Components by applying to the "host" element (`<Host>` in Stencil). This will work fine, if you use your host element as the basis for your component. But if you need to use a specific HTML type (like `<pure-button>` has to be a `<button>` or `<input>` depending), your component will use a nested `<TagType>` element that changes the HTML element based on props/input. And if any logic is contained in a nested element, there's no way to alter it using inline styles.
 
 ```js
-import { Component, Host, h, Prop } from '@stencil/core'
+import { Component, Host, h, Prop } from "@stencil/core";
 
 @Component({
-  tag: 'pure-menu',
-  styleUrl: 'pure-menu.css',
+  tag: "pure-menu",
+  styleUrl: "pure-menu.css",
   shadow: true,
 })
 export class PureMenu {
@@ -328,11 +326,11 @@ export class PureMenu {
           <p>This will be blue, not red.</p>
         </nav>
       </Host>
-    )
+    );
   }
 }
 
-;<pure-menu style="color:red"></pure-menu>
+<pure-menu style="color:red"></pure-menu>;
 ```
 
 I wasn't able to use the style prop directly, and when I tried to define one, I would get an error stating I couldn't define props for default element attributes. So there was no way to pass the inline styles down from the Host to a wrapper element (like TagType).
@@ -417,21 +415,21 @@ In order to properly select the slot elements, you should:
   headingPosition="left"
   list={[
     {
-      name: 'News',
-      url: '#',
+      name: "News",
+      url: "#",
       selected: true,
     },
     {
-      name: 'Contact',
-      url: '#',
+      name: "Contact",
+      url: "#",
       dropdown: [
         {
-          name: 'Email',
-          url: '#',
+          name: "Email",
+          url: "#",
         },
         {
-          name: 'Twitter',
-          url: '#',
+          name: "Twitter",
+          url: "#",
         },
       ],
     },
@@ -615,7 +613,9 @@ Here is a snippet of the associated CSS stylesheet, so you can see how the inter
 ```css
 .pure-button.active,
 .pure-button:active {
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15) inset, 0 0 6px rgba(0, 0, 0, 0.2) inset;
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.15) inset,
+    0 0 6px rgba(0, 0, 0, 0.2) inset;
   border-color: #000;
 }
 

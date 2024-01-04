@@ -1,20 +1,18 @@
 ---
 title: Syncing Figma Styles with CSS in JS
-date: '2020-07-16'
+date: "2020-07-16"
 section: blog
 tags:
   [
-    'design systems',
-    'productivity',
-    'figma',
-    'design ops',
-    'theming',
-    'css in js',
-    'javascript',
+    "design systems",
+    "productivity",
+    "figma",
+    "design ops",
+    "theming",
+    "css in js",
+    "javascript",
   ]
-cover_image: './Syncing_Figma_Styles__with_CSS_in_JS.png'
-
-layout: "@/layouts/BlogLayout.astro"
+cover_image: "./Syncing_Figma_Styles__with_CSS_in_JS.png"
 ---
 
 As I've been creating new design systems with CSS in JS libraries like Styled Components or Emotion, I've found myself repeatedly having to translate design tokens from Figma into a JSON-based theme for code. I'll put together an entire design system inside Figma, then have to spend hours copying the design tokens over into a structured theme object. Then if I update the design tokens in the theme code, I have to synchronize any changes with the Figma document — all manually.
@@ -176,28 +174,28 @@ figma.ui.onmessage = (msg) => {
 Gives you an object like:
 
 ```jsx
-;[
+[
   {
-    name: 'Header',
-    fontFamily: 'Roboto',
-    fontWeight: 'Regular',
+    name: "Header",
+    fontFamily: "Roboto",
+    fontWeight: "Regular",
     fontSize: 24,
-    letterSpacing: { unit: 'PERCENT', value: 0 },
-    lineHeight: { unit: 'AUTO' },
-    textCase: 'ORIGINAL',
-    textDecoration: 'NONE',
+    letterSpacing: { unit: "PERCENT", value: 0 },
+    lineHeight: { unit: "AUTO" },
+    textCase: "ORIGINAL",
+    textDecoration: "NONE",
   },
   {
-    name: 'Paragraph',
-    fontFamily: 'Roboto',
-    fontWeight: 'Regular',
+    name: "Paragraph",
+    fontFamily: "Roboto",
+    fontWeight: "Regular",
     fontSize: 12,
-    letterSpacing: { unit: 'PERCENT', value: 0 },
-    lineHeight: { unit: 'AUTO' },
-    textCase: 'ORIGINAL',
-    textDecoration: 'NONE',
+    letterSpacing: { unit: "PERCENT", value: 0 },
+    lineHeight: { unit: "AUTO" },
+    textCase: "ORIGINAL",
+    textDecoration: "NONE",
   },
-]
+];
 ```
 
 ### Extracting font sizes
@@ -208,17 +206,17 @@ We have to loop through the text styles and build a font size array, which shoul
 
 ```tsx
 // Get text styles to generate text variants
-const textStyles = figma.getLocalTextStyles()
+const textStyles = figma.getLocalTextStyles();
 
 // Parse font sizes
 // Create array of font sizes and sort numerically by least to most
 const fontSizesWithDupes = textStyles
   .map(({ fontSize }) => fontSize)
-  .sort((a, b) => a - b)
+  .sort((a, b) => a - b);
 // Remove dupes
 const fontSizes = fontSizesWithDupes.filter(
   (item, index) => fontSizesWithDupes.indexOf(item) == index
-)
+);
 ```
 
 This can also be done for other similar values, like font families, weights, etc. Except these are stored as a **hash map**, not an array. This is accomplished my using the array's `reduce` method to map it to an empty object:
@@ -230,9 +228,9 @@ const fontFamilies = textStyles
   .map(({ fontName }) => fontName!.family)
   .sort()
   .reduce((map, obj) => {
-    map[obj.toLowerCase()] = obj
-    return map
-  }, {})
+    map[obj.toLowerCase()] = obj;
+    return map;
+  }, {});
 ```
 
 Note here that we just take the font name and use it as the object key (or property). I debated over this implementation, whether or note to try and generate semantic naming conventions (like header vs body font), but I opted to just use the font name. It allows developers to go into the theme and more easily find and replace the property with a semantic name. This seemed better than alternatives, like creating an array and accessing fonts using `fonts[2]`.
@@ -343,11 +341,11 @@ Based on the [PaintStyle](https://www.figma.com/plugin-docs/api/PaintStyle/) and
 
 ```jsx
 // Get colors
-const colors = figma.getLocalPaintStyles()
+const colors = figma.getLocalPaintStyles();
 
 colors.map(({ paints, type, remote, name }) =>
   console.log(JSON.stringify({ paints, type, remote, name }))
-)
+);
 ```
 
 Gives you something like:
@@ -383,17 +381,17 @@ As you can see above, the objects in the `paints` array have a `type` property. 
  * @ignore
  */
 const enum FigmaPaintType {
-  Solid = 'SOLID',
-  GradientLinear = 'GRADIENT_LINEAR',
+  Solid = "SOLID",
+  GradientLinear = "GRADIENT_LINEAR",
 }
 
 const isFigmaLinearGradient = (paint: FigmaPaint): paint is GradientPaint => {
-  return paint.type === FigmaPaintType.GradientLinear
-}
+  return paint.type === FigmaPaintType.GradientLinear;
+};
 
 const isFigmaSolid = (paint: FigmaPaint): paint is SolidPaint => {
-  return paint.type === FigmaPaintType.Solid
-}
+  return paint.type === FigmaPaintType.Solid;
+};
 
 if (isFigmaSolid(paint)) {
 }
@@ -408,22 +406,22 @@ I originally found this code in [the Diez CLI codebase](https://github.com/diez/
 Figma colors are in RGB format, but they're stored as a value from 0 to 1, instead of 0 to 255 like standard RGB format. This means the Figma color value needs to be converted:
 
 ```jsx
-const { r, g, b } = paint.color
+const { r, g, b } = paint.color;
 let newColor = `rgba (${Math.round(r * 255)}, ${Math.round(
   g * 255
-)}, ${Math.round(b * 255)}, ${paint.opacity})`
+)}, ${Math.round(b * 255)}, ${paint.opacity})`;
 ```
 
 Which is then easily used with libraries like TinyColor:
 
 ```jsx
-newColor = Color(newColor).toHexString()
+newColor = Color(newColor).toHexString();
 // Gives HEX version of color
 
-newColor = Color(newColor).toRgbString()
+newColor = Color(newColor).toRgbString();
 // Gives RGBA version of color
 
-newColor = Color(newColor).toHslString()
+newColor = Color(newColor).toHslString();
 // Gives HSL version of color
 ```
 
@@ -451,7 +449,7 @@ const theme = {
 It's important to take Figma styles that feature separators (like `Header/H1`) and break them out into nested objects. We can do this using the `split()` method on the `String` prototype:
 
 ```jsx
-const colorArray = name.split('/')
+const colorArray = name.split("/");
 ```
 
 Now we have an array of name "pieces" that we need to convert into a nested object, where each property name is a segment of our name. It should look like this:
@@ -459,9 +457,9 @@ Now we have an array of name "pieces" that we need to convert into a nested obje
 ```jsx
 const obj = {
   Header: {
-    H1: '',
+    H1: "",
   },
-}
+};
 ```
 
 This function needs to be recursive, meaning it will run itself repeatedly until a certain condition is met. In this case, we loop through the object's parameters (using `Object.keys()`) and see if the parameter is an object. If so, we run the function again.
@@ -514,12 +512,12 @@ The reducer:
 ```jsx
 const colorNameReducer = (accumulator, currentValue, index) => {
   if (index == colorArray.length) {
-    return walkObject(accumulator, '')
+    return walkObject(accumulator, "");
   }
-  console.log('creating param', accumulator, currentValue)
-  return walkObject(accumulator, currentValue, true)
-}
-let colorObject = colorArray.reduce(colorNameReducer, {})
+  console.log("creating param", accumulator, currentValue);
+  return walkObject(accumulator, currentValue, true);
+};
+let colorObject = colorArray.reduce(colorNameReducer, {});
 ```
 
 The array's reducer accepts an empty object, which allows you to create a new object as the basis for the reducing. We use that empty object as an `accumulator`, which runs the "object walking" function.
@@ -542,11 +540,11 @@ This returns an object for each color that looks like this:
 This then can be combined later:
 
 ```jsx
-let finalColors = {}
+let finalColors = {};
 
 // loop here
 
-finalColors = { ...finalColors, colorObject }
+finalColors = { ...finalColors, colorObject };
 ```
 
 ### Shallow vs deep merging
@@ -614,78 +612,78 @@ Once I figured out the process of reading from Figma's text and color styles, I 
 This is sent to the "backend" plugin code, which parse the theme into Figma styles. We also do a check to see if no theme is provided, and inform the user with an error message.
 
 ```tsx
-document.getElementById('generate').onclick = () => {
+document.getElementById("generate").onclick = () => {
   // Clear errors
-  const errorBox = document.getElementById('msg')
-  errorBox.classList.remove('flex')
-  errorBox.classList.add('hidden')
+  const errorBox = document.getElementById("msg");
+  errorBox.classList.remove("flex");
+  errorBox.classList.add("hidden");
 
-  const textbox = document.getElementById('theme')
+  const textbox = document.getElementById("theme");
 
   // Check if theme is empty before sending
-  if (textbox.innerHTML !== '') {
+  if (textbox.innerHTML !== "") {
     parent.postMessage(
-      { pluginMessage: { type: 'generate', theme: textbox.innerHTML } },
-      '*'
-    )
+      { pluginMessage: { type: "generate", theme: textbox.innerHTML } },
+      "*"
+    );
   } else {
-    const errorBox = document.getElementById('msg')
-    errorBox.classList.remove('hidden')
-    errorBox.classList.add('flex')
-    const errorText = document.getElementById('msg-text')
+    const errorBox = document.getElementById("msg");
+    errorBox.classList.remove("hidden");
+    errorBox.classList.add("flex");
+    const errorText = document.getElementById("msg-text");
     errorText.innerHTML =
-      'No theme found. Please copy your theme inside the text box.'
+      "No theme found. Please copy your theme inside the text box.";
   }
-}
+};
 ```
 
 In the backend code we can access this by using the `theme` prop on the `msg` object Figma (a kind of "response" from the input/frontend).
 
 ```tsx
 figma.ui.onmessage = async (msg) => {
-  if (msg.type === 'generate') {
-    const theme = JSON.parse(msg.theme)
-    console.log('the theme', theme)
+  if (msg.type === "generate") {
+    const theme = JSON.parse(msg.theme);
+    console.log("the theme", theme);
   }
-}
+};
 ```
 
 Since we already know the theme structure, we can loop over the arrays and hash maps accordingly. Here's an example of the text styles importer:
 
 ```tsx
 // Get existing document styles to check later
-const localTextStyles = figma.getLocalTextStyles()
+const localTextStyles = figma.getLocalTextStyles();
 
 // Loop through text styles
 // Note that this is an async function
 Object.keys(theme.text)?.map(async (name) => {
-  const themeFont = theme.text[name]
+  const themeFont = theme.text[name];
   // See if name exists in document styles
   const localStyle = localTextStyles.find(
     ({ name: localName }) => localName === name
-  )
+  );
   // Use existing style or create new one
-  const textStyle = localStyle || figma.createTextStyle()
+  const textStyle = localStyle || figma.createTextStyle();
 
   // Prepare the fontName object
   const fontName = {
     family: theme.fonts[themeFont.fontFamily],
-    style: themeFont.fontStyle ? themeFont.fontStyle : 'Regular',
-  }
+    style: themeFont.fontStyle ? themeFont.fontStyle : "Regular",
+  };
 
   // Update/mutate the text style's properties
-  textStyle.name = name
+  textStyle.name = name;
   // Load font before you apply the property
   // You must await or Figma will not apply the font proper
-  await figma.loadFontAsync(fontName)
-  textStyle.fontName = fontName
-  textStyle.fontSize = themeFont.fontSize
-  textStyle.letterSpacing = themeFont.letterSpacing
-  textStyle.lineHeight = themeFont.lineHeight
-  textStyle.textCase = themeFont.textTransform
-  textStyle.textDecoration = themeFont.textDecoration
-  console.log('text style', textStyle)
-})
+  await figma.loadFontAsync(fontName);
+  textStyle.fontName = fontName;
+  textStyle.fontSize = themeFont.fontSize;
+  textStyle.letterSpacing = themeFont.letterSpacing;
+  textStyle.lineHeight = themeFont.lineHeight;
+  textStyle.textCase = themeFont.textTransform;
+  textStyle.textDecoration = themeFont.textDecoration;
+  console.log("text style", textStyle);
+});
 ```
 
 It took me a minute to figure out how to create Figma styles. The official documentation lists the method `createTextStyle()`, but doesn't tell you what to do with it. I tried to pass the font object to it and it kicked back with some errors. Then I tried just running the function by itself and a blank style appeared in Figma's sidebar (no name, no properties). I finally figured out that you create this text style and just mutate it's properties, very similar to creating an element with JS and using the element reference to change it's attributes/innerHTML.
@@ -726,7 +724,7 @@ I'd also be interested in taking simpler components that only use 1 auto layout 
 <Box
   variant="heading.h1"
   sx={{
-    color: 'primary',
+    color: "primary",
     m: 2,
     px: 3,
   }}

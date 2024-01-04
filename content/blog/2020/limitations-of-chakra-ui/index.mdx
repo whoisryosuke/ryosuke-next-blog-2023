@@ -1,11 +1,9 @@
 ---
 title: Limitations of Chakra UI
-date: '2020-06-24'
+date: "2020-06-24"
 section: blog
-tags: ['chakra ui', 'react', 'js', 'design systems', 'seshsource']
-cover_image: './limitations-of-chakra-ui-thumb.png'
-
-layout: "@/layouts/BlogLayout.astro"
+tags: ["chakra ui", "react", "js", "design systems", "seshsource"]
+cover_image: "./limitations-of-chakra-ui-thumb.png"
 ---
 
 I've been using [**Chakra UI**](https://chakra-ui.com/) for a couple weeks now to create a new design system and I feel like I can provide a proper critique of it's customizability.
@@ -45,8 +43,8 @@ I also needed to customize the **icon** used for the `<Checkbox>` , but I wouldn
 And this one was strange (_but understandable_). I needed to style the `<Tooltip>` arrow. This requires you to copy the source because it's [**a React "portal"**](https://reactjs.org/docs/portals.html) (meaning it's not a direct child of the [Tooltip component](https://chakra-ui.com/tooltip), near the root of the DOM).
 
 ```jsx
-import React from 'react'
-import { Tooltip as ChakraTooltip } from '@chakra-ui/core'
+import React from "react";
+import { Tooltip as ChakraTooltip } from "@chakra-ui/core";
 
 export const Tooltip = ({ children, ...props }) => (
   <ChakraTooltip
@@ -57,9 +55,9 @@ export const Tooltip = ({ children, ...props }) => (
   >
     {children}
   </ChakraTooltip>
-)
+);
 
-export default Tooltip
+export default Tooltip;
 ```
 
 If it were a nested child instead, you could possibly use a selector to grab the necessary object, but it'd be impossible in this case (because it's outside the component scope, and doesn't have a defined class name or ID to target). You can style it in a basic sense, like changing the background or text color. But I was looking to add a border, which ends up looking odd, as it doesn't style the underlying SVG properly:
@@ -83,8 +81,8 @@ I created a new component (`<Button>`) that passed a `<ChakraButton>` with a few
 ![Screenshot of my customized Chakra button in Storybook](Screen_Shot_2020-06-08_at_5.23.53_PM.png)
 
 ```jsx
-import React from 'react'
-import { Button as ChakraButton } from '@chakra-ui/core'
+import React from "react";
+import { Button as ChakraButton } from "@chakra-ui/core";
 
 export const Button = ({ children, ...props }) => (
   <ChakraButton
@@ -99,20 +97,20 @@ export const Button = ({ children, ...props }) => (
     display="block"
     height="auto"
     _hover={{
-      backgroundColor: 'primary.300',
-      color: 'black',
+      backgroundColor: "primary.300",
+      color: "black",
     }}
     _pressed={{
-      backgroundColor: 'primary.700',
-      color: 'white',
+      backgroundColor: "primary.700",
+      color: "white",
     }}
     {...props}
   >
     {children}
   </ChakraButton>
-)
+);
 
-export default Button
+export default Button;
 ```
 
 But as you can see above, I had to override the text color to ensure contrast (it defaults to white, which isn't accessible with the "primary" color). This means if I pass the component another `variantColor` (which is a BG and text color), it overrides it's text color with hard-coded "black". Which doesn't work for all the `variantColor`, as some may need white text (requiring you to override the `color` prop too). This means you end up making a manual variant for each color (like creating your own `variant` prop that works like a giant `switch()` statement to swap utility props).
@@ -124,10 +122,10 @@ It also makes that process much more difficult, since you have to change multipl
 Chakra provides props for many of common CSS states (hover, focus, etc) — but there are plenty of times you can do much more powerful logic with other more exact CSS states or selectors. For instance, I wanted to style an input different based on the attribute passed to it. To accomplish this, I'd have to use the `sx` prop to pass the selector, or wrap the component in a `styled` (and hope for no collisions with style/utility props).
 
 ```jsx
-import React from 'react'
-import styled from '@emotion/styled'
-import { Select as ChakraSelect } from '@chakra-ui/core'
-import { Box } from '../Box/Box'
+import React from "react";
+import styled from "@emotion/styled";
+import { Select as ChakraSelect } from "@chakra-ui/core";
+import { Box } from "../Box/Box";
 
 const SelectContainer = styled(Box)`
   &:focus-within {
@@ -138,7 +136,7 @@ const SelectContainer = styled(Box)`
   & select {
     font-weight: bold;
   }
-`
+`;
 
 export const Select = ({ children, ...props }) => (
   <SelectContainer
@@ -149,13 +147,13 @@ export const Select = ({ children, ...props }) => (
     p={1}
     {...props}
   >
-    <ChakraSelect border="0" _focus={{ outline: 'none' }}>
+    <ChakraSelect border="0" _focus={{ outline: "none" }}>
       {children}
     </ChakraSelect>
   </SelectContainer>
-)
+);
 
-export default Select
+export default Select;
 ```
 
 ## No way to theme some components
@@ -174,12 +172,12 @@ const theme = {
   variants: {
     Alert: {
       error: {
-        bg: 'red',
-        color: 'white',
+        bg: "red",
+        color: "white",
       },
     },
   },
-}
+};
 ```
 
 After perusing through the theme file and type interfacing, I didn't see any settings for the status, or variants in general.
