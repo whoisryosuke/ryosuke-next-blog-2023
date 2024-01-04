@@ -4,6 +4,9 @@ const nextConfig = {
   distDir: "build",
   output: "export",
   removeConsole: false,
+  images: {
+    unoptimized: true,
+  },
   compiler: {
     styledComponents: true,
   },

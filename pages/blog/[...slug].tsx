@@ -47,7 +47,7 @@ export default function PostPage({ source, frontMatter, slug }) {
   const meta: MetaTagsProps = {
     title: frontMatter.title,
     // Markdown uses relative image URLs, we convert here
-    image: frontMatter.cover_image.replace(
+    image: frontMatter?.cover_image?.replace(
       "./",
       `https://whoisryosuke.com/${slug}/`
     ),

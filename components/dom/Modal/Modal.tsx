@@ -51,22 +51,20 @@ const Modal = ({
     };
   }, [onClose]);
 
-  return rootRef.current
-    ? createPortal(
-        <ThemeProvider
-          //@ts-ignore more need for partials
-          theme={MODAL_THEME}
-        >
-          <ModalContainer isOpen={isOpen} {...props}>
-            <ModalCurtain onClose={onClose} />
-            <Dialog width={width} onClose={onClose}>
-              {children}
-            </Dialog>
-          </ModalContainer>
-        </ThemeProvider>,
-        rootRef.current
-      )
-    : null;
+  return createPortal(
+    <ThemeProvider
+      //@ts-ignore more need for partials
+      theme={MODAL_THEME}
+    >
+      <ModalContainer isOpen={isOpen} {...props}>
+        <ModalCurtain onClose={onClose} />
+        <Dialog width={width} onClose={onClose}>
+          {children}
+        </Dialog>
+      </ModalContainer>
+    </ThemeProvider>,
+    rootRef.current
+  );
 };
 
 export default Modal;
