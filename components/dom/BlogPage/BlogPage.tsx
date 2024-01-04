@@ -102,6 +102,7 @@ const BlogPage = ({ children, ...props }: PropsWithChildren<Props>) => {
                   mr={3}
                   onClick={handleBackButton}
                   display={{ default: "none", tablet: "inherit" }}
+                  title="Go to previous page in history"
                 />
                 <Button
                   solid
@@ -110,6 +111,7 @@ const BlogPage = ({ children, ...props }: PropsWithChildren<Props>) => {
                   mr={3}
                   onClick={handleForwardButton}
                   display={{ default: "none", tablet: "inherit" }}
+                  title="Go to next page in history"
                 />
                 <Box flex={1} mr={3}>
                   <Input
@@ -126,6 +128,7 @@ const BlogPage = ({ children, ...props }: PropsWithChildren<Props>) => {
                   mr={3}
                   onClick={handleShare}
                   display={{ default: "none", tablet: "inherit" }}
+                  title="Popup the share menu"
                 />
                 <Button
                   solid
@@ -134,6 +137,7 @@ const BlogPage = ({ children, ...props }: PropsWithChildren<Props>) => {
                   mr={3}
                   onClick={handleCustomizationModal}
                   display={{ default: "none", tablet: "inherit" }}
+                  title="Customize the blog appearance"
                 />
                 <Button
                   as={Link}
@@ -144,6 +148,7 @@ const BlogPage = ({ children, ...props }: PropsWithChildren<Props>) => {
                   icon={<BiFolder />}
                   mr={3}
                   display={{ default: "none", tablet: "inherit" }}
+                  title="See all blog posts"
                 />
               </Box>
             </Glass>
