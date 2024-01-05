@@ -1,11 +1,14 @@
 import React, { useCallback, useEffect, useRef } from "react";
 import { useGLTF } from "@react-three/drei";
-import { useFrame } from "@react-three/fiber";
-import { CanvasTexture, Vector3 } from "three";
+import { extend, useFrame } from "@react-three/fiber";
+import { CanvasTexture, TextureLoader, Vector3 } from "three";
 import { animated, easings, useSpring } from "@react-spring/three";
 import { UserInputMap } from "@store/input";
 import useRequestAnimationFrame from "features/animation/useRequestAnimationFrame";
 import { useAppStore } from "@store/app";
+import ScreenShaderMaterial from "./ScreenShader/ScreenShaderMaterial";
+
+extend({ ScreenShaderMaterial });
 
 const AnimatedMesh = (props) => {
   return <animated.mesh {...props} />;
@@ -107,7 +110,14 @@ export default function PocketStation({ controls, ...props }: Props) {
         //@ts-ignore
         geometry={nodes.BodyFrontScreen.geometry}
         material={materials.PS_FrontScreen}
-      />
+      >
+        <screenShaderMaterial
+          time={0}
+          uTexture={new TextureLoader().load(
+            "./images/Body.Front.Screen.Rotated-textured1.png"
+          )}
+        />
+      </mesh>
       <AnimatedMesh
         castShadow
         receiveShadow
