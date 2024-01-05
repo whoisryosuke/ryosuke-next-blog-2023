@@ -11,6 +11,8 @@ const ScreenShaderMaterial = shaderMaterial(
     baseTexture: new THREE.Texture(),
     welcomeTexture: new THREE.Texture(),
     uiTexture: new THREE.Texture(),
+    welcomeTexture2: new THREE.Texture(),
+    screenIndex: 0,
     time: 0,
     // offset: 0,
     // A uniform to turn on/off animation if user doesn't want it

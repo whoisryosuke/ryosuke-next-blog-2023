@@ -7,6 +7,7 @@ import { UserInputMap } from "@store/input";
 import useRequestAnimationFrame from "features/animation/useRequestAnimationFrame";
 import { useAppStore } from "@store/app";
 import ScreenShaderMaterial from "./ScreenShader/ScreenShaderMaterial";
+import { screenAnimations } from "./screens/screen-animations";
 
 extend({ ScreenShaderMaterial });
 
@@ -26,6 +27,7 @@ type Props = {
 
 export default function PocketStation({ controls, ...props }: Props) {
   const frontPanelRef = useRef(null);
+  const currentAnimation = useRef("intro");
   // @ts-ignore Yeah it exists
   const { nodes, materials } = useGLTF(MODEL_PATH);
   const screenMaterial = useRef(null);
@@ -99,8 +101,15 @@ export default function PocketStation({ controls, ...props }: Props) {
     //   meshRef.current.rotation.x = meshRef.current.rotation.y += 0.01;
     // }
     if (frontPanelRef.current.material) {
-      frontPanelRef.current.material.uniforms.time.value +=
-        Math.sin(delta / 2) * Math.cos(delta / 2);
+      frontPanelRef.current.material.uniforms.time.value += delta;
+
+      // Switch to next screen after certain amount of time
+      if (
+        frontPanelRef.current.material.uniforms.time.value >
+        screenAnimations.intro.animationTime
+      ) {
+        frontPanelRef.current.material.uniforms.screenIndex.value = 1;
+      }
     }
   });
 
@@ -128,6 +137,9 @@ export default function PocketStation({ controls, ...props }: Props) {
           )}
           welcomeTexture={new TextureLoader().load(
             "./images/ps-screens/screen-intro.png"
+          )}
+          welcomeTexture2={new TextureLoader().load(
+            "./images/ps-screens/screen-welcome.png"
           )}
         />
       </mesh>
