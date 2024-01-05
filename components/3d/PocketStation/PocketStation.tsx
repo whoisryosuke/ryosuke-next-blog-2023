@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useGLTF } from "@react-three/drei";
 import { extend, useFrame } from "@react-three/fiber";
 import { CanvasTexture, TextureLoader, Vector3 } from "three";
@@ -34,6 +34,7 @@ export default function PocketStation({ controls, ...props }: Props) {
   const frameId = useRef(null);
   const screenCanvas = useRef(null);
   const { pocketStationAnimating } = useAppStore();
+  const [hearts, setHearts] = useState<number[]>([]);
 
   const { upY, downY, leftY, rightY, confirmY } = useSpring({
     upY: controls.up ? BUTTON_PRESSED_DEPTH : BUTTON_DEFAULT_DEPTH,
@@ -110,8 +111,31 @@ export default function PocketStation({ controls, ...props }: Props) {
       ) {
         frontPanelRef.current.material.uniforms.screenIndex.value = 1;
       }
+
+      if (hearts.length > 1) {
+        frontPanelRef.current.material.uniforms.heart1.value = hearts[0];
+      }
+      if (
+        frontPanelRef.current.material.uniforms.screenIndex.value == 1 &&
+        controls.confirm
+      ) {
+        spawnHeart(frontPanelRef.current.material.uniforms.time.value);
+      }
     }
   });
+
+  const spawnHeart = useCallback((id: number) => {
+    setHearts((prevHearts) => [...prevHearts, id]);
+
+    // Destroy heart after animation time
+    setTimeout(() => {
+      setHearts((prevHearts) =>
+        prevHearts.filter((stateHeart) => stateHeart == id)
+      );
+    }, 1.0);
+  }, []);
+
+  useEffect(() => {}, [controls.confirm, spawnHeart]);
 
   return (
     <animated.group {...props} dispose={null}>

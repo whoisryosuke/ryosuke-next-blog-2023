@@ -19,7 +19,6 @@ void main() {
 
   vec4 currentScreen = vec4(0);
   vec4 currentScreenAnimated = vec4(0);
-  vec4 adjustedColor = vec4(0);
   float duration = 0.0;
 
   // Render the welcome screen
@@ -29,7 +28,6 @@ void main() {
     vec2 animation = vec2(0, yAnimation);
     currentScreen = texture2D(introTexture, vUv - animation); 
     currentScreenAnimated = vec4(currentScreen.rgb, sin(time / duration));
-    adjustedColor = vec4(baseImage.rgb + brightness + intensity, baseImage.a);
     // vec4 combinedColor = adjustedColor * welcomeImage;
   }
   if(screenIndex == 1) {
@@ -39,18 +37,18 @@ void main() {
     duration = 3.0;
     vec4 toro = texture2D(welcomeToroTexture, vUv);
     vec4 text = vec4(1.0); 
-    if(animationTime < duration) {
+    if(animationTime > duration) {
       text = texture2D(welcomeTextTexture, vUv); 
       text = vec4(text.rgb, min(animationTime, duration) / duration);
     } 
     currentScreen = toro * text; 
     currentScreenAnimated = vec4(currentScreen.rgb, min(animationTime, duration) / duration);
-    adjustedColor = vec4(baseImage.rgb + brightness + intensity, baseImage.a);
     // vec4 combinedColor = adjustedColor * welcomeImage;
   }
 
   // Combine all the screens
   // We `pow()` the alpha to help white aliasing on some screens
+  vec4 adjustedColor = vec4(baseImage.rgb + brightness + intensity, baseImage.a);
   vec4 combinedColor = mix(adjustedColor, currentScreenAnimated, pow(currentScreen.a, 1.4));
   gl_FragColor.rgba = combinedColor;
   // gl_FragColor.rgba = vec4(0.0, 0.0, 1.0, 1.0);

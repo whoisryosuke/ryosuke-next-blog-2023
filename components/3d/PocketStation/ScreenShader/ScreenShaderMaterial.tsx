@@ -14,6 +14,7 @@ const ScreenShaderMaterial = shaderMaterial(
     welcomeToroTexture: new THREE.Texture(),
     welcomeTextTexture: new THREE.Texture(),
     heartTexture: new THREE.Texture(),
+    heart1: 0,
     screenIndex: 0,
     time: 0,
     // offset: 0,
