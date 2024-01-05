@@ -94,6 +94,15 @@ export default function PocketStation({ controls, ...props }: Props) {
   // }, [pocketStationAnimating]);
 
   // useRequestAnimationFrame(animate);
+  useFrame((state, delta) => {
+    // if (meshRef.current) {
+    //   meshRef.current.rotation.x = meshRef.current.rotation.y += 0.01;
+    // }
+    if (frontPanelRef.current.material) {
+      frontPanelRef.current.material.uniforms.time.value +=
+        Math.sin(delta / 2) * Math.cos(delta / 2);
+    }
+  });
 
   return (
     <animated.group {...props} dispose={null}>
@@ -105,6 +114,7 @@ export default function PocketStation({ controls, ...props }: Props) {
         material={materials.PS_Back}
       />
       <mesh
+        ref={frontPanelRef}
         castShadow
         receiveShadow
         //@ts-ignore
