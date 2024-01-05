@@ -36,12 +36,10 @@ void main() {
     float animationTime = time - (3.0 * 2.0);
     duration = 3.0;
     vec4 toro = texture2D(welcomeToroTexture, vUv);
-    vec4 text = vec4(1.0); 
     if(animationTime > duration) {
-      text = texture2D(welcomeTextTexture, vUv); 
-      text = vec4(text.rgb, min(animationTime, duration) / duration);
+      toro = texture2D(welcomeTextTexture, vUv); 
     } 
-    currentScreen = toro * text; 
+    currentScreen = toro; 
     currentScreenAnimated = vec4(currentScreen.rgb, min(animationTime, duration) / duration);
     // vec4 combinedColor = adjustedColor * welcomeImage;
   }

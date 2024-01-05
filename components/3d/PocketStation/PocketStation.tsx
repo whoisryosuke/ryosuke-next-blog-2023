@@ -166,7 +166,7 @@ export default function PocketStation({ controls, ...props }: Props) {
             "./images/ps-screens/screen-welcome-toro.png"
           )}
           welcomeTextTexture={new TextureLoader().load(
-            "./images/ps-screens/screen-welcome-text.png"
+            "./images/ps-screens/screen-welcome.png"
           )}
           heartTexture={new TextureLoader().load(
             "./images/ps-screens/screen-heart.png"
