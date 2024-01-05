@@ -13,11 +13,12 @@ void main() {
   float intensity = 0.1;
   // vec3 animation = sin(vUv.xyx + (cos(time * stop) - 0.5) + sin(offset));
   vec4 baseImage = texture2D(baseTexture, vUv); 
-  vec2 animation = vec2(0, sin(time));
+  vec2 animation = vec2(0, sin(time) / 4.0);
   vec4 welcomeImage = texture2D(welcomeTexture, vUv - animation); 
+  vec4 welcomeImageAdjusted = vec4(welcomeImage.rgb, 1.0 - sin(time));
   vec4 adjustedColor = vec4(baseImage.rgb + brightness + intensity, baseImage.a);
   // vec4 combinedColor = adjustedColor * welcomeImage;
-  vec4 combinedColor = mix(adjustedColor, welcomeImage, welcomeImage.a);
+  vec4 combinedColor = mix(adjustedColor, welcomeImageAdjusted, welcomeImage.a);
   gl_FragColor.rgba = combinedColor;
   // gl_FragColor.rgba = vec4(0.0, 0.0, 1.0, 1.0);
   // gl_FragColor.rgba = vec4(vec3(0.), 1.);
