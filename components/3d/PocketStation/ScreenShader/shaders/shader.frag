@@ -22,7 +22,7 @@ void main() {
   float duration = 0.0;
 
   // Render the welcome screen
-  if(screenIndex == 0) {
+  if(time < 8.0) {
     duration = 3.0;
     float yAnimation = mix(0.5, 0.0, sin(time / duration));
     vec2 animation = vec2(0, yAnimation);
@@ -30,10 +30,10 @@ void main() {
     currentScreenAnimated = vec4(currentScreen.rgb, sin(time / duration));
     // vec4 combinedColor = adjustedColor * welcomeImage;
   }
-  if(screenIndex == 1) {
+  if(time > 8.0) {
     // We want time to start from 0 for animation, 
     // so we offset by prev duration * 2 (since it loops)
-    float animationTime = time - (3.0 * 2.0);
+    float animationTime = time - 8.0;
     duration = 3.0;
     vec4 toro = texture2D(welcomeToroTexture, vUv);
     if(animationTime > duration) {
