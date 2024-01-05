@@ -8,7 +8,9 @@ import fragment from "./shaders/shader.frag";
 
 const ScreenShaderMaterial = shaderMaterial(
   {
-    uTexture: new THREE.Texture(),
+    baseTexture: new THREE.Texture(),
+    welcomeTexture: new THREE.Texture(),
+    uiTexture: new THREE.Texture(),
     time: 0,
     // offset: 0,
     // A uniform to turn on/off animation if user doesn't want it

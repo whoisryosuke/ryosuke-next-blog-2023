@@ -113,8 +113,11 @@ export default function PocketStation({ controls, ...props }: Props) {
       >
         <screenShaderMaterial
           time={0}
-          uTexture={new TextureLoader().load(
+          baseTexture={new TextureLoader().load(
             "./images/Body.Front.Screen.Rotated-textured1.png"
+          )}
+          welcomeTexture={new TextureLoader().load(
+            "./images/ps-screens/screen-intro.png"
           )}
         />
       </mesh>
