@@ -135,11 +135,17 @@ export default function PocketStation({ controls, ...props }: Props) {
           baseTexture={new TextureLoader().load(
             "./images/Body.Front.Screen.Rotated-textured1.png"
           )}
-          welcomeTexture={new TextureLoader().load(
+          introTexture={new TextureLoader().load(
             "./images/ps-screens/screen-intro.png"
           )}
-          welcomeTexture2={new TextureLoader().load(
-            "./images/ps-screens/screen-welcome.png"
+          welcomeToroTexture={new TextureLoader().load(
+            "./images/ps-screens/screen-welcome-toro.png"
+          )}
+          welcomeTextTexture={new TextureLoader().load(
+            "./images/ps-screens/screen-welcome-text.png"
+          )}
+          heartTexture={new TextureLoader().load(
+            "./images/ps-screens/screen-heart.png"
           )}
         />
       </mesh>
