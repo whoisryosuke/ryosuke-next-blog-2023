@@ -89,6 +89,7 @@ const PortfolioSingleVideo = ({ work, ...props }: Props) => {
         muted
         playsInline
         controls={false}
+        poster={work.src}
         //@ts-ignore
         width={SINGLE_VIEW_WIDTH}
         //@ts-ignore
