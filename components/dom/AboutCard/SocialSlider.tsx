@@ -13,6 +13,7 @@ const SocialIconImage = styled("img")`
 
   @media (min-width: ${BREAKPOINTS.computer}) {
     width: 100%;
+    max-width: 100%;
   }
 `;
 
@@ -67,22 +68,28 @@ const SocialSlider = (props: Props) => {
           href="https://www.twitch.tv/whoisryosuke"
         />
         <SocialPlatform
-          image="/images/social-mastodon.png"
-          alt="Mastodon"
-          title="@whoisryosuke on Mastodon"
-          href="https://mastodon.gamedev.place/@whoisryosuke"
-        />
-        <SocialPlatform
           image="/images/social-threads.png"
           alt="Threads"
           title="@whoisryosuke on Threads"
           href="https://www.threads.net/@whoisryosuke"
         />
         <SocialPlatform
+          image="/images/social-mastodon.png"
+          alt="Mastodon"
+          title="@whoisryosuke on Mastodon"
+          href="https://mastodon.gamedev.place/@whoisryosuke"
+        />
+        <SocialPlatform
           image="/images/social-youtube.png"
           alt="YouTube"
           title="@whoisryosuke on YouTube"
           href="https://www.youtube.com/@whoisryosuke"
+        />
+        <SocialPlatform
+          image="/images/social-linkedin.png"
+          alt="LinkedIn"
+          title="Find me on LinkedIn"
+          href="https://www.linkedin.com/in/whoisryosuke/"
         />
       </Stack>
     </HorizontalScroll>
