@@ -8,6 +8,7 @@ import { BREAKPOINTS } from "@theme/tokens";
 const SocialIconImage = styled("img")`
   @media (min-width: ${BREAKPOINTS.default}) {
     width: auto;
+    max-width: 32px;
   }
 
   @media (min-width: ${BREAKPOINTS.computer}) {
