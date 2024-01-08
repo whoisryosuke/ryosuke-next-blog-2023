@@ -26,6 +26,10 @@ const StyledVideo = styled("video")<VideoProps>`
   border-radius: ${({ theme, borderRadius }) =>
     borderRadius ? theme.radius[borderRadius] : theme.radius[1]};
 
+  video::-webkit-media-controls {
+    display: none;
+  }
+
   ${width}
   ${height}
 `;
