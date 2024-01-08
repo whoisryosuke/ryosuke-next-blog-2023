@@ -21,7 +21,7 @@ const WorkCard = ({
     // @ts-ignore
     <Box {...props}>
       <Box position="relative">
-        {src && <Image src={src} />}
+        {src && <Image src={src} alt={title} />}
         {video && (
           <Video
             autoPlay
