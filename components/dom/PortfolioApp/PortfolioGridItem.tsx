@@ -62,6 +62,7 @@ const PortfolioGridItem = ({
       onClick={handleClick}
       {...props}
       position="relative"
+      title="View this artwork"
     >
       <div className="overlay" />
       {src && (
