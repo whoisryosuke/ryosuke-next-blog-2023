@@ -33,7 +33,7 @@ export default function PocketStation({ controls, ...props }: Props) {
   const screenMaterial = useRef(null);
   const frameId = useRef(null);
   const screenCanvas = useRef(null);
-  const { pocketStationAnimating } = useAppStore();
+  const { pocketStationAnimating, customizations } = useAppStore();
   const [hearts, setHearts] = useState<number[]>([]);
 
   const { upY, downY, leftY, rightY, confirmY } = useSpring({
@@ -179,7 +179,7 @@ export default function PocketStation({ controls, ...props }: Props) {
         //@ts-ignore
         geometry={nodes.BodyFrontPanel003.geometry}
         material={materials.PS_FrontPanel}
-        rotation={rotation}
+        rotation={customizations.animation.active ? rotation : [0, 0, 0]}
       />
       <mesh
         castShadow
@@ -208,7 +208,7 @@ export default function PocketStation({ controls, ...props }: Props) {
         //@ts-ignore
         geometry={nodes.BodyFrontButtonsLeft.geometry}
         material={materials["Material.030"]}
-        rotation={rotation}
+        rotation={customizations.animation.active ? rotation : [0, 0, 0]}
         position={leftY}
       />
       <AnimatedMesh
@@ -217,7 +217,7 @@ export default function PocketStation({ controls, ...props }: Props) {
         //@ts-ignore
         geometry={nodes.BodyFrontButtonsUp.geometry}
         material={materials["Material.030"]}
-        rotation={rotation}
+        rotation={customizations.animation.active ? rotation : [0, 0, 0]}
         position={upY}
       />
       <AnimatedMesh
@@ -226,7 +226,7 @@ export default function PocketStation({ controls, ...props }: Props) {
         //@ts-ignore
         geometry={nodes.BodyFrontButtonsRight.geometry}
         material={materials["Material.030"]}
-        rotation={rotation}
+        rotation={customizations.animation.active ? rotation : [0, 0, 0]}
         position={rightY}
       />
       <AnimatedMesh
@@ -235,7 +235,7 @@ export default function PocketStation({ controls, ...props }: Props) {
         //@ts-ignore
         geometry={nodes.BodyFrontButtonsDown.geometry}
         material={materials["Material.030"]}
-        rotation={rotation}
+        rotation={customizations.animation.active ? rotation : [0, 0, 0]}
         position={downY}
       />
       <AnimatedMesh
@@ -244,7 +244,7 @@ export default function PocketStation({ controls, ...props }: Props) {
         //@ts-ignore
         geometry={nodes.BodyFrontButtonsConfirm.geometry}
         material={materials["Material.030"]}
-        rotation={rotation}
+        rotation={customizations.animation.active ? rotation : [0, 0, 0]}
         position={confirmY}
       />
       <mesh
