@@ -85,10 +85,10 @@ const PortfolioApp = ({ work }: Props) => {
               work={sortedWork}
               handleNavigateWork={handleNavigateWork}
             />
-            <PortfolioCategorySort
+            {/* <PortfolioCategorySort
               currentCategory={currentCategory}
               sortPortfolioByCategory={sortPortfolioByCategory}
-            />
+            /> */}
           </>
         )}
         {showSingleView && (
