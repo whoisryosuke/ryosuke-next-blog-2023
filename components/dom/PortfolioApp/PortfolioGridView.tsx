@@ -29,7 +29,7 @@ const PortfolioGridView = ({ work, category, handleNavigateWork }: Props) => {
       <Glass position="relative">
         <ScrollBox
           position="relative"
-          width="calc(100% + 15px)"
+          width={{ default: "100%", tablet: "calc(100% + 15px)" }}
           display="flex"
           flexDirection="column"
           height={"70vh"}
