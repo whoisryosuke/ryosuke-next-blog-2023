@@ -42,6 +42,7 @@ const PageTransition = ({ children }: PropsWithChildren<Props>) => {
         position: "absolute",
         top: 0,
         left: 0,
+        overflow: "hidden",
       }}
     >
       {children}
