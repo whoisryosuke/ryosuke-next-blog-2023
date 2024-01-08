@@ -96,6 +96,17 @@ export default function PocketStation({ controls, ...props }: Props) {
   //   return () => cancelAnimationFrame(frameId.current);
   // }, [pocketStationAnimating]);
 
+  const spawnHeart = useCallback((id: number) => {
+    setHearts((prevHearts) => [...prevHearts, id]);
+
+    // Destroy heart after animation time
+    setTimeout(() => {
+      setHearts((prevHearts) =>
+        prevHearts.filter((stateHeart) => stateHeart == id)
+      );
+    }, 1.0);
+  }, []);
+
   // useRequestAnimationFrame(animate);
   useFrame((state, delta) => {
     // if (meshRef.current) {
@@ -112,30 +123,18 @@ export default function PocketStation({ controls, ...props }: Props) {
         frontPanelRef.current.material.uniforms.screenIndex.value = 1;
       }
 
-      if (hearts.length > 1) {
-        frontPanelRef.current.material.uniforms.heart1.value = hearts[0];
-      }
-      if (
-        frontPanelRef.current.material.uniforms.screenIndex.value == 1 &&
-        controls.confirm
-      ) {
-        spawnHeart(frontPanelRef.current.material.uniforms.time.value);
-      }
+      // if (hearts.length > 1) {
+      //   frontPanelRef.current.material.uniforms.heart1.value = hearts[0];
+      // }
+      // if (
+      //   frontPanelRef.current.material.uniforms.screenIndex.value == 1 &&
+      //   controls.confirm
+      // ) {
+      //   //TODO: debounce this
+      //   spawnHeart(frontPanelRef.current.material.uniforms.time.value);
+      // }
     }
   });
-
-  const spawnHeart = useCallback((id: number) => {
-    setHearts((prevHearts) => [...prevHearts, id]);
-
-    // Destroy heart after animation time
-    setTimeout(() => {
-      setHearts((prevHearts) =>
-        prevHearts.filter((stateHeart) => stateHeart == id)
-      );
-    }, 1.0);
-  }, []);
-
-  useEffect(() => {}, [controls.confirm, spawnHeart]);
 
   return (
     <animated.group {...props} dispose={null}>
@@ -154,6 +153,7 @@ export default function PocketStation({ controls, ...props }: Props) {
         geometry={nodes.BodyFrontScreen.geometry}
         material={materials.PS_FrontScreen}
       >
+        {/* @ts-ignore */}
         <screenShaderMaterial
           time={0}
           baseTexture={new TextureLoader().load(
