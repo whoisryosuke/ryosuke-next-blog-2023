@@ -5,7 +5,7 @@ import styled from "styled-components";
 const StyledLink = styled("a")`
   display: inline-block;
   position:relative;
-  color: ${({ theme }) => theme.colors.primary.pressed};
+  color: ${({ theme }) => theme.colors.primary.default};
   text-decoration: none;
   transition: "color 400ms linear",
 
@@ -13,7 +13,11 @@ const StyledLink = styled("a")`
   margin-right: ${({ theme }) => theme.space[1]};
 
   &:hover {
-    color: ${({ theme }) => theme.colors.primary.default};
+    color: ${({ theme }) => theme.colors.primary.hovered};
+  }
+
+  &:active {
+    color: ${({ theme }) => theme.colors.primary.pressed};
   }
 
   &:after {

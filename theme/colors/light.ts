@@ -26,9 +26,9 @@ export const primaryColors = {
     disabledText: "rgba(234,234,241,0.3)",
   },
   primary: {
-    default: "rgba(31,27,216,1)",
-    hovered: "#5854FD",
-    pressed: "#1A17BC",
+    default: "#1B76FF",
+    hovered: "#78AEFF",
+    pressed: "#0C4294",
   },
   // secondary: primaryColors.purple[500],
   muted: "#b6b6b9",
@@ -55,8 +55,8 @@ export const gradients = {
       "radial-gradient(253.85% 474.76% at 50% -83.65%, rgba(255, 255, 255, 0.13) 0%, rgba(255, 255, 255, 0.0) 33%, rgba(255, 255, 255, 0.16) 100%)",
   },
   blue: {
-    default: `linear-gradient(90deg, #1F1BD8 0%, #4845EF 36.1%);`,
-    hover: `linear-gradient(90deg, #4845EF 0%, #1F1BD8 36.1%);`,
+    default: `linear-gradient(90deg, #1B76FF 0%, #0C4294 36.1%);`,
+    hover: `linear-gradient(90deg, #78AEFF 0%, #1B76FF 36.1%);`,
   },
   text: {
     blue: {

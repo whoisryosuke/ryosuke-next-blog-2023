@@ -25,9 +25,9 @@ export const primaryColors = {
     disabledText: "rgba(0,0,0,0.2)",
   },
   primary: {
-    default: "rgba(72,69,239,1)",
-    hovered: "#7A77FD",
-    pressed: "#2D2AC5",
+    default: "#1B76FF",
+    hovered: "#78AEFF",
+    pressed: "#0C4294",
   },
   // secondary: primaryColors.purple[500],
   muted: "#f6f6f9",
