@@ -42,7 +42,7 @@ const A11yCheck = (props: Props) => {
     if (typeof window !== "undefined") {
       const shouldReduceMotion = window.matchMedia(REDUCED_MOTION_MEDIA_QUERY);
       setUserAnimation({
-        active: !shouldReduceMotion,
+        active: !shouldReduceMotion.matches,
       });
     }
   }, []);
