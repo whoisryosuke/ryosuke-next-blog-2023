@@ -6,6 +6,7 @@ import {
   DEFAULT_ACHIEVEMENT_DATA,
 } from "features/achievements/achievement-list";
 import { create } from "zustand";
+import { devtools, persist } from "zustand/middleware";
 
 type ModalNames = "customization" | "achievements";
 
@@ -53,87 +54,94 @@ interface AppState {
   toggleAchivementNotifications: (status?: boolean) => void;
 }
 
-export const useAppStore = create<AppState>()((set) => ({
-  theme: "light",
-  setTheme: (theme) => set((state) => ({ theme })),
-  toggleTheme: () =>
-    set((state) => ({
-      theme: state.theme === "light" ? "dark" : "light",
-    })),
+export const useAppStore = create<AppState>()(
+  persist(
+    (set) => ({
+      theme: "light",
+      setTheme: (theme) => set((state) => ({ theme })),
+      toggleTheme: () =>
+        set((state) => ({
+          theme: state.theme === "light" ? "dark" : "light",
+        })),
 
-  customizations: {
-    animation: {
-      active: true,
-    },
-    theme: {
-      fontWeights: base.fontWeights,
-      modal: false,
-      highContrastBlog: false,
-    },
-  },
-  setUserTheme: (theme) =>
-    set((state) => ({
       customizations: {
-        ...state.customizations,
-        theme: { ...state.customizations.theme, ...theme },
-      },
-    })),
-  setUserAnimation: (settings) =>
-    set((state) => ({
-      customizations: {
-        ...state.customizations,
-        animation: { ...state.customizations.animation, ...settings },
-      },
-    })),
-
-  modalName: "customization",
-  openModal: (modalName) =>
-    set((state) => ({
-      modalName,
-      customizations: {
-        ...state.customizations,
+        animation: {
+          active: true,
+        },
         theme: {
-          ...state.customizations.theme,
-          modal: !state.customizations.theme.modal,
+          fontWeights: base.fontWeights,
+          modal: false,
+          highContrastBlog: false,
         },
       },
-    })),
-  toggleModal: (modal) =>
-    set((state) => ({
-      customizations: {
-        ...state.customizations,
-        theme: {
-          ...state.customizations.theme,
-          modal: modal ?? !state.customizations.theme.modal,
-        },
-      },
-    })),
+      setUserTheme: (theme) =>
+        set((state) => ({
+          customizations: {
+            ...state.customizations,
+            theme: { ...state.customizations.theme, ...theme },
+          },
+        })),
+      setUserAnimation: (settings) =>
+        set((state) => ({
+          customizations: {
+            ...state.customizations,
+            animation: { ...state.customizations.animation, ...settings },
+          },
+        })),
 
-  pocketStationAnimation: "LOADING",
-  pocketStationAnimating: false,
-  setPSAnimation: (animation) =>
-    set((state) => ({
-      pocketStationAnimation: animation,
-    })),
-  setPocketStationAnimating: (animation) =>
-    set((state) => ({
-      pocketStationAnimating: animation,
-    })),
+      modalName: "customization",
+      openModal: (modalName) =>
+        set((state) => ({
+          modalName,
+          customizations: {
+            ...state.customizations,
+            theme: {
+              ...state.customizations.theme,
+              modal: !state.customizations.theme.modal,
+            },
+          },
+        })),
+      toggleModal: (modal) =>
+        set((state) => ({
+          customizations: {
+            ...state.customizations,
+            theme: {
+              ...state.customizations.theme,
+              modal: modal ?? !state.customizations.theme.modal,
+            },
+          },
+        })),
 
-  // Achievements
-  achievementNotification: false,
-  achievementsLog: [],
-  achievementData: DEFAULT_ACHIEVEMENT_DATA,
-  updateAchievementData: (newAchievementData) =>
-    set((state) => ({
-      achievementData: { ...state.achievementData, ...newAchievementData },
-    })),
-  addAchievement: (achievement) =>
-    set((state) => ({
-      achievementsLog: [achievement, ...state.achievementsLog],
-    })),
-  toggleAchivementNotifications: (status) =>
-    set((state) => ({
-      achievementNotification: status ?? !state.achievementNotification,
-    })),
-}));
+      pocketStationAnimation: "LOADING",
+      pocketStationAnimating: false,
+      setPSAnimation: (animation) =>
+        set((state) => ({
+          pocketStationAnimation: animation,
+        })),
+      setPocketStationAnimating: (animation) =>
+        set((state) => ({
+          pocketStationAnimating: animation,
+        })),
+
+      // Achievements
+      achievementNotification: false,
+      achievementsLog: [],
+      achievementData: DEFAULT_ACHIEVEMENT_DATA,
+      updateAchievementData: (newAchievementData) =>
+        set((state) => ({
+          achievementData: { ...state.achievementData, ...newAchievementData },
+        })),
+      addAchievement: (achievement) =>
+        set((state) => ({
+          achievementsLog: [achievement, ...state.achievementsLog],
+        })),
+      toggleAchivementNotifications: (status) =>
+        set((state) => ({
+          achievementNotification: status ?? !state.achievementNotification,
+        })),
+    }),
+    {
+      name: "ryo-storage",
+    }
+  )
+);
