@@ -153,7 +153,7 @@ const MainNavbar = ({ ...props }: MenuProps) => {
           <Button
             as={Link}
             // @ts-ignore hard to image I know
-            href="/explorations/work-r3"
+            href="/work"
             title="Work"
             icon={<BiGhost />}
             onlyIcon
@@ -164,7 +164,7 @@ const MainNavbar = ({ ...props }: MenuProps) => {
           <Button
             as={Link}
             // @ts-ignore hard to image I know
-            href="/explorations/playlist"
+            href="/playlist"
             title="Playlist"
             icon={<BiHeadphone />}
             onlyIcon
