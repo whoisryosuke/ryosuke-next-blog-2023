@@ -96,7 +96,7 @@ const PortfolioSingleVideo = ({ work, ...props }: Props) => {
         height={SINGLE_VIEW_HEIGHT}
         // style={{ width: "60vh", height: "60vh" }}
       >
-        <source src={work.video.src} />
+        <source src={work.video.src} type="video/mp4" />
       </Video>
 
       {/* Bottom Video Navigation */}
