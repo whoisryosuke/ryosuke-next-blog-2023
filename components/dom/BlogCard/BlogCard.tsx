@@ -46,6 +46,7 @@ const BlogCard = ({ post, ...props }: BlogCardProps) => {
       <Link
         href={`${post.slug}`}
         style={{ textDecoration: "none", outline: 0 }}
+        title="Read the blog post"
       >
         <Box
           display="flex"
