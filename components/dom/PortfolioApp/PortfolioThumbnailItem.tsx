@@ -18,7 +18,6 @@ const PortfolioThumbnailItem = ({
   const ref = useRef<HTMLImageElement>(null);
 
   const handleClick = () => {
-    console.log("slider item", ref.current.getBoundingClientRect());
     const thumbnailPosition = ref.current.getBoundingClientRect();
     handleScroll(thumbnailPosition.left, thumbnailPosition.top);
     handleNavigateWork(item.id);

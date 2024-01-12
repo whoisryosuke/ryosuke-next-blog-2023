@@ -19,7 +19,6 @@ const AchievementList = ({ achievements, ...props }: Props) => {
   const { achievementsLog } = useAppStore();
   const list = Object.entries(achievements);
 
-  console.log("Achievements Log", achievementsLog);
   return (
     <Box>
       {list.map(([key, achievement]) => {

@@ -55,8 +55,6 @@ const BlogArchivePage = ({ posts, allTags }: Props) => {
     setSelectedTag(e.currentTarget.value);
   };
 
-  console.log("all tags", allTags);
-
   return (
     <BlogTransition>
       <Head title="Blog Archive" />

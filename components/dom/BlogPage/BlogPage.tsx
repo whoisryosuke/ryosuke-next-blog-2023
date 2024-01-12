@@ -35,7 +35,6 @@ const BlogPage = ({ children, ...props }: PropsWithChildren<Props>) => {
   const boxRef = useRef(null);
 
   useEffect(() => {
-    console.log("resetting scroll position");
     boxRef?.current?.scrollTo(0, 0);
   }, [router.pathname]);
 

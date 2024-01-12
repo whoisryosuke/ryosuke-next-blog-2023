@@ -59,9 +59,7 @@ const useAnimatedCamera = (rotate: number) => {
 
     const duration =
       Math.min(prevRotateTime.current, ANIMATION_DURATION) / ANIMATION_DURATION;
-    console.log("time", prevRotateTime.current, duration);
     camera.rotation.y = MathUtils.lerp(camera.rotation.y, rotate, duration);
-    console.log("animating", camera.rotation.y, rotate);
     // camera.rotateY(MathUtils.lerp(camera.rotation.y, rotate, duration));
     if (prevRotateTime.current >= ANIMATION_DURATION) {
       prevRotate.current = rotate;
@@ -96,8 +94,6 @@ const CUBE_SUBDIVISIONS = 6;
 const PrimitiveScene = ({ customizations, rotate, ...props }: Props) => {
   const cameraRef = useRef<ThreePerspectiveCamera>();
   useAnimatedCamera(rotate);
-
-  console.log("rotate", rotate);
 
   //    useFrame((state) => {
   //     // HERE, looking for a way to lerp camera lookAt in a way that can toggle.

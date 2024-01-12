@@ -20,7 +20,7 @@ const useBlogPostRead = () => {
 
     // Only mark as read once
     if (!loaded) {
-      console.log("[ACHIEVEMENT] Blog post read", achievementData.blogsRead);
+      // console.log("[ACHIEVEMENT] Blog post read", achievementData.blogsRead);
       // Update the achievement data store
       const blogsRead = achievementData.blogsRead + 1;
       updateAchievementData({
@@ -37,10 +37,10 @@ const useBlogPostRead = () => {
           key = "READ_5";
           break;
       }
-      console.log("[ACHIEVEMENT] Blog post read added", blogsRead);
+      // console.log("[ACHIEVEMENT] Blog post read added", blogsRead);
 
       if (key) {
-        console.log("[ACHIEVEMENT] Found a key", key);
+        // console.log("[ACHIEVEMENT] Found a key", key);
         // Save achievement to data store
         blogReadAchievement(key);
 

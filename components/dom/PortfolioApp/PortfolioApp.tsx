@@ -56,7 +56,6 @@ const PortfolioApp = ({ work }: Props) => {
   };
 
   useEffect(() => {
-    console.log("sorting category", currentCategory);
     const freshWork = condensePortfolio(work);
     if (currentCategory == "All work") {
       setSortedWork(freshWork);

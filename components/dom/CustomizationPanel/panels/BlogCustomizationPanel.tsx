@@ -15,7 +15,6 @@ const BlogCustomizationPanel = (props: Props) => {
   const { customizations, setUserTheme } = useAppStore();
 
   const handleHighContrastBlog = (e: React.FormEvent<HTMLInputElement>) => {
-    console.log("toggling contrast", e.currentTarget.checked);
     setUserTheme({
       highContrastBlog: e.currentTarget.checked,
     });

@@ -25,7 +25,6 @@ const A11yCheck = (props: Props) => {
 
   // Check on changes to settings using media queries
   const updateMotionSetting = (event) => {
-    console.log("motion changed", event);
     // We're checking if they want to reduce motion so
     // reduce motion = true
     // animation ok = false

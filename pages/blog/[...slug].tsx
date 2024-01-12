@@ -64,8 +64,6 @@ export default function PostPage({ source, frontMatter, slug }) {
 
 // Grabs MDX content based on slug passed in URL params
 export const getStaticProps = async ({ params }) => {
-  console.log("page slug", params.slug, params.slug.join("/"));
-
   // We add back the `blog/` to the path
   const slugPath = params.slug.join("/");
 
@@ -86,7 +84,6 @@ export const getStaticProps = async ({ params }) => {
     throw Error("No post found");
   }
 
-  console.log("post file path", postFilePath);
   const source = fs.readFileSync(postFilePath);
 
   const { content, data } = matter(source);

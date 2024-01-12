@@ -108,18 +108,14 @@ const PerspectiveContainer = ({
 
   useEffect(() => {
     const location = ref.current.getBoundingClientRect();
-    console.log("container location", location);
     syncLocation(id, location);
   }, [ref.current]);
 
   useEffect(() => {
     if (hasFocusedChild) {
-      console.log("has a focused child, scrolling to");
       focusScroll();
     }
   }, [hasFocusedChild]);
-
-  console.log("focused child?", focused, hasFocusedChild);
 
   return (
     <FocusContext.Provider value={focusKey}>
@@ -136,8 +132,6 @@ type AnimatedCameraProps = {
 
 const AnimatedCamera = ({ rotate }: AnimatedCameraProps) => {
   const cameraRef = useRef<ThreePerspectiveCamera>();
-
-  console.log("rotation", rotate);
 
   useFrame((state) => {
     // HERE, looking for a way to lerp camera lookAt in a way that can toggle.
@@ -196,8 +190,6 @@ export default function LabPage() {
       left: containerLocations.app.left,
     });
   };
-
-  console.log("locations", containerLocations);
 
   return (
     <>

@@ -30,7 +30,7 @@ const PSIntroScreen = ({ getContextAndDrawBase }: Props) => {
       },
     ],
     onStart(result, ctrl, item) {
-      console.log("screen animation started");
+      // console.log("screen animation started");
       setPocketStationAnimating(true);
     },
     onChange(result, ctrl, item) {
