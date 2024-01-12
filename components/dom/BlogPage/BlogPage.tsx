@@ -23,6 +23,8 @@ import { useBlogStore } from "@store/blog";
 import Head from "../Head/Head";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import { H1 } from "../Headline/Headers";
+import { fromUnixTime } from "date-fns";
 
 type Props = {
   title: string;
@@ -164,6 +166,7 @@ const BlogPage = ({ children, ...props }: PropsWithChildren<Props>) => {
                   borderRadius={3}
                   p={{ mobile: 5, tablet: 8 }}
                 >
+                  <H1 mt={0}>{title}</H1>
                   {children}
                 </ScrollBox>
               </Glass>
