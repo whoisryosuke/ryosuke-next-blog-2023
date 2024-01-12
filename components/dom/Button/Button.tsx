@@ -64,7 +64,7 @@ const StyledButton = styled("button")<ButtonProps>`
       ? `calc(${theme.space[3]} + 2px)`
       : `${theme.space[3]} ${theme.space[4]}`};
 
-  color: ${({ theme }) => theme.colors.text};
+  color: ${({ theme, color }) => color ?? theme.colors.text};
 
   /* For button links - button provides focus behavior */
   text-decoration: none;

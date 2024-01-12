@@ -93,6 +93,10 @@ const MainNavbar = ({ ...props }: MenuProps) => {
     windowSize.width < 800 ? "bottom" : "left";
   const marginRight = orientation == "left" ? 0 : "8px";
   const marginBottom = orientation == "left" ? "8px" : 0;
+  const buttonColor =
+    orientation == "bottom" && customizations.theme.highContrastBlog
+      ? "#000"
+      : null;
 
   const handleAchievementsModal = () => {
     openModal("achievements");
@@ -138,6 +142,7 @@ const MainNavbar = ({ ...props }: MenuProps) => {
             solid={router.asPath === "/"}
             marginRight={marginRight}
             marginBottom={marginBottom}
+            color={buttonColor}
           />
           <Button
             as={Link}
@@ -149,6 +154,7 @@ const MainNavbar = ({ ...props }: MenuProps) => {
             solid={router.asPath.includes("blog")}
             marginRight={marginRight}
             marginBottom={marginBottom}
+            color={buttonColor}
           />
           <Button
             as={Link}
@@ -160,6 +166,7 @@ const MainNavbar = ({ ...props }: MenuProps) => {
             solid={router.asPath.includes("work")}
             marginRight={marginRight}
             marginBottom={marginBottom}
+            color={buttonColor}
           />
           <Button
             as={Link}
@@ -171,6 +178,7 @@ const MainNavbar = ({ ...props }: MenuProps) => {
             solid={router.asPath.includes("playlist")}
             marginRight={marginRight}
             marginBottom={marginBottom}
+            color={buttonColor}
           />
           <Button
             title="Achievements"
@@ -178,6 +186,7 @@ const MainNavbar = ({ ...props }: MenuProps) => {
             onlyIcon
             solid={isAchievementModalOpen}
             onClick={handleAchievementsModal}
+            color={buttonColor}
           />
           <Button
             title="Customize"
@@ -185,6 +194,7 @@ const MainNavbar = ({ ...props }: MenuProps) => {
             onlyIcon
             solid={isCustomizalModalOpen}
             onClick={handleCustomizationModal}
+            color={buttonColor}
           />
         </Box>
       </StyledMenu>
