@@ -32,6 +32,11 @@ const Box = styled("div")<BoxProps>(
   {
     boxSizing: "border-box",
     perspective: "500px",
+    color: ({ theme }) => theme.colors.text,
+    fontSize: ({ theme }) => theme.fontSizes[2],
+    fontWeight: ({ theme }) => theme.fontWeights.regular,
+    lineHeight: ({ theme }) => theme.lineHeights[2],
+    fontFamily: ({ theme }) => theme.fonts.body,
   },
   space,
   position,

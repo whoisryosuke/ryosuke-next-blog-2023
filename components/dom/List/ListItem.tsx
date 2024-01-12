@@ -6,7 +6,7 @@ type Props = {};
 
 const ListItem = ({ children, ...props }: PropsWithChildren<Props>) => {
   return (
-    <Box as="li" mb={4} {...props}>
+    <Box as="li" mb={4} color="text" {...props}>
       <Text as="p" fontSize={3} lineHeight={6}>
         {children}
       </Text>
