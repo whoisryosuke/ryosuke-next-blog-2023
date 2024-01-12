@@ -1,6 +1,6 @@
 import BlogTransition from "@components/dom/BlogTransition/BlogTransition";
 import { POSTS_PATH, postFilePaths } from "@utils/mdxUtils";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import fs from "fs";
 import matter from "gray-matter";
 import Stack from "@components/dom/Stack/Stack";
@@ -9,15 +9,18 @@ import { H2, H3, H4 } from "@components/dom/Headline/Headers";
 import BlogCard, { BlogPostData } from "@components/dom/BlogCard/BlogCard";
 import { useBlogStore } from "@store/blog";
 import Head from "@components/dom/Head/Head";
+import BlogTagSearch from "@components/dom/BlogTagSearch/BlogTagSearch";
 
 type Props = {
   posts: BlogPostData[];
+  allTags: string[];
 };
 
 type PostsByYear = Record<string, BlogPostData[]>;
 
-const BlogArchivePage = ({ posts }: Props) => {
+const BlogArchivePage = ({ posts, allTags }: Props) => {
   const { setTitle, resetTableOfContents } = useBlogStore();
+  const [selectedTag, setSelectedTag] = useState("");
 
   useEffect(() => {
     setTitle("Blog Archive");
@@ -48,36 +51,61 @@ const BlogArchivePage = ({ posts }: Props) => {
     }, {} as PostsByYear)
   );
 
+  const handleTagSelect = (e: React.FormEvent<HTMLSelectElement>) => {
+    setSelectedTag(e.currentTarget.value);
+  };
+
+  console.log("all tags", allTags);
+
   return (
     <BlogTransition>
       <Head title="Blog Archive" />
-      {postsByYear.reverse().map(([year, posts]) => (
-        <Box key={year} marginBottom={8}>
-          <H2 marginTop={0}>{year}</H2>
-          <Stack
-            vertical
-            gap="0px"
-            position="relative"
-            ml={-8}
-            left={0}
-            width="calc(100% + 128px)"
-          >
-            {posts.map((post) => (
-              <BlogCard key={post.slug} post={post} />
-            ))}
-          </Stack>
-        </Box>
-      ))}
+      <BlogTagSearch
+        selectedTag={selectedTag}
+        handleTagSelect={handleTagSelect}
+        allTags={allTags}
+      />
+      {postsByYear.reverse().map(([year, posts]) => {
+        const filteredPosts = posts.filter(
+          (post) =>
+            selectedTag == "" || post.frontmatter.tags.includes(selectedTag)
+        );
+
+        if (filteredPosts.length == 0) return;
+
+        return (
+          <Box key={year} marginBottom={8}>
+            <H2 marginTop={0}>{year}</H2>
+            <Stack
+              vertical
+              gap="0px"
+              position="relative"
+              ml={-8}
+              left={0}
+              width="calc(100% + 128px)"
+            >
+              {filteredPosts.map((post) => (
+                <BlogCard key={post.slug} post={post} />
+              ))}
+            </Stack>
+          </Box>
+        );
+      })}
     </BlogTransition>
   );
 };
 
 export async function getStaticProps() {
   const rawPosts = await postFilePaths();
+  let tagSet = new Set();
   // Remove root path
   const posts = rawPosts.map((filePath) => {
     const source = fs.readFileSync(filePath);
     const { content, data } = matter(source);
+
+    if (data.tags && data.tags.length > 0) {
+      data.tags.forEach((tag) => tagSet.add(tag));
+    }
 
     // Generate a slug
     const slug = filePath
@@ -93,7 +121,11 @@ export async function getStaticProps() {
     };
   });
 
-  return { props: { posts } };
+  let allTags = [];
+  tagSet.forEach((tag) => allTags.push(tag));
+  allTags = allTags.sort();
+
+  return { props: { posts, allTags } };
 }
 
 export default BlogArchivePage;
