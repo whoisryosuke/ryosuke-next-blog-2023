@@ -12,18 +12,26 @@ I thought I'd share what happened along the way, and what mistakes when establis
 # The Result
 
 <div style={{ display: "flex" }}>
-  <div style={{ width: "50%" }}>
-    <img src="./frontpage-light.png" alt="Frontpage (Light Mode)" />
-  </div>
-  <div style={{ width: "50%" }}>
-    <img src="./frontpage-dark.png" alt="Frontpage (Dark Mode)" />
-  </div>
-  <div style={{ width: "50%" }}>
-    <img src="./projects-light.png" alt="Projects (Light Mode)" />
-  </div>
-  <div style={{ width: "50%" }}>
-    <img src="./projects-dark.png" alt="Projects (Dark Mode)" />
-  </div>
+<div style={{ width: "50%" }}>
+
+![Frontpage (Light Mode)](./frontpage-light.png)
+
+</div>
+<div style={{ width: "50%" }}>
+
+![Frontpage (Dark Mode)](./frontpage-dark.png)
+
+</div>
+<div style={{ width: "50%" }}>
+
+![Projects (Light Mode)](./projects-light.png)
+
+</div>
+<div style={{ width: "50%" }}>
+
+![Projects (Dark Mode)](./projects-dark.png)
+
+</div>
 </div>
 
 # Process
@@ -186,18 +194,16 @@ I also had issues with the way I named my variables. When I need to use a light,
 Don't exist. I have an SVG image I use as a background image for my `<Featured>` card. It's an SVG pattern of black triangles on a transparent background. Because of the way things work together, you can't have a Styled Component wrapped SVG work inside a Styled Component CSS block. This is because the `background-image` property leverages Webpack's build process to convert SVG elements into URI encoded data (long string prefixed by `data:image/svg+xml;base64,` with escaped HTML characters).
 
 <div style={{ display: "flex" }}>
-  <div style={{ width: "50%" }}>
-    <img
-      src="./featured-card-light.png"
-      alt="Featured Card with SVG background (Light Mode)"
-    />
-  </div>
-  <div style={{ width: "50%" }}>
-    <img
-      src="./featured-card-dark.png"
-      alt="Featured Card with SVG background (Dark Mode)"
-    />
-  </div>
+<div style={{ width: "50%" }}>
+
+![Featured Card with SVG background (Light Mode)](./feature-card-light.png)
+
+</div>
+<div style={{ width: "50%" }}>
+
+![Featured Card with SVG background (Dark Mode)](./feature-card-dark.png)
+
+</div>
 </div>
 
 Since I was only using a single SVG element, I just created a "dark" version, duplicating the SVG file and replacing the fill colors with lighter versions. Then in Styled Components, I used a `selectedTheme` prop to check for a "dark" theme and swap out the other BG.
