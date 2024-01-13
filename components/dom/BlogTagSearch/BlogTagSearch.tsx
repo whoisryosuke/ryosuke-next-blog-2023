@@ -44,9 +44,6 @@ const BlogTagSearch = ({ allTags, selectedTag, handleTagSelect }: Props) => {
         </Input>
         <BiSolidDownArrow className="icon" />
       </BlogTagSearchContainer>
-      {selectedTag !== "" && (
-        <H1>{`Browsing all posts tagged "${selectedTag}"`}</H1>
-      )}
     </Box>
   );
 };

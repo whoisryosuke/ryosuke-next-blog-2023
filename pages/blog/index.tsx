@@ -53,11 +53,21 @@ const BlogArchivePage = ({ posts, allTags }: Props) => {
 
   const handleTagSelect = (e: React.FormEvent<HTMLSelectElement>) => {
     setSelectedTag(e.currentTarget.value);
+    if (e.currentTarget.value == "") setTitle("Blog Archive");
+
+    if (e.currentTarget.value !== "")
+      setTitle(`Browsing all posts tagged "${selectedTag}"`);
   };
 
   return (
     <BlogTransition>
-      <Head title="Blog Archive" />
+      <Head
+        title={
+          selectedTag !== ""
+            ? `Browsing all posts tagged "${selectedTag}"`
+            : "Blog Archive"
+        }
+      />
       <BlogTagSearch
         selectedTag={selectedTag}
         handleTagSelect={handleTagSelect}
