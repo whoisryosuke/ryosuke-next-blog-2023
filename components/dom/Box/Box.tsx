@@ -27,8 +27,8 @@ export type BoxProps = SpaceProps &
   BorderProps & {
     borderRadius?: keyof Theme["radius"];
   };
-// example using object syntax
 const Box = styled("div")<BoxProps>(
+  //@ts-ignore
   {
     boxSizing: "border-box",
     perspective: "500px",

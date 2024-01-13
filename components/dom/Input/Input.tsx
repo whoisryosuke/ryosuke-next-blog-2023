@@ -9,6 +9,7 @@ type Props = DetailedHTMLProps<
   InputHTMLAttributes<HTMLInputElement>,
   HTMLInputElement
 > & {
+  as?: any;
   style?: React.CSSProperties;
   icon?: React.ReactElement | boolean;
   borderRadius?: keyof Theme["radius"];
