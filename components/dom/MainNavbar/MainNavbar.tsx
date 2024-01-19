@@ -133,7 +133,7 @@ const MainNavbar = ({ ...props }: MenuProps) => {
           flexDirection={orientation == "left" ? "column" : "row"}
         >
           <Button
-            as="a"
+            as={Link}
             // @ts-ignore hard to image I know
             href="/"
             title="Home"
