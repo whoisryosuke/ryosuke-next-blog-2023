@@ -2,6 +2,7 @@ import React, {
   ButtonHTMLAttributes,
   DetailedHTMLProps,
   PropsWithChildren,
+  useEffect,
 } from "react";
 import styled, { css } from "styled-components";
 import Text from "../Text/Text";
@@ -23,6 +24,8 @@ import {
 import { Theme } from "@theme/index";
 import { borderShineEffect } from "@theme/styles/glass";
 import { BREAKPOINTS } from "@theme/tokens";
+import { useAppStore } from "@store/app";
+import { useInputStore } from "@store/input";
 
 type ButtonProps = DetailedHTMLProps<
   ButtonHTMLAttributes<HTMLButtonElement>,
@@ -148,7 +151,15 @@ const Button = ({
   onlyIcon,
   ...props
 }: PropsWithChildren<ButtonProps>) => {
+  const { input } = useInputStore();
   const { ref, focused } = useFocusable();
+
+  useEffect(() => {
+    if (input.confirm && focused) {
+      ref.current.click();
+    }
+  }, [input.confirm, focused]);
+
   return (
     <StyledButton ref={ref} solid={focused} onlyIcon={onlyIcon} {...props}>
       {icon && (

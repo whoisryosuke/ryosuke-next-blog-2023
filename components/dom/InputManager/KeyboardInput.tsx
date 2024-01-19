@@ -40,7 +40,7 @@ const KeyboardInput = (props: Props) => {
   useKeyPress("s", null, movePlayerDown, movePlayerDownDone);
   useKeyPress("a", null, movePlayerLeft, movePlayerLeftDone);
   useKeyPress("d", null, movePlayerRight, movePlayerRightDone);
-  useKeyPress("'", null, playerConfirm, playerConfirmDone);
+  useKeyPress("Enter", null, playerConfirm, playerConfirmDone);
 
   return <></>;
 };
