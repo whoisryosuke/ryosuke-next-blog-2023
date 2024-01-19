@@ -18,7 +18,7 @@ const SwitchButton = styled("span")`
   display: block;
 
   ${StyledSwitch}:checked ~ & {
-    background: ${({ theme }) => theme.colors.success};
+    background: ${({ theme }) => theme.colors.primary.default};
     transform: translateX(28px);
   }
 
