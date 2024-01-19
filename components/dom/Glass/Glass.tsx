@@ -25,6 +25,9 @@ const Glass = styled(Box)<GlassProps>`
   transform: ${({ theme, modal }) =>
     theme.modal && !modal ? MODAL_OPEN_TRANSFORM : MODAL_CLOSED_TRANSFORM};
 
+  filter: ${({ theme, modal }) =>
+    theme.modal && !modal ? "blur(4.20px)" : "none"};
+
   /* Animation */
   @media (prefers-reduced-motion: no-preference) {
     transition-property: transform;
