@@ -85,7 +85,7 @@ const StyledMenu = styled(Glass)<MenuProps>`
 
 const MainNavbar = ({ ...props }: MenuProps) => {
   const { ref, focusKey, focusSelf } = useFocusable();
-  const { openModal, modalName, customizations } = useAppStore();
+  const { openModal, modalName, customizations, theme } = useAppStore();
   const windowSize = useWindowSize();
   const router = useRouter();
 
@@ -93,9 +93,11 @@ const MainNavbar = ({ ...props }: MenuProps) => {
     windowSize.width < 800 ? "bottom" : "left";
   const marginRight = orientation == "left" ? 0 : "8px";
   const marginBottom = orientation == "left" ? "8px" : 0;
+  const isLightTheme = theme == "light";
+  const contrastColor = isLightTheme ? "#000" : null;
   const buttonColor =
     orientation == "bottom" && customizations.theme.highContrastBlog
-      ? "#000"
+      ? contrastColor
       : null;
 
   const handleAchievementsModal = () => {
