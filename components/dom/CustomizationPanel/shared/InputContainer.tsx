@@ -9,7 +9,7 @@ type Props = {
 
 const InputContainer = ({ label, input, ...props }: Props) => {
   return (
-    <Stack alignItems="center" {...props}>
+    <Stack alignItems="center" responsive={false} {...props}>
       <Box flex={1}>{label}</Box>
       <Box width="70%" display="flex" justifyContent="flex-end">
         {input}
