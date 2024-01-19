@@ -32,9 +32,10 @@ type Props = {
 
 const BlogPage = ({ children, ...props }: PropsWithChildren<Props>) => {
   const router = useRouter();
-  const { openModal, modalName, customizations } = useAppStore();
+  const { openModal, modalName, customizations, theme } = useAppStore();
   const { title, tableOfContents, slug } = useBlogStore();
   const boxRef = useRef(null);
+  const isLightTheme = theme == "light";
 
   useEffect(() => {
     boxRef?.current?.scrollTo(0, 0);
@@ -43,8 +44,8 @@ const BlogPage = ({ children, ...props }: PropsWithChildren<Props>) => {
   const customTheme = customizations.theme.highContrastBlog
     ? {
         colors: {
-          glass: "rgba(245,245,245,1.0)",
-          text: "rgba(10,10,10,1.0)",
+          glass: isLightTheme ? "rgba(245,245,245,1.0)" : "rgba(5,5,5,1.0)",
+          text: isLightTheme ? "rgba(10,10,10,1.0)" : "rgba(240,240,240,1.0)",
         },
       }
     : {};
