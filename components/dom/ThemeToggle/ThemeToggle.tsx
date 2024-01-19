@@ -6,11 +6,7 @@ import { useAppStore } from "store/app";
 type Props = {};
 
 const ThemeToggle = (props: Props) => {
-  const { theme, toggleTheme, setTheme } = useAppStore();
-  const prevTheme = useRef("");
-  const rootDiv = useRef(null);
-  const colorMode = theme === "light" ? themes.light : themes.dark;
-  const oldTheme = theme !== "light" ? themes.light : themes.dark;
+  const { setTheme } = useAppStore();
 
   // Check the user's device setting and override with that
   useEffect(() => {
@@ -36,11 +32,7 @@ const ThemeToggle = (props: Props) => {
     };
   }, []);
 
-  return (
-    <button onClick={toggleTheme}>
-      {theme === "light" ? <TbMoonStars /> : <TbSun />}
-    </button>
-  );
+  return <></>;
 };
 
 export default ThemeToggle;

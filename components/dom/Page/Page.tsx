@@ -33,6 +33,7 @@ const Page = ({ children, transparent = false }: PropsWithChildren<Props>) => {
     <StyleSheetManager enableVendorPrefixes shouldForwardProp={isPropValid}>
       <ThemeProvider>
         <A11yCheck />
+        <ThemeToggle />
         <GlobalStyles />
         <Paper
           id="root-content"
@@ -44,9 +45,6 @@ const Page = ({ children, transparent = false }: PropsWithChildren<Props>) => {
         >
           <main>
             <MainNavbar orientation="left" />
-            <Box as="header" position="absolute" bottom={1} left={1}>
-              <ThemeToggle />
-            </Box>
 
             <Box minHeight="100vh" width="100%" position="relative">
               <Box
@@ -67,7 +65,7 @@ const Page = ({ children, transparent = false }: PropsWithChildren<Props>) => {
                 }}
               />
               <Box
-                background="rgba(0,0,0,0.6)"
+                backgroundColor="background_overlay"
                 minHeight="100vh"
                 width="100%"
                 zIndex={-419}
