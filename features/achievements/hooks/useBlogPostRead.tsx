@@ -6,8 +6,12 @@ import createAchievementToast from "../createAchievementToast";
 
 const useBlogPostRead = () => {
   const [loaded, setLoaded] = useState(false);
-  const { addAchievement, achievementData, updateAchievementData } =
-    useAppStore();
+  const {
+    achievementNotification,
+    addAchievement,
+    achievementData,
+    updateAchievementData,
+  } = useAppStore();
   const { addToast } = useToastStore();
 
   useEffect(() => {
@@ -44,12 +48,14 @@ const useBlogPostRead = () => {
         // Save achievement to data store
         blogReadAchievement(key);
 
-        // Send out a notification toast about it
-        const toast = createAchievementToast({
-          ...ACHIEVEMENT_LIST.blog[key],
-          icon: "",
-        });
-        addToast(toast);
+        if (achievementNotification) {
+          // Send out a notification toast about it
+          const toast = createAchievementToast({
+            ...ACHIEVEMENT_LIST.blog[key],
+            icon: "",
+          });
+          addToast(toast);
+        }
       }
 
       // Set blog post as loaded so this won't run again until new page load

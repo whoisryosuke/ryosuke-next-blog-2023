@@ -13,6 +13,8 @@ export type TextProps<ElementType = HTMLParagraphElement> = ColorProps &
   TypographyProps &
   MarginProps &
   React.HTMLAttributes<ElementType> & {
+    as?: string;
+    for?: string;
     fontWeight?: keyof Theme["fontWeights"];
     display?: React.CSSProperties["display"];
   };

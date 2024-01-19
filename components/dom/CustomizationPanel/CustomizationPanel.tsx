@@ -7,15 +7,16 @@ import Stack from "../Stack/Stack";
 import Box from "../Box/Box";
 import ScrollBox from "../ScrollBox/ScrollBox";
 import WindowHeader from "../WindowHeader/WindowHeader";
-import { BiFont, BiBook } from "react-icons/bi";
+import { BiFont, BiBook, BiTrophy } from "react-icons/bi";
 import TypographyPanel from "./panels/TypographyPanel";
 import BlogCustomizationPanel from "./panels/BlogCustomizationPanel";
 import { useWindowSize } from "usehooks-ts";
 import { BREAKPOINTS_RAW } from "@theme/tokens";
+import AchievementsPanel from "./panels/AchievementsPanel";
 
 const PANELS = {
   typography: {
-    title: "Typography",
+    title: "Theme",
     icon: <BiFont />,
     panel: <TypographyPanel />,
   },
@@ -23,6 +24,11 @@ const PANELS = {
     title: "Blog",
     icon: <BiBook />,
     panel: <BlogCustomizationPanel />,
+  },
+  achievements: {
+    title: "Achievements",
+    icon: <BiTrophy />,
+    panel: <AchievementsPanel />,
   },
 };
 

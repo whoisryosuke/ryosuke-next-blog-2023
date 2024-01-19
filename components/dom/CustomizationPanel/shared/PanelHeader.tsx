@@ -1,7 +1,8 @@
+import { BoxProps } from "@components/dom/Box/Box";
 import { H4 } from "@components/dom/Headline/Headers";
 import React, { PropsWithChildren } from "react";
 
-type Props = {};
+type Props = BoxProps & {};
 
 const PanelHeader = ({ children, ...props }: PropsWithChildren<Props>) => {
   return (

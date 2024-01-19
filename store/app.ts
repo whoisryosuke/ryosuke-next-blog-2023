@@ -124,7 +124,7 @@ export const useAppStore = create<AppState>()(
         })),
 
       // Achievements
-      achievementNotification: false,
+      achievementNotification: true,
       achievementsLog: [],
       achievementData: DEFAULT_ACHIEVEMENT_DATA,
       updateAchievementData: (newAchievementData) =>

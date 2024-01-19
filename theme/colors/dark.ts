@@ -1,12 +1,13 @@
 export const primaryColors = {
-  text: "rgba(234,234,241,1)",
-  textOverlay: "rgba(6,6,19,0.7)",
-  textInverted: "rgba(6,6,19,1)",
+  text: "rgba(234,234,241,0.9)",
+  textOverlay: "rgba(234,234,241,0.7)",
+  textInverted: "rgba(16,16,9,1)",
   reading: "rgba(221,221,228,1)",
   background: "rgba(10,10,14,1)",
   background_level1: "rgba(225,225,225,1)",
   background_level2: "rgba(200,200,200,1)",
   background_level3: "rgba(100,100,100,1)",
+  background_overlay: "rgba(0,0,0,0.8)",
   glass: "rgba(40, 40, 40, 0.65)",
   glassBorder: "rgba(40, 40, 40, 0.75)",
   glassSidebar: "rgba(40, 40, 40,0.2)",
@@ -15,7 +16,7 @@ export const primaryColors = {
   darkGlass: {
     panel: "rgba(31,31,31,0.6)",
     input: "rgba(0,0,0,0.25)",
-    focused: "rgba(200,196,193,0.1)",
+    focused: "rgba(200,196,193,0.8)",
   },
   button: {
     default: "rgba(242, 242, 242, 0.1)",
