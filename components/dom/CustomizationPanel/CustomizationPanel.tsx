@@ -2,28 +2,16 @@ import React, { useState } from "react";
 import Modal from "../Modal/Modal";
 import { useAppStore } from "@store/app";
 import Glass from "../Glass/Glass";
-import Text from "../Text/Text";
 import Button from "../Button/Button";
-import { Theme } from "@theme/index";
-import Headline from "../Headline/Headline";
-import Slider from "../Slider/Slider";
 import Stack from "../Stack/Stack";
 import Box from "../Box/Box";
 import ScrollBox from "../ScrollBox/ScrollBox";
 import WindowHeader from "../WindowHeader/WindowHeader";
-import {
-  BiDotsHorizontal,
-  BiMusic,
-  BiMicrophone,
-  BiTime,
-  BiFolder,
-  BiBong,
-  BiUser,
-  BiFont,
-  BiBook,
-} from "react-icons/bi";
+import { BiFont, BiBook } from "react-icons/bi";
 import TypographyPanel from "./panels/TypographyPanel";
 import BlogCustomizationPanel from "./panels/BlogCustomizationPanel";
+import { useWindowSize } from "usehooks-ts";
+import { BREAKPOINTS_RAW } from "@theme/tokens";
 
 const PANELS = {
   typography: {
@@ -47,6 +35,7 @@ type Props = {
 const CustomizationPanel = ({ open, ...props }: Props) => {
   const { toggleModal } = useAppStore();
   const [currentPanel, setCurrentPanel] = useState<PanelNames>("typography");
+  const windowSize = useWindowSize();
 
   const onClose = () => {
     toggleModal(false);
@@ -85,7 +74,10 @@ const CustomizationPanel = ({ open, ...props }: Props) => {
               sidebar
             />
 
-            <Stack vertical>
+            <Stack
+              vertical={windowSize.width > BREAKPOINTS_RAW.tablet}
+              responsive={false}
+            >
               {panelsMap.map(([key, panel]) => (
                 <Button
                   key={key}
