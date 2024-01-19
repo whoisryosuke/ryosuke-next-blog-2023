@@ -8,6 +8,7 @@ import {
   MODAL_CLOSED_TRANSFORM,
   MODAL_OPEN_TRANSFORM,
 } from "@theme/styles/modal";
+import { BREAKPOINTS } from "@theme/tokens";
 
 type GlassProps = BoxProps & {
   transparent?: boolean;
@@ -25,8 +26,14 @@ const Glass = styled(Box)<GlassProps>`
   transform: ${({ theme, modal }) =>
     theme.modal && !modal ? MODAL_OPEN_TRANSFORM : MODAL_CLOSED_TRANSFORM};
 
-  filter: ${({ theme, modal }) =>
-    theme.modal && !modal ? "blur(4.20px)" : "none"};
+  @media (min-width: ${BREAKPOINTS.default}) {
+    filter: ${({ theme, modal }) =>
+      theme.modal && !modal ? "blur(4.20px)" : "none"};
+  }
+
+  @media (min-width: ${BREAKPOINTS.desktop}) {
+    filter: none;
+  }
 
   /* Animation */
   @media (prefers-reduced-motion: no-preference) {
