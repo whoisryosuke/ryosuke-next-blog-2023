@@ -10,6 +10,7 @@ import Glass from "../Glass/Glass";
 import Box from "../Box/Box";
 import Text from "../Text/Text";
 import { H2, H3 } from "../Headline/Headers";
+import { getImageThumbnail } from "@utils/image";
 
 const GRID_GAP = "2px";
 const HERO_IMG_HEIGHT = "60vh";
@@ -83,10 +84,12 @@ const PortfolioGridView = ({ work, category, handleNavigateWork }: Props) => {
               {/* Grid underneath */}
               <Grid cols={6} columnGap={1} rowGap={1}>
                 {restWork.map((workItem) => {
+                  const filename = getImageThumbnail(workItem.src);
                   return (
                     <PortfolioGridItem
                       key={workItem.id}
                       {...workItem}
+                      src={filename}
                       height="150px"
                       handleNavigateWork={handleNavigateWork}
                     />
