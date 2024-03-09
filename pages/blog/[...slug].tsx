@@ -31,7 +31,12 @@ function transformImgSrc({ slug }) {
   };
 }
 
-export default function PostPage({ source, frontMatter, slug }) {
+export default function PostPage({
+  source,
+  frontMatter,
+  slug,
+  enabledComponents,
+}) {
   const { setTitle, setSlug, resetTableOfContents } = useBlogStore();
 
   useEffect(() => {
@@ -57,7 +62,7 @@ export default function PostPage({ source, frontMatter, slug }) {
   return (
     <BlogTransition>
       <Head title={frontMatter.title} meta={meta} />
-      <MDXRemote {...source} components={components} />
+      <MDXRemote {...source} components={components(enabledComponents)} />
     </BlogTransition>
   );
 }
@@ -88,6 +93,10 @@ export const getStaticProps = async ({ params }) => {
 
   const { content, data } = matter(source);
 
+  const enabledComponents = [/<P5Viz/.test(content) ? "P5Viz" : null].filter(
+    Boolean
+  );
+
   const mdxSource = await serialize(content, {
     // Optionally pass remark/rehype plugins
     mdxOptions: {
@@ -106,6 +115,7 @@ export const getStaticProps = async ({ params }) => {
       source: mdxSource,
       frontMatter: data,
       slug: slugPath,
+      enabledComponents,
     },
   };
 };
