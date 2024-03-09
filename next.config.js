@@ -1,8 +1,11 @@
+const withMDX = require("@next/mdx")();
+
 // The NextJS config defined separately
 // Gets passed to next-offline
 const nextConfig = {
   distDir: "build",
   output: "export",
+  pageExtensions: ["js", "jsx", "mdx", "ts", "tsx"],
   removeConsole: false,
   images: {
     unoptimized: true,
@@ -39,4 +42,4 @@ const nextConfig = {
   },
 };
 
-module.exports = nextConfig;
+module.exports = withMDX(nextConfig);
