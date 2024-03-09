@@ -13,6 +13,7 @@ export function MdxLayout({ children }) {
 # Welcome to my MDX page!
 
 export function TestViz() {
+  let time = 0;
     const canvasSize = { 
         x: 500,
         y: 500,
@@ -32,7 +33,11 @@ export function TestViz() {
     p.background("#333"); // Set the background to black
     
     p.fill("#008080");
-    p.ellipse(canvasSize.x / 2, canvasSize.y / 2, 72, 72);
+    const distance = 10;
+    const speed = 120; // larger = slower
+    const offsetX = p.sin(p.millis() / speed) * distance; 
+    const offsetY = p.cos(p.millis() / speed) * distance; 
+    p.ellipse(canvasSize.x / 2 + offsetX, canvasSize.y / 2 + offsetY, 72, 72);
 
         p.pop();
         }
