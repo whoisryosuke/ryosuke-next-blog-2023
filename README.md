@@ -23,7 +23,7 @@ I use [`next-mdx-remote`](https://github.com/hashicorp/next-mdx-remote) to load 
 
 However, I do use NextJS MDX parser for specific use cases. When I need to support writing inline React components (like P5JS visualizations), the MDX file is placed inside the [/pages/](/pages/) directory. `next-mdx-remote` [doesn't support "import/export" of React components](https://github.com/hashicorp/next-mdx-remote?tab=readme-ov-file#import--export), so any component used in the MDX file needs to be explicitly listed in the [`MDXComponents`](/components/dom/MDXComponents/MDXComponents.tsx). This process sucks when you want to create one-off example React components - which is why some pages use the NextJS parser.
 
-All this said, when **creating a new NextJS-powered MDX page**, make sure to include the frontmatter in a YAML format and exported to a layout component:
+All this said, when **creating a new NextJS-powered MDX page**, make sure to include the frontmatter in a YAML format **_and_** exported to a layout component:
 
 ```mdx
 ---
