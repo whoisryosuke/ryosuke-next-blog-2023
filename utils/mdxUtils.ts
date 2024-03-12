@@ -34,12 +34,14 @@ const getFiles = async (dir: string): Promise<string[]> => {
 };
 
 const getPosts = async () => {
-  const files = await getFiles(POSTS_PATH);
-  return files;
+  const rawFiles = await getFiles(POSTS_PATH);
+  const pageFiles = await getFiles(FILES_PATH);
+  return [...rawFiles, ...pageFiles];
 };
 
 // POSTS_PATH is useful when you want to get the path to a specific file
 export const POSTS_PATH = path.join(process.cwd(), "content");
+export const FILES_PATH = path.join(process.cwd(), "pages");
 
 // postFilePaths is the list of all mdx files inside the POSTS_PATH directory
 export const postFilePaths = async () => await getPosts();

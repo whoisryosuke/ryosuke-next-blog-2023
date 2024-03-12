@@ -3,7 +3,7 @@ import matter from "gray-matter";
 import { MDXRemote } from "next-mdx-remote";
 import { serialize } from "next-mdx-remote/serialize";
 import path from "path";
-import { postFilePaths, POSTS_PATH } from "@utils/mdxUtils";
+import { FILES_PATH, postFilePaths, POSTS_PATH } from "@utils/mdxUtils";
 import { visit } from "unist-util-visit";
 import remarkPrism from "remark-prism";
 import "prismjs/themes/prism-tomorrow.css";
@@ -93,6 +93,7 @@ export const getStaticProps = async ({ params }) => {
 
   const { content, data } = matter(source);
 
+  // We check for dynamic components and make a list of any we detect
   const enabledComponents = [/<P5Viz/.test(content) ? "P5Viz" : null].filter(
     Boolean
   );

@@ -1,16 +1,33 @@
-import dynamic from "next/dynamic";
+---
+title: Intro to Visualizing Audio Programming
+date: "2024-02-26"
+tags: ["blender", "ui", "tips"]
+cover_image: "./how-i-made-the-render-buddy-blender-plugin.png"
+---
 
-export const P5VizDynamic = dynamic(
+import dynamic from "next/dynamic";
+export const BlogMDXWrapper = dynamic(
+  () => import("@components/dom/BlogMDXWrapper/BlogMDXWrapper"),
+  { ssr: false }
+);
+export default function Layout({children}) {
+  const frontmatter = {
+    title: "Intro to Visualizing Audio Programming",
+    date: "2024-03-12",
+    section: "blog",
+    tags: ["blender", "ui", "tips"],
+    cover_image: "./how-i-made-the-render-buddy-blender-plugin.png",
+  }
+  return <BlogMDXWrapper frontMatter={frontmatter} slug="test-mdx">{children}</BlogMDXWrapper>;
+
+}
+
+export const P5Viz = dynamic(
   () => import("@components/dom/P5Viz/P5Viz"),
   { ssr: false }
 );
-
-export function MdxLayout({ children }) {
-  // Create any shared layout or styles here
-  return <div style={{ color: 'blue' }}>{children}</div>
-}
  
-# Welcome to my MDX page!
+# MIDI
 
 export function TestViz() {
   let time = 0;
@@ -44,7 +61,7 @@ export function TestViz() {
 
     };
 
-    return <P5VizDynamic title="Test Viz" sketch={sketch} width={canvasSize.x} height={canvasSize.y} />
+    return <P5Viz title="Test Viz" sketch={sketch} width={canvasSize.x} height={canvasSize.y} />
 
 }
 

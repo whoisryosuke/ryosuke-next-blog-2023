@@ -1,4 +1,5 @@
-const withMDX = require("@next/mdx")();
+import createMDX from "@next/mdx";
+import remarkFrontmatter from "remark-frontmatter";
 
 // The NextJS config defined separately
 // Gets passed to next-offline
@@ -42,4 +43,13 @@ const nextConfig = {
   },
 };
 
-module.exports = withMDX(nextConfig);
+const withMDX = createMDX({
+  // Add markdown plugins here, as desired
+  options: {
+    remarkPlugins: [remarkFrontmatter],
+    rehypePlugins: [],
+  },
+});
+
+// Merge MDX config with Next.js config
+export default withMDX(nextConfig);

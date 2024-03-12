@@ -1,5 +1,5 @@
 import BlogTransition from "@components/dom/BlogTransition/BlogTransition";
-import { POSTS_PATH, postFilePaths } from "@utils/mdxUtils";
+import { FILES_PATH, POSTS_PATH, postFilePaths } from "@utils/mdxUtils";
 import React, { useEffect, useState } from "react";
 import fs from "fs";
 import matter from "gray-matter";
@@ -118,6 +118,7 @@ export async function getStaticProps() {
     // Generate a slug
     const slug = filePath
       .replace(POSTS_PATH, "")
+      .replace(FILES_PATH, "")
       .replace(/\.mdx?$/, "")
       .replace("/index", "");
 

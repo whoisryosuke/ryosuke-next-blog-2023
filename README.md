@@ -1,83 +1,69 @@
-# MDX Remote Example
+# Ryosuke Blog and Portfolio
 
-This example shows how a simple blog might be built using the [next-mdx-remote](https://github.com/hashicorp/next-mdx-remote) library, which allows mdx content to be loaded via `getStaticProps` or `getServerSideProps`. The mdx content is loaded from a local folder, but it could be loaded from a database or anywhere else.
+This is the blog and portfolio of Ryosuke Hana circa 2024.
 
-The example also showcases [next-remote-watch](https://github.com/hashicorp/next-remote-watch), a library that allows next.js to watch files outside the `pages` folder that are not explicitly imported, which enables the mdx content here to trigger a live reload on change.
+## Getting Started
 
-Since `next-remote-watch` uses undocumented Next.js APIs, it doesn't replace the default `dev` script for this example. To use it, run `npm run dev:watch` or `yarn dev:watch`.
+1. Clone repo.
+1. `yarn` to install dependencies.
+1. `yarn dev` to spin up the site.
+1. Visit the app: http://localhost:1420
 
-## Deploy your own
+## How it works
 
-Deploy the example using [Vercel](https://vercel.com?utm_source=github&utm_medium=readme&utm_campaign=next-example):
+### Content
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/vercel/next.js/tree/canary/examples/with-mdx-remote&project-name=with-mdx-remote&repository-name=with-mdx-remote)
+Most content is a JSON file in the `/content/` folder, that's read by a page inside the `/pages/` folder.
 
-## How to use
+### MDX
 
-Execute [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app) with [npm](https://docs.npmjs.com/cli/init), [Yarn](https://yarnpkg.com/lang/en/docs/cli/create/), or [pnpm](https://pnpm.io) to bootstrap the example:
+All long form content on the website is powered by MDX. MDX is a superset of Markdown that enabled you to use JavaScript and React. [Learn more here.](https://mdxjs.com/)
 
-```bash
-npx create-next-app --example with-mdx-remote with-mdx-remote-app
-```
+I use [`next-mdx-remote`](https://github.com/hashicorp/next-mdx-remote) to load the MDX remotely from the [/content/](/content/) folder. This allows us to control the rendering of the MDX better at scale, like parsing frontmatter. The MDX parser built in with NextJS is a bit more strict and requires strange workarounds that would've required massive changes to years worth of content - so I opted for better support now (and in the long run).
 
-```bash
-yarn create next-app --example with-mdx-remote with-mdx-remote-app
-```
+However, I do use NextJS MDX parser for specific use cases. When I need to support writing inline React components (like P5JS visualizations), the MDX file is placed inside the [/pages/](/pages/) directory. `next-mdx-remote` [doesn't support "import/export" of React components](https://github.com/hashicorp/next-mdx-remote?tab=readme-ov-file#import--export), so any component used in the MDX file needs to be explicitly listed in the [`MDXComponents`](/components/dom/MDXComponents/MDXComponents.tsx). This process sucks when you want to create one-off example React components - which is why some pages use the NextJS parser.
 
-```bash
-pnpm create next-app --example with-mdx-remote with-mdx-remote-app
-```
+All this said, when **creating a new NextJS-powered MDX page**, make sure to include the frontmatter in a YAML format and exported to a layout component:
 
-Deploy it to the cloud with [Vercel](https://vercel.com/new?utm_source=github&utm_medium=readme&utm_campaign=next-example) ([Documentation](https://nextjs.org/docs/deployment)).
+```mdx
+---
+title: Intro to Visualizing Audio Programming
+date: "2024-02-26"
+tags: ["blender", "ui", "tips"]
+cover_image: "./how-i-made-the-render-buddy-blender-plugin.png"
+---
 
-## Notes
-
-### Conditional custom components
-
-When using `next-mdx-remote`, you can pass custom components to the MDX renderer. However, some pages/MDX files might use components that are used infrequently, or only on a single page. To avoid loading those components on every MDX page, you can use `next/dynamic` to conditionally load them.
-
-For example, here's how you can change `getStaticProps` to pass a list of component names, checking the names in the page render function to see which components need to be dynamically loaded.
-
-```js
-import dynamic from 'next/dynamic'
-import Test from '../components/test'
-
-const SomeHeavyComponent = dynamic(() => import('SomeHeavyComponent'))
-
-const defaultComponents = { Test }
-
-export function SomePage({ mdxSource, componentNames }) {
-  const components = {
-    ...defaultComponents,
-    SomeHeavyComponent: componentNames.includes('SomeHeavyComponent')
-      ? SomeHeavyComponent
-      : null,
+import dynamic from "next/dynamic";
+export const BlogMDXWrapper = dynamic(
+  () => import("@components/dom/BlogMDXWrapper/BlogMDXWrapper"),
+  { ssr: false }
+);
+export default function Layout({children}) {
+  const frontmatter = {
+    title: "Intro to Visualizing Audio Programming",
+    date: "2024-03-12",
+    section: "blog",
+    tags: ["blender", "ui", "tips"],
+    cover_image: "./how-i-made-the-render-buddy-blender-plugin.png",
   }
+  return <BlogMDXWrapper frontMatter={frontmatter} slug="test-mdx">{children}</BlogMDXWrapper>;
 
-  return <MDXRemote {...mdxSource} components={components} />
-}
-
-export async function getStaticProps() {
-  const source = `---
-  title: Conditional custom components
-  ---
-
-  Some **mdx** text, with a default component <Test name={title}/> and a Heavy component <SomeHeavyComponent />
-  `
-
-  const { content, data } = matter(source)
-
-  const componentNames = [
-    /<SomeHeavyComponent/.test(content) ? 'SomeHeavyComponent' : null,
-  ].filter(Boolean)
-
-  const mdxSource = await serialize(content)
-
-  return {
-    props: {
-      mdxSource,
-      componentNames,
-    },
-  }
 }
 ```
+
+### MDX Page Flow
+
+1. Content is written in `/content/` or `/pages/` in MDX files.
+1. Content is loaded based on the right route.
+
+- The `/pages/blog/[...slug].tsx` grabs pages from `/content/`
+- Or the direct MDX file is loaded in the `/pages/`
+
+1. The page is wrapped in `<MDXBlogWrapper>`, which handles setting the page title in the HTML metadata and UI (like the faux URL bar).
+1. The whole page is wrapped in a `<BlogPage>` component as well, which happens on the `/pages/app.tsx` level (it checks if route is blog and swaps layout).
+
+### MDX Images
+
+All images in MDX are relative to the file. So if you do `[Image here](./some-image.png)` in a blog post at `https://whoisryosuke.com/blog/2024/blender-rendering-optimization-tips`, the images will be at `https://whoisryosuke.com/blog/2024/blender-rendering-optimization-tips/some-image.png`.
+
+You can find all blog images inside the `/public/` folder in a subdirectory that matches the content (e.g. `public\blog\2024\blender-rendering-optimization-tips\Untitled.png`).
