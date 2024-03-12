@@ -11,13 +11,14 @@ const BlogHeadline = ({
   title,
   ...props
 }: PropsWithChildren<Props>) => {
-  const { addTOCItem } = useBlogStore();
+  const { tableOfContents, addTOCItem } = useBlogStore();
   useEffect(() => {
+    if (tableOfContents.find((tocItem) => tocItem.title === title)) return;
     addTOCItem({
       title: title,
       slug: `${kebabCase(title)}`,
     });
-  }, [title]);
+  }, [title, tableOfContents, addTOCItem]);
 
   return <>{children}</>;
 };
