@@ -23,11 +23,20 @@ export type UserCustomizations = {
   };
 };
 
+export interface CanvasSize {
+  width: number;
+  height: number;
+}
+
 interface AppState {
   // Theming
   theme: ThemeOptions;
   setTheme: (theme: ThemeOptions) => void;
   toggleTheme: () => void;
+
+  // Canvas sizing
+  canvasSize: CanvasSize;
+  setCanvasSize: (canvasSize: CanvasSize) => void;
 
   // User Customizations
   customizations: UserCustomizations;
@@ -63,6 +72,12 @@ export const useAppStore = create<AppState>()(
         set((state) => ({
           theme: state.theme === "light" ? "dark" : "light",
         })),
+
+      canvasSize: {
+        width: 0,
+        height: 0,
+      },
+      setCanvasSize: (canvasSize) => set((state) => ({ canvasSize })),
 
       customizations: {
         animation: {

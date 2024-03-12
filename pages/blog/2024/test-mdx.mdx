@@ -1,6 +1,6 @@
 ---
 title: Intro to Visualizing Audio Programming
-date: "2024-02-26"
+date: "2024-03-12"
 section: blog
 tags: ["blender", "ui", "tips"]
 cover_image: "./how-i-made-the-render-buddy-blender-plugin.png"
@@ -24,44 +24,32 @@ export default function Layout({children}) {
 }
 
 export const P5Viz = dynamic(
-  () => import("@components/dom/P5Viz/P5Viz"),
+  () => import("@components/dom/P5Viz/P5VizWrapper"),
   { ssr: false }
 );
  
 # MIDI
 
 export function TestViz() {
-  let time = 0;
-    const canvasSize = { 
-        x: 500,
-        y: 500,
-    }
-    const sketch = (p) => {
-    if(window === 'undefined') return;
-    let y = 100;
-    p.setup = () => {
-    console.log("setup canvas");
-    p.createCanvas(canvasSize.x, canvasSize.y);
-    p.stroke(255); // Set line drawing color to white
-    p.frameRate(30);
+
+    const setup = (p, colors) => {
+    console.log("setup canvas inside MDX");
     };
-    p.draw = () => {
-    if(window === 'undefined') return;
-    // console.log('drawing!!')
+    const draw = (p, colors, scene) => {
     p.background("#333"); // Set the background to black
-    
+
     p.fill("#008080");
     const distance = 10;
     const speed = 120; // larger = slower
-    const offsetX = p.sin(p.millis() / speed) * distance; 
-    const offsetY = p.cos(p.millis() / speed) * distance; 
-    p.ellipse(canvasSize.x / 2 + offsetX, canvasSize.y / 2 + offsetY, 72, 72);
+    const offsetX = p.sin(p.millis() / speed) * distance;
+    const offsetY = p.cos(p.millis() / speed) * distance;
+    p.ellipse(scene.canvasSize.width / 2 + offsetX, scene.canvasSize.height / 2 + offsetY, 72, 72);
 
-        }
+    // p.ellipse(10, 10, 72, 72);
 
     };
 
-    return <P5Viz title="Test Viz" sketch={sketch} width={canvasSize.x} height={canvasSize.y} />
+return <P5Viz title="Test Viz" setup={setup} draw={draw} />
 
 }
 
