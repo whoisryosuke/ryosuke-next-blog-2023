@@ -2,37 +2,44 @@ import { CanvasSize, useAppStore } from "@store/app";
 import { GraphicsColors, colors } from "@theme/graphics";
 import p5 from "p5";
 
+// Scene data we pass to the `draw` method
 interface P5SceneInfo {
   canvasSize: CanvasSize;
 }
 
-type P5SetupCallback = (p: p5, colors: GraphicsColors) => void;
-type P5SketchCallback = (
+// The callbacks the user uses (usually in MDX)
+export type P5SetupCallback = (p: p5, colors: GraphicsColors) => void;
+export type P5SketchCallback = (
   p: p5,
   colors: GraphicsColors,
   scene: P5SceneInfo
 ) => void;
 
+/**
+ * Wrapper for the `sketch` prop passed to P5 to create blog viz.
+ * Handles sensible defaults like setting canvas size.
+ * @param setup
+ * @param draw
+ * @returns
+ */
 export const createSketch = (
   setup: P5SetupCallback,
   draw: P5SketchCallback
 ) => {
-  let time = 0;
-  let defaultCanvasSize = {
-    x: 480,
-    y: 480,
+  let canvasSize = {
+    width: 480,
+    height: 400, // Change fixed height here
   };
   return (p) => {
-    let y = 100;
     p.setup = () => {
-      console.log("setup canvas");
       // Create the canvas
-      // We scale it to 100% width and a set height
-      const { canvasSize } = useAppStore.getState();
-      p.createCanvas(
-        canvasSize?.width ?? defaultCanvasSize.x,
-        defaultCanvasSize.y
-      );
+      // We scale it to 100% width and a fixed height (above)
+      // We grab the store instead of querying DOM
+      // because store is more accurate thanks to ResizeObserver
+      const { canvasSize: canvasSizeStore } = useAppStore.getState();
+      canvasSize.width = canvasSizeStore.width;
+      //   canvasSize.height = canvasSizeStore.height;
+      p.createCanvas(canvasSizeStore.width, canvasSizeStore.height);
 
       p.frameRate(30);
 
@@ -46,10 +53,6 @@ export const createSketch = (
       // Bail if we aren't client-side
       if (typeof window === "undefined") return;
 
-      const { canvasSize } = useAppStore.getState();
-
-      //   console.log("canvas size", canvasSize);
-
       const scene = {
         canvasSize,
       };
@@ -59,10 +62,13 @@ export const createSketch = (
     };
 
     p.windowResized = () => {
-      console.log("resized window");
-      const { canvasSize } = useAppStore.getState();
+      const container = document.querySelector(".p5-viz");
+      const containerSize = container.getBoundingClientRect();
 
-      p.resizeCanvas(canvasSize.width, canvasSize.height);
+      canvasSize.width = containerSize.width;
+      //   canvasSize.height = containerSize.height;
+
+      p.resizeCanvas(containerSize.width, containerSize.height);
     };
   };
 };

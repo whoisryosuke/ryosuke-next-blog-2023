@@ -65,8 +65,8 @@ const P5Container = (
   ref: RefObject<HTMLDivElement>
 ) => {
   return (
-    <P5ContainerBase {...props}>
-      <div ref={ref} className={className}>
+    <P5ContainerBase className={className} {...props}>
+      <div ref={ref}>
         <P5ContainerTitle className="title">
           <H3 marginBottom={3}>{title}</H3>
           {description && (

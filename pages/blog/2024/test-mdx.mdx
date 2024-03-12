@@ -23,34 +23,11 @@ export default function Layout({children}) {
 
 }
 
-export const P5Viz = dynamic(
-  () => import("@components/dom/P5Viz/P5VizWrapper"),
+export const TestViz = dynamic(
+  () => import("@components/viz/2024/TestViz"),
   { ssr: false }
 );
  
 # MIDI
-
-export function TestViz() {
-
-    const setup = (p, colors) => {
-    console.log("setup canvas inside MDX");
-    };
-    const draw = (p, colors, scene) => {
-    p.background("#333"); // Set the background to black
-
-    p.fill("#008080");
-    const distance = 10;
-    const speed = 120; // larger = slower
-    const offsetX = p.sin(p.millis() / speed) * distance;
-    const offsetY = p.cos(p.millis() / speed) * distance;
-    p.ellipse(scene.canvasSize.width / 2 + offsetX, scene.canvasSize.height / 2 + offsetY, 72, 72);
-
-    // p.ellipse(10, 10, 72, 72);
-
-    };
-
-return <P5Viz title="Test Viz" setup={setup} draw={draw} />
-
-}
 
 <TestViz />
