@@ -31,12 +31,7 @@ function transformImgSrc({ slug }) {
   };
 }
 
-export default function PostPage({
-  source,
-  frontMatter,
-  slug,
-  enabledComponents,
-}) {
+export default function PostPage({ source, frontMatter, slug }) {
   const { setTitle, setSlug, resetTableOfContents } = useBlogStore();
 
   useEffect(() => {
@@ -62,7 +57,7 @@ export default function PostPage({
   return (
     <BlogTransition>
       <Head title={frontMatter.title} meta={meta} />
-      <MDXRemote {...source} components={components(enabledComponents)} />
+      <MDXRemote {...source} components={components()} />
     </BlogTransition>
   );
 }
@@ -94,9 +89,9 @@ export const getStaticProps = async ({ params }) => {
   const { content, data } = matter(source);
 
   // We check for dynamic components and make a list of any we detect
-  const enabledComponents = [/<P5Viz/.test(content) ? "P5Viz" : null].filter(
-    Boolean
-  );
+  // const enabledComponents = [/<P5Viz/.test(content) ? "P5Viz" : null].filter(
+  //   Boolean
+  // );
 
   const mdxSource = await serialize(content, {
     // Optionally pass remark/rehype plugins
@@ -116,7 +111,6 @@ export const getStaticProps = async ({ params }) => {
       source: mdxSource,
       frontMatter: data,
       slug: slugPath,
-      enabledComponents,
     },
   };
 };

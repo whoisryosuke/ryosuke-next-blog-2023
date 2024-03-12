@@ -12,11 +12,7 @@ import { H1, H2, H3, H4, H5, H6 } from "../Headline/Headers";
 import BlogHeadline from "../BlogHeadline/BlogHeadline";
 import dynamic from "next/dynamic";
 
-const P5VizDynamic = dynamic(() => import("../P5Viz/P5Viz"), { ssr: false });
-
-type EnabledComponent = "P5Viz";
-
-export const components = (enabledComponents: EnabledComponent[]) => ({
+export const components = () => ({
   h1: (props) => (
     <BlogHeadline title={props.children}>
       <H1 slug {...props} />
@@ -48,5 +44,4 @@ export const components = (enabledComponents: EnabledComponent[]) => ({
   aside: (props) => <Blockquote {...props} />,
   Box: (props) => <Box {...props} />,
   Stack: (props) => <Stack {...props} />,
-  P5Viz: enabledComponents.includes("P5Viz") ? P5VizDynamic : null,
 });
