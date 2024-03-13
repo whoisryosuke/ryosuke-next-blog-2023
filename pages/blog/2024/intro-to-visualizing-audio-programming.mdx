@@ -31,6 +31,10 @@ export const CircleWaveformExample = dynamic(
   () => import("@components/viz/2024/CircleWaveformExample"),
   { ssr: false }
 );
+export const ControlledExample = dynamic(
+  () => import("@components/viz/2024/ControlledExample"),
+  { ssr: false }
+);
  
 # MIDI
 
@@ -39,3 +43,7 @@ export const CircleWaveformExample = dynamic(
 # Another heading
 
 <CircleWaveformExample />
+
+# Controlled Example
+
+<ControlledExample />
