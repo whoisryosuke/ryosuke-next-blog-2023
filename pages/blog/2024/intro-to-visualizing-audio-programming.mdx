@@ -23,19 +23,19 @@ export default function Layout({children}) {
 
 }
 
-export const TestViz = dynamic(
-  () => import("@components/viz/2024/TestViz"),
+export const WaveformExample = dynamic(
+  () => import("@components/viz/2024/WaveformExample"),
+  { ssr: false }
+);
+export const CircleWaveformExample = dynamic(
+  () => import("@components/viz/2024/CircleWaveformExample"),
   { ssr: false }
 );
  
 # MIDI
 
-<TestViz />
+<WaveformExample />
 
 # Another heading
 
-> Test
-
-[fsdjfnsdkjnf](google.com)
-
-`fnsjkdnfkj`
+<CircleWaveformExample />
