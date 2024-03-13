@@ -1,6 +1,6 @@
 import dark from "./colors/dark";
 export const colors = {
-  ...dark.colors.primary,
+  primary: { ...dark.colors.primary },
   text: dark.colors.primary,
   background: dark.colors.background,
 
