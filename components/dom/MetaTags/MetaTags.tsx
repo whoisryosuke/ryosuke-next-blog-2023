@@ -17,7 +17,7 @@ const MetaTags = ({
   url = "",
   blogArticle = false,
 }: MetaTagsProps) => {
-  const siteImage = `https://whoisryosuke.com${image}`;
+  const siteImage = `${image}`;
   const siteUrl = `https://whoisryosuke.com/${url}`;
   return (
     <>
