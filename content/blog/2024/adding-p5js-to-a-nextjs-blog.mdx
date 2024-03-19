@@ -10,7 +10,7 @@ I’ve recently been getting into P5.js, a graphics library for the web that let
 
 A few years ago, [I switched my blog over](https://whoisryosuke.com/blog/2019/the-redesign-begins) from Markdown to MDX based content. This allowed me to support React components inside of my Markdown files, which allows for some cool stuff, like embedding interactive examples into posts (without “embedding” a separate website via `iframe`).
 
-![mdx-p5-example.gif](./mdx-p5-example.gif)
+![Animation showing the P5 React component with an interactive slider to move the position of the drawing](./mdx-p5-example.gif)
 
 I thought I’d go over the process of getting P5.js working with my NextJS MDX-based blog, and intricacies behind the process that tripped me up. I’ve got plenty of tips for working with P5 and React, so bring the popcorn 🍿
 
@@ -513,7 +513,7 @@ function ControlledExample() {
 export default ControlledExample;
 ```
 
-![mdx-p5-example-hide.gif](./mdx-p5-example-hide.gif)
+![Animation showing the drawing hiding but button not changing](./mdx-p5-example-hide.gif)
 
 But when we run this, we’ll notice that the button inside doesn’t update (it always says “Hide” - should change to “Visible”). This is because we used a `ref` to store state, which should be in a `useState()` hook. But like we saw, we can’t use React state in our drawing. So like before — we just have to do both:
 
