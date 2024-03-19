@@ -18,9 +18,7 @@ const MetaTags = ({
   blogArticle = false,
 }: MetaTagsProps) => {
   const siteImage = `${image}`;
-  const siteUrl = blogArticle
-    ? `https://whoisryosuke.com/blog/${url}`
-    : `https://whoisryosuke.com/${url}`;
+  const siteUrl = `https://whoisryosuke.com/${url}`;
   return (
     <>
       <meta property="og:title" content={title} />

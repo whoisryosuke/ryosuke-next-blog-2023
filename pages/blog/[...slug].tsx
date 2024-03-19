@@ -49,7 +49,7 @@ export default function PostPage({ source, frontMatter, slug }) {
     // Markdown uses relative image URLs, we convert here
     image: frontMatter?.cover_image?.replace(
       "./",
-      `https://whoisryosuke.com/${slug}/`
+      `https://whoisryosuke.com/blog/${slug}/`
     ),
     url: slug,
     blogArticle: true,
