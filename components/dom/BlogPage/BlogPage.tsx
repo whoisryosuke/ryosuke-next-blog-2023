@@ -1,11 +1,9 @@
 import React, { PropsWithChildren, useEffect, useRef } from "react";
 import Glass from "@components/dom/Glass/Glass";
 import Box from "@components/dom/Box/Box";
-import Stack from "@components/dom/Stack/Stack";
 import Button from "@components/dom/Button/Button";
 import Headline from "@components/dom/Headline/Headline";
 import ScrollBox from "@components/dom/ScrollBox/ScrollBox";
-import Paragraph from "@components/dom/Paragraph/Paragraph";
 import ThemeProvider from "../ThemeProvider/ThemeProvider";
 import {
   BiBook,
