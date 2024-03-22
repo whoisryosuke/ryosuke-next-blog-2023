@@ -10,6 +10,8 @@ import Stack from "../Stack/Stack";
 import Headline from "../Headline/Headline";
 import { H1, H2, H3, H4, H5, H6 } from "../Headline/Headers";
 import BlogHeadline from "../BlogHeadline/BlogHeadline";
+import Paragraph from "../Text/Paragraph";
+import Strong from "../Text/Strong";
 
 export const components = {
   h1: (props) => (
@@ -22,16 +24,8 @@ export const components = {
   h4: (props) => <H4 {...props} />,
   h5: (props) => <H5 {...props} />,
   h6: (props) => <H6 {...props} />,
-  p: (props) => (
-    <Text
-      as="p"
-      fontSize={3}
-      lineHeight={6}
-      mb={5}
-      display="block"
-      {...props}
-    />
-  ),
+  p: (props) => <Paragraph {...props} />,
+  strong: (props) => <Strong {...props} />,
   a: (props) => <Link {...props} />,
   img: (props) => <Image {...props} />,
   // code: (props) => <CodeInline {...props} />,
