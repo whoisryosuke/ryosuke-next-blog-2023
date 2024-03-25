@@ -9,6 +9,7 @@ const Strong = (props: Props) => {
       as="strong"
       display="inline-block"
       fontWeight="bold"
+      marginBottom={0}
       {...props}
     />
   );
