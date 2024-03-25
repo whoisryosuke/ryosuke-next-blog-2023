@@ -90,7 +90,7 @@ const MainNavbar = ({ ...props }: MenuProps) => {
   const router = useRouter();
 
   const orientation: MenuOrientations =
-    windowSize.width < 800 ? "bottom" : "left";
+    windowSize.width < windowSize.height ? "bottom" : "left";
   const marginRight = orientation == "left" ? 0 : "8px";
   const marginBottom = orientation == "left" ? "8px" : 0;
   const isLightTheme = theme == "light";
