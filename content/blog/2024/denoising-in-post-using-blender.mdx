@@ -1,0 +1,152 @@
+---
+title: Denoising in post using Blender
+date: "2024-04-12"
+section: blog
+tags: ["blender", "ui", "tips"]
+cover_image: "./denoising-in-post-using-blender.png"
+---
+
+Recently I’ve been rendering a lot of projects in Blender, from large 4k still images to 1080p videos. While rendering out all these projects, I kept having renders fail during the denoising process. After complaining about it online I had a few people recommend that they denoise in post production.
+
+I explored the process of denoising Blender renders in post production using the compositor, and outweigh the pros and cons of the new and extended workflow. If you're just interested in the results, scroll down to see a comparison of render times.
+
+# How to Denoise in Post
+
+There are a couple of ways of denoising in post production. The one we’ll be focused on today primarily is using Blender’s built-in Compositor. But you could also use 3rd party software to accomplish a similar goal, albeit at the cost of said software.
+
+## Compositor
+
+If you’re not familiar, Blender has a tab called “Compositor”. This features [the Compositor “panel”](https://docs.blender.org/manual/en/latest/compositing/introduction.html#introduction), which is essentially a node graph for post processing and compositing one or more images.
+
+You can use it to change photographic settings of a scene, like the exposure levels or hue, saturation, and contrast. Or you could combine images, or use data from the scene like UVs or ambient occlusion data to power the composition.
+
+In our case, we want to use [the Denoise node](https://docs.blender.org/manual/en/latest/compositing/types/filter/denoise.html). This node is the same as checking off “Denoise” under the render settings. By making it a separate node, we can change the workflow up and render out a noisy image then composite it into a denoised version later.
+
+Here’s how that workflow looks:
+
+### Render image with noise
+
+1. Render image with noise (aka “Denoise” unchecked)
+2. Save the image somewhere
+
+### Compositing
+
+1. Make a new Blender file (optional) — append it with a “\_compositing” filename to distinguish it.
+2. Go to View Layer tab. Under the “Include” section check the Denoising Data.
+
+   ![View layer property settings for denoising](./Untitled.png)
+
+3. Open the Compositor (either tab on top - or change one of your panels to it)
+4. Drag and drop the image into the compositor. It’ll appear as an node with an `Image` and `Alpha` output.
+
+   ![The image node inside the compositor node graph](./Untitled%201.png)
+
+5. Add a Denoise node
+
+   ![The denoise node](./Untitled%202.png)
+
+6. Connect the image to Image on Denoise
+7. Connect the denoise albedo and normal data to the Denoise node
+
+   ![The complete setup for denoising from an image using the denoise data from current scene](./Untitled%203.png)
+
+8. Go to the Render Properties tab and turn Render samples down to 1. This makes it much faster since ideally we just need the denoise data.
+
+   ![Render properties settings](./Untitled%204.png)
+
+9. Render the scene - it should be much faster than the original render.
+10. Your image should be denoised now
+
+### Working with animations
+
+You can also import image sequences into the Blender compositor, so it can use all the frames (e.g. `0-100`) and render it into a single animation. Make sure to change your export format to a movie file like `.mp4`.
+
+To add an image sequence, right click anywhere in the Compositor node graph and go to Add > Input > Image Sequence.
+
+![The popup menu in the node graph showing the Image Sequence option](./Untitled%205.png)
+
+### Afterthoughts
+
+This process definitely works, and helps a lot if your renders or animations are failing consistently on the denoise part. It ensures you can render faster and less intensively (since denoising is often the most CPU or GPU intensive task — particularly at scale like 4k+).
+
+But as you can see, it definitely takes a bit of setup every time. And if you’re using a workflow that has a queue system, like Flamenco, you basically have to do everything twice.
+
+I also noticed a difference in image quality when I denoised in post. My images looked more washed out (see comparison below).
+
+It’d definitely be interesting to see if there was a Blender plugin or solution that could automate this process. Ideally I want to be able to hit a render button and have the noisy image queued up, then the denoise to also be queued up without setup. It’s hard to ask though, since the compositor step requires a reference to an image file or sequence.
+
+## Post Processing in other software
+
+You could also denoise in 3rd party software like Blackmagicstudio’s Fusion. You can find some good success with this route cause go figure - you’re using industry grade (and priced) software.
+
+I honestly didn’t dive to deep into this because if I’m using Blender, I’m probably not paying for high end software — and if I am, it’s a whole different bespoke pipeline (like more VFX-based for Fusion) that doesn’t apply to most Blender users.
+
+# Comparison of render times
+
+To test this I used my recent PS1 memory card project and rendered out a 1080 by 1920 image - once with denoise enabled, then again using the entire compositor process.
+
+<Stack>
+
+![Render and denoised at same time](./PS1_Memory_Card_-_R9k_-_Compositor_Denoise_Test_005.png)
+
+![Rendered with noise](./PS1_Memory_Card_-_R9k_-_Compositor_Denoise_Test_001.png)
+
+![Denoised in post](./PS1_Memory_Card_-_R9k_-_Compositor_Denoise_Test_003_-_denoise_in_post.png)
+
+</Stack>
+
+For reference, here are some of my PC specs:
+
+- Intel Core i9 13900K
+- NVIDIA GeForce RTX 4080
+- 2x 16GB DDR5 RAM
+
+Here were my settings for my render:
+
+- Cycles
+- 4096 samples
+- Tiling enabled - 2048
+- 1080 x 1920
+
+Here were the results:
+
+Control:
+
+- **Render with denoise (baseline):** `01:46.98` - `1011.14M` memory
+
+Compositor:
+
+- **Render without denoise:** `01:45.44` - `978.5M` memory
+- **Render with denoise compositor (1 sample):** `00:02.20` - `964.5M` memory
+
+![Node graph setup for denoising using a pre-rendered image](./Untitled%203.png)
+
+- **Compositor denoise combined time:** `01:47:04`
+  - Technically takes longer by a second or so
+- **Render with denoise compositor (4096 samples - directly - not from image):** `01:47:03`
+  - Basically the same time as manually combining them myself. The only issue here is if denoising failed - I’d have no image to work from after all that render time (since render + denoise is combined, no noisy image is saved before denoise — meaning crash is full loss).
+
+![Node graph setup for denoising directly](./Untitled%206.png)
+
+Seems that render time isn’t greatly effected or improved by this process. Even when I’m rendering 4k, denoising is intensive — but only takes about 2-3 seconds.
+
+# Should you denoise in post?
+
+I’d probably only recommend this method if you’re rendering anything where denoising is crashing Blender.
+
+For example, on larger images like 4K and above, denoising can sometimes fail even on my high end machine. So it’d benefit me to render out a noisy image first — just so I don’t have to waste compute time on re-rendering it again just to denoise it.
+
+But for most cases, I usually just combine the denoising to save myself the time. For example, recently I had to render out some PS1 memory card videos for social. There are 5 different colors, and each one had multiple camera views to render.
+
+I ended up rendering out over 20+ videos. Rather than waste time setting up 20+ compositor files to denoise, I just denoised immediately. I had maybe 1 or 2 renders fail on a frame or two? But thanks to Flamenco (the Blender open source render farm), I just had to requeue them and they rendered the next time around 🤘
+
+# Refs
+
+- [Ryosuke (@whoisryosuke) on Threads](https://www.threads.net/@whoisryosuke/post/C5HHDv7yI4J)
+- [Ryosuke (@whoisryosuke) on Threads](https://www.threads.net/@whoisryosuke/post/C5MHdu9PCLL)
+- [How to DENOISE A RENDER in Blender 2.9 | Blender Rendering Tutorial](https://www.youtube.com/watch?v=iD1Y1D-KTMI)
+- [Tutorial - Denoise AFTER You've Rendered Your Scene](https://www.youtube.com/watch?app=desktop&v=nRnupAxKxEA)
+- [Remove noise from your footage in After Effects without any plugins!!](https://www.youtube.com/watch?v=nKZPa7iVdo0)
+- [How To Remove Noise From Video in After Effects - No Plugins](https://www.youtube.com/watch?v=KnHMs40yaiY)
+- [How to Setup Compositor Denoising for Blender 3.0 [Read Desc]](https://youtu.be/5A2ahhFT7Fw?t=538)
+- [Fusion 18 | Blackmagic Design](https://www.blackmagicdesign.com/products/fusion)
