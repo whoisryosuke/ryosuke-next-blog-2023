@@ -15,11 +15,15 @@ import Strong from "../Text/Strong";
 
 export const components = {
   h1: (props) => (
-    <BlogHeadline title={props.children}>
+    <BlogHeadline title={props.children} level={1}>
       <H1 slug {...props} />
     </BlogHeadline>
   ),
-  h2: (props) => <H2 {...props} />,
+  h2: (props) => (
+    <BlogHeadline title={props.children} level={2}>
+      <H2 {...props} />
+    </BlogHeadline>
+  ),
   h3: (props) => <H3 {...props} />,
   h4: (props) => <H4 {...props} />,
   h5: (props) => <H5 {...props} />,

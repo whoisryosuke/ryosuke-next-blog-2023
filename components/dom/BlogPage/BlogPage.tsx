@@ -180,14 +180,15 @@ const BlogPage = ({ children, ...props }: PropsWithChildren<Props>) => {
               <Headline id="test" fontSize={2}>
                 Table of Contents
               </Headline>
-              {tableOfContents.map((tocItem) => (
+              {tableOfContents.map((tocItem, index) => (
                 <Button
-                  key={tocItem.slug}
+                  key={`${tocItem.slug}${tocItem.level}`}
                   as="a"
                   // @ts-ignore
                   href={`#${tocItem.slug}`}
                   // icon={<BiTime />}
                   justifyContent="flex-start"
+                  marginLeft={tocItem.level * 2}
                 >
                   {tocItem.title}
                 </Button>
