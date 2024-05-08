@@ -36,5 +36,5 @@ export const components = {
   blockquote: (props) => <Blockquote {...props} />,
   aside: (props) => <Blockquote {...props} />,
   Box: (props) => <Box {...props} />,
-  Stack: (props) => <Stack {...props} />,
+  Stack: (props) => <Stack marginBottom={2} {...props} />,
 };
