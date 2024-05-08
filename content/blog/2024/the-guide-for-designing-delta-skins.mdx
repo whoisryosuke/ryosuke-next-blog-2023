@@ -168,6 +168,7 @@ There’s a lot going on here, so let’s take it step by step. Let’s start at
 - `identifier` - A unique dot separated key for skin. It’s used so if you upload the skin again, it’ll update and replace the old with new skin. A good practice is to include the console/platform in the name, since each skin is platform specific.
 - `gameTypeIdentifier` - The emulator core you’re targeting with this skin. This is a very specific dot separated code for each one (e.g. `com.rileytestut.delta.game.ds`).
 - `representations` - This is where you define each mode (edge to edge portrait, standard landscape, etc) and it’s relevant data, like the images, hitboxes, and the screen position.
+- `debug` - Sets to true or false. This visualizes the hitboxes in your app. It's useful for checking alignment on buttons. We'll get into those later.
 
 ### Representations
 
@@ -191,7 +192,7 @@ You’ll find each representation nested under the `iphone` property (e.g. `repr
   },
   ```
 
-- `items` - This is where the “hitboxes” of the buttons are defined using X and Y coordinates. The `inputs` is either an array of button names (like `a` or `start`) — or for d-pad input you provide an object with `up`, `down`, `left`, `right` properties. You can also define `extendedEdges` to provide a overflow for buttons.
+- `items` - This is where the “hitboxes” of the buttons are defined using X and Y coordinates. The `inputs` is either an array of button names (like `a` or `start`) — or for d-pad input you provide an object with `up`, `down`, `left`, `right` properties. You can also define `extendedEdges` to provide a overflow for buttons (basically makes the surface area larger).
   ```jsx
   "items": [
   	// The "Start" button,
@@ -392,6 +393,10 @@ Once you have things mapped out in a design software, you can just select each h
 ```
 
 Each button should be an [“object”](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Working_with_objects#creating_new_objects) (JS-talk for the properties between a `{` and `}`) under the specific mode’s `items` property (for example `representations.iphone.edgeToEdge.portrait.items`).
+
+You can verify you placed the buttons correctly by using the `debug` mode in the `info.json`. It looks like this:
+
+![The debug mode enabled showing boxes over each button and their respective label](./2024-05-07 18.03.02.png)
 
 ## Screen FX
 
