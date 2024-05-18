@@ -12,6 +12,8 @@ import { H1, H2, H3, H4, H5, H6 } from "../Headline/Headers";
 import BlogHeadline from "../BlogHeadline/BlogHeadline";
 import Paragraph from "../Text/Paragraph";
 import Strong from "../Text/Strong";
+import ThreadsEmbed from "../Embeds/ThreadsEmbed";
+import TweetEmbed from "../Embeds/TweetEmbed";
 
 export const components = {
   h1: (props) => (
@@ -41,4 +43,6 @@ export const components = {
   aside: (props) => <Blockquote {...props} />,
   Box: (props) => <Box {...props} />,
   Stack: (props) => <Stack marginBottom={2} {...props} />,
+  ThreadsEmbed: (props) => <ThreadsEmbed {...props} />,
+  TweetEmbed: (props) => <TweetEmbed {...props} />,
 };
