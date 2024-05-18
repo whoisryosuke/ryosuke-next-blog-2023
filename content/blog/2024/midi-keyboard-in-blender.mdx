@@ -12,7 +12,9 @@ I could build a Blender addon that imports MIDI files and parses the data into a
 
 In this blog I’ll cover how I made [my MIDI addon for Blender](https://github.com/whoisryosuke/blender-gamepad/tree/midi), and how to animate objects based on MIDI input. I’ll also cover some examples of different uses, beyond saving keyframes.
 
-![Blender with a 3D single set of white and black piano keys. A panel is open to the right of the 3D viewport labeled MIDI with various settings](MIDI%20Keyboard%20in%20Blender%2047ccf36896324c3fb227b65f3b738769/Untitled.png)
+<ThreadsEmbed id="C6uifSVPf6S" />
+
+![Blender with a 3D single set of white and black piano keys. A panel is open to the right of the 3D viewport labeled MIDI with various settings](./Untitled.png)
 
 Check out [the video of it in action here](https://www.threads.net/@whoisryosuke/post/C6uifSVPf6S). And you can see the addon and source code [here on GitHub.](https://github.com/whoisryosuke/blender-gamepad/tree/midi)
 
@@ -317,7 +319,7 @@ bpy.types.VIEW3D_MT_object.append(GI_midi_menu_item)
 
 Here’s what it looks like inside Blender:
 
-![Cropped screenshot of Blender’s 3D Viewport panel with the Object menu expanded and the Enable MIDI Recording menu item selected at the bottom of the list ](MIDI%20Keyboard%20in%20Blender%2047ccf36896324c3fb227b65f3b738769/Untitled%201.png)
+![Cropped screenshot of Blender’s 3D Viewport panel with the Object menu expanded and the Enable MIDI Recording menu item selected at the bottom of the list ](./Untitled%201.png)
 
 # Save input as keyframe animation
 
@@ -391,7 +393,7 @@ And here’s what the UI panel looks like. The user can drag and drop their obje
 
 💡 And conveniently, once you assign an object and save your file, it remembers all objects. So you don’t have to remap it every time you close Blender (very useful to me for testing!).
 
-![Cropped screenshot of the Blender 3D Viewport with the side MIDI menu expanded to reveal a panel with each piano key listed and a object selection input next to each. ](MIDI%20Keyboard%20in%20Blender%2047ccf36896324c3fb227b65f3b738769/Untitled%202.png)
+![Cropped screenshot of the Blender 3D Viewport with the side MIDI menu expanded to reveal a panel with each piano key listed and a object selection input next to each. ](./Untitled%202.png)
 
 Nice. Now that we have the objects we want to control, let’s start to map these 3D objects to our actual piano keys.
 
@@ -399,7 +401,7 @@ Nice. Now that we have the objects we want to control, let’s start to map thes
 
 I needed a 3D model to test this with. I initially made a bunch of cubes and just used those, but I eventually modeled a small set of 3D piano keys. Not a necessary step, but just wanted to make the demo look cooler.
 
-![Blender with a 3D model of a single set of black and white piano keys floating above a 2D reference ohoto of an Arturia Keylab MIDI keyboard](MIDI%20Keyboard%20in%20Blender%2047ccf36896324c3fb227b65f3b738769/Screenshot_2024-05-08_165058.png)
+![Blender with a 3D model of a single set of black and white piano keys floating above a 2D reference ohoto of an Arturia Keylab MIDI keyboard](./Screenshot_2024-05-08_165058.png)
 
 ## Mapping the keys to 3D objects
 
@@ -531,7 +533,7 @@ def move_note(self, midi_input, gamepad_props, noteLetter, current_frame):
 
 And with that - we have MIDI input animating objects in Blender! You can see a video of the prototype [here on Threads](https://www.threads.net/@whoisryosuke/post/C6uifSVPf6S). Trying to save bandwidth on my blog 😅
 
-![Blender app with 3 cubes side by side, with the first selected and slightly raised in Z space. The timeline panel is open below to show the cube’s keyframes, which there are several going from down to up to down again.](MIDI%20Keyboard%20in%20Blender%2047ccf36896324c3fb227b65f3b738769/vlcsnap-2024-05-17-16h25m29s504.png)
+![Blender app with 3 cubes side by side, with the first selected and slightly raised in Z space. The timeline panel is open below to show the cube’s keyframes, which there are several going from down to up to down again.](./vlcsnap-2024-05-17-16h25m29s504.png)
 
 # What’s next?
 
@@ -539,7 +541,7 @@ Art! For me at least. I’ve got a few pieces I want to approach using this meth
 
 Is this practical? Of course not. Why would you want to play live into Blender? It’s much more efficient to record everything before hand and import that “baked” data into Blender. Realistically you’d want to create some sort of external app that can record playback into a data format like MIDI or JSON, then have the addon read that file. This way you could also record real playback using the other app - or even just give the person music feedback (cause this Blender addon definitely won’t do that).
 
-![Blender with a 3D arcade gamepad with a rig above it made of a bone for the joystick and mesh circles for each button. The joystick is tilted to the right, along with it’s corresponding bone. Below the timeline panel displays the keyframes for the joystick bone.](MIDI%20Keyboard%20in%20Blender%2047ccf36896324c3fb227b65f3b738769/vlcsnap-2024-05-17-16h30m50s292.png)
+![Blender with a 3D arcade gamepad with a rig above it made of a bone for the joystick and mesh circles for each button. The joystick is tilted to the right, along with it’s corresponding bone. Below the timeline panel displays the keyframes for the joystick bone.](./vlcsnap-2024-05-17-16h30m50s292.png)
 
 But just like my gamepad addon, this opens the door for interfacing with Blender in more creative ways. I didn’t touch on it in this blog, you could the “controllers” on a MIDI keyboard to have a finer control on objects in the scene. You could assign this input to an animation rig - like facial controls - and get a different “performance” than you would manually keyframing. You can see an example of this with [my gamepad addon controlling an arcade gamepad rig](https://www.threads.net/@whoisryosuke/post/C6ZtI0eymTI).
 
