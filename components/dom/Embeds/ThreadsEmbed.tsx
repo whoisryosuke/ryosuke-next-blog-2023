@@ -30,7 +30,7 @@ const ThreadsEmbed = ({ id }: Props) => {
       >
         {" "}
         <a
-          href="https://www.threads.net/@whoisryosuke/post/C7COCDFrgCC"
+          href={`https://www.threads.net/@whoisryosuke/post/${id}`}
           style={{
             background: "#FFFFFF",
             lineHeight: 0,
