@@ -1,0 +1,844 @@
+---
+title: Focus and Spatial Navigation in React
+date: "2024-06-03"
+section: blog
+tags: ["javascript", "react", "game dev", "gamepad"]
+cover_image: "./Creating_an_input_management_library_(1).png"
+---
+
+It’s been a while since I wrote and released [**react-unified-input**](https://github.com/whoisryosuke/react-unified-input), and I wanted to share the process behind creating it and demystify focus management and spatial navigation in modern applications.
+
+When I first redesigned my blog in 2023 with the Vision Pro aesthetic, I started out with a goal to make the entire site more accessible to all kinds of users. Beyond navigating the site with a mouse, I wanted the user to be able to use their keyboard or even a gamepad to use the site.
+
+There are plenty of input libraries out there, and even a pretty good library that handles focus. But none of them tackle the issue of multiple input support. For example, the Norigin Spatial Navigation library works great on keyboard — but if you try adding a gamepad support it requires forking the entire library. And [GitHub issues have proven](https://github.com/NoriginMedia/Norigin-Spatial-Navigation/issues/67#issuecomment-1520534511) that they’re not interested in implementing it.
+
+I’ve also personally created other input libraries in the past like [react-gamepad](https://www.npmjs.com/package/react-gamepad) and [input-manager](https://github.com/whoisryosuke/input-manager) - but neither handled focus management or spatial navigation.
+
+![Screenshot of the react-unified-input demo page with 4 focus containers in a 2 by 2 grid layout with 4 buttons in each, some stacked horizontally, others vertically.](./screenshot-lib.png)
+
+That’s why I created **[react-unified-input](https://github.com/whoisryosuke/react-unified-input)** - a React library that handled both in a simple to use package.
+
+So with all that being said — let’s talk focus navigation!
+
+# What is “focus”?
+
+In UI development terms, it’s when an element on the page is clearly indicated as being **selected** or “focused” (usually by default with a solid outline, provided by most web browsers).
+
+![The MDN web page footer with the About link element focused using tab based navigation. Focus appears as a solid white rounded outline in the Chrome browser.](Focus%20Management%20and%20Spatial%20Navigation%20in%20React%2054af838ca0594f5486924681e535c6cd/Untitled.png)
+
+Why is it important? It allows users to navigate the page and interact with it using their keyboard. By pressing the **Tab key** users can cycle through the focusable elements on a page. And using the **Enter key** they can activate the `onPress` method of a DOM element. This allows users that can’t use devices like mice to navigate content using their keyboard (or another assistive device mapped to those functions).
+
+> ⌨️ On desktop? Try it now! Press tab on your keyboard a few times and see how it travels across the page. If you’re on mobile, you could sync to a Bluetooth gamepad and navigate my site similarly.
+
+But it’s not just the web! The concept of a “focused” element can be carried over to any UI, as seen by games like Assassins Creed. They use a gamepad to imitate a mouse cursor that can hover over interactive UI elements like buttons. Then the UI responds by “focusing” the component by drawing a glow around the element.
+
+![The start screen for Assassin’s Creed Odyssey with a circle representing the cursor which is hovered over a menu item. The menu item is lighter than others, and has a white stroke around it. [Courtesy of the Game UI Database.](https://www.gameuidatabase.com/gameData.php?id=536#&gid=1&pid=2)](Focus%20Management%20and%20Spatial%20Navigation%20in%20React%2054af838ca0594f5486924681e535c6cd/Untitled%201.png)
+
+My goal was to basically make the site work more like a PC game and extend the existing browser APIs to create a more holistic input and navigation experience for all users.
+
+# What is “spatial navigation”?
+
+When you see people talk about focus navigation, it’s often referred to as “spatial navigation”. But what is spatial navigation?
+
+## Simple focus navigation
+
+First let’s talk about focus navigation. Lets say you have a menu with a list of buttons you want the user to scroll through. To keep things simple, the user will only need to navigate up or down.
+
+If you wanted to setup a simple focus navigation system, you could do something like this:
+
+```tsx
+const Carousel = () => {
+  const [focusedItem, setFocusedItem] = useState(0);
+
+  const handleNavigation = (direction) => {
+    if (direction == "UP") setFocusedItem((prevState) => prevState - 1);
+    if (direction == "DOWN") setFocusedItem((prevState) => prevState + 1);
+  };
+
+  // Ideally you'd have a `useEffect` that sets up keyboard input...
+
+  return (
+    <div>
+      <Button focused={focusedItem == 0}>Button 1</Button>
+      <Button focused={focusedItem == 1}>Button 2</Button>
+      <Button focused={focusedItem == 2}>Button 3</Button>
+    </div>
+  );
+};
+```
+
+The concept is simple - we keep track of focus using a number (ranging from 0 to however many elements we have).
+
+When we render the UI, we’ll check if the current item is focused by checking it’s “index” against the focused index (e.g. `focused={focusedItem == 0}`). Each component knows what to do when focused - in this case the button would have a solid outline.
+
+Then when we want to navigate, we just update the focused index (or `focusedItem`) with a new index, and the focus will update appropriately.
+
+This works really well for simple UI’s, like a “game start” screen where the user only needs to navigate between 3-5 options in a vertical or horizontal list. This
+
+But if we wanted to navigate in multiple directions, things get a little harder. If every element on the screen represents an number that increments from 0 — setting the number up or down doesn’t actually navigate “up” or “down” on the page. It’s similar to pressing Tab on PC, you just go through each element on the page one by one until you hit the bottom. This works, but isn’t very efficient and requires the user to spend a lot of extra time going through items they’re not interested in.
+
+And there are ways to work around this (we’ll see later with LRUD), this whole structure is pretty rigid in terms of architecture. It’s harder to have animated focus items, or anything absolutely placed that needs to also be focusable. Even things like modals get a little tricky to manage.
+
+Instead, what if when the user pressed up, down, left, or right — we have a system in place that figures out if there’s a focus element there? This is where we turn to spatial navigation.
+
+## Spatial navigation
+
+It refers to an object (in this case “focus”) moving in a 2D or 3D space. What direction is it moving in? How far? These are what spatial navigation is all about. For example, if the user presses down, they would expect to move or “navigate” down on the web page or “space”.
+
+![A diagram for spatial navigation in a 2D space. A 2D graph with X and Y axis going from 0 to 4 on each. A player sprite is positioned at the coordinates 1,1. Above the sprite is an arrow representing movement up, and a circle shows where the sprite will end up at 3,1. [Thanks for Kenney for the sprite.](https://kenney.nl/assets/rpg-urban-pack)](<Focus%20Management%20and%20Spatial%20Navigation%20in%20React%2054af838ca0594f5486924681e535c6cd/Spatial_Navigation_in_a_2D_Space_(1).png>)
+
+In our case, we’re talking about navigating focus elements - so it’d look more like this:
+
+![Diagram for focus management using spatial navigation. An button labeled Add to Cart is focused on middle top with an arrow leading down and a label next to arrow with text Input: Down. Below is a horizontal list of 3 buttons, with the arrow leading to the middle button.](<Focus%20Management%20and%20Spatial%20Navigation%20in%20React%2054af838ca0594f5486924681e535c6cd/Input_-_Simple_Focus_Nav_(2).png>)
+
+But navigation is more complex than simply just moving in a single direction. It encompasses the logic behind picking the next object. It’s vaguely similar to pathfinding in game development - where an NPC may need to move to a certain place, but needs to check for colliding objects in the way first. In our case, we’re checking for the closest object in the direction we’re traveling (the closest “focus” item).
+
+In this example you can see the user presses down, but the next item isn’t exactly directly below, but it’s technically the closest and still within range (instead of going to the “Comments” button - which is directly below - but farther).
+
+![A slightly more complex example of spatial navigation using focus. The next element that will be focused is offset to the right slightly, while another menu below lines up perfectly with top button.](<Focus%20Management%20and%20Spatial%20Navigation%20in%20React%2054af838ca0594f5486924681e535c6cd/Input_-_Offset_Focus_Nav_(1).png>)
+
+If you’ve done low level game development or UI work, you’re probably familiar with this kind of vector (as in _direction_) math. One of the most basic functions you can find yourself writing is a collision detection “algorithm”. In a game, you may need to check if the player has collided with a set of objects in the scene (like other enemies, hazards or bonuses, etc). You can see an example of this in [my blog post on making Asteroids with Bevy and Rust](https://whoisryosuke.com/blog/2023/making-galaga-in-rust-with-bevy-part-1).
+
+In our case, we need to check if we travel in a certain direction, what object would we “hit” first? We’ll get into that later once we dive into my library and how it works.
+
+Now that we understand focus and spatial navigation - let’s dive into my library and see how it works.
+
+# Using react-unified-input
+
+Let’s setup the library in a basic React project (like a fresh NextJS project).
+
+Install the library `npm i react-unified-input`.
+
+Then add the `<InputManager />` to your app, ideally in a high level place like the root `<App />` component - but you can really put it anywhere (at the expense of it initializing slower).
+
+```tsx
+const App = () => {
+  return (
+    <>
+      <Router />
+      <InputManager />
+    </>
+  );
+};
+```
+
+Create a focusable component by using the `useFocusable()` hook inside a React component and pass the ref the underlying DOM element. I also have some logic here to automatically focus the item (great for the “first” item you want focused — or to force focus on an item you load in later).
+
+```tsx
+import { useEffect } from "react";
+import useFocusable from "../../hooks/useFocusable";
+import { useFocusStore } from "../../store/library";
+
+type Props = React.HTMLAttributes<HTMLButtonElement> & {
+  initialFocus?: boolean;
+};
+
+const ExampleFocusComponent = ({ initialFocus = false, ...props }: Props) => {
+  const { ref, focusId, focused } = useFocusable<HTMLButtonElement>();
+  const { setFocusedItem } = useFocusStore();
+
+  // Initially focus
+  useEffect(() => {
+    initialFocus && setFocusedItem(focusId);
+  }, [focusId, initialFocus, setFocusedItem]);
+
+  return (
+    <button
+      ref={ref}
+      style={{ backgroundColor: focused ? "blue" : "transparent" }}
+      onClick={() => console.log("button pressed!")}
+      {...props}
+    >
+      Focusable Component
+    </button>
+  );
+};
+
+export default ExampleFocusComponent;
+```
+
+Spin up your app and try navigating using the keyboards arrow keys. You should see the buttons turn blue when focused.
+
+I put together [a few examples](https://github.com/whoisryosuke/react-unified-input/tree/main/src/examples/HelloWorldExample) you can test out if you clone the library and run it locally.
+
+# How does it work?
+
+Here’s what happens from the page initially loading, to when the user presses an input:
+
+1. Page loads, all focusable elements render, and they send a signal to a [Zustand](https://github.com/pmndrs/zustand) data store that they’re focusable. It stores their “focus ID” (randomly generated ID) and their current position. All this happens in the `useFocusable()` hook.
+2. User presses down on keyboard to navigate. A `<Keyboard />` component inside the `<InputManager />` component has event listeners that update a shared data store with the current input. It also checks the data store for the current “key map”, just in case the bindings change (and down isn’t “down” anymore). We map all input devices to a common “key map”, similar to game engines like Unity or Unreal Engine. So `KeyUp` on keyboard and `002` on Gamepad can both be assigned to the “Up” direction.
+3. A `<Navigator />` component sees the input change in the store and runs the navigation algorithm.
+4. The algorithm first runs through the focusable elements in the same container and checks if the element is in the direction we’re looking for. Then we run the same process again for anything outside the container if we don’t find anything.
+
+   We check if the element in the direction we’re going by doing a bit of geometry and math. We loop over each focusable item and check it’s position against our currently focused item. We check both axes, the X and the Y, no matter what the direction — because they both help determine how close something is. For example, I could have an element directly above my button, but another one to the left of it on the same line — if the left one is detected first it “wins” and the focus moves in a way the user doesn’t expect.
+
+That’s pretty high level though, and there’s a lot of nuance to how this kind of architecture is composed. Let’s break it down piece by piece.
+
+## The useFocusable Hook
+
+We need a system to mark elements on a page as focusable. In React we can do this using hooks, that way when someone is creating UI components, they can just include a single line of code to make it focusable.
+
+The `useFocusable()` hook handles a few things - let’s tackle them bit by bit. You can [see the full hook here](https://github.com/whoisryosuke/react-unified-input/blob/main/src/hooks/useFocusable.ts) for reference.
+
+First we create a random ID to identify the focus item - I do a crude hash algorithm here using a combination of the current date and a random number, but this could be resolved with a library like UUID (at the cost of some extra calculations maybe):
+
+```tsx
+const generateId = () =>
+  `${Number(new Date()).toString()}-${Math.round(Math.random() * 100000)}`;
+```
+
+Then it adds the focus item to the data store. The data is structured as a flat object to make lookups easier:
+
+```tsx
+export type FocusId = string;
+export type FocusItem = {
+  parent: FocusId;
+  position: DOMRect;
+  // This is primarily for parent/container elements
+  // when you need to contain focus elements but dont need the container focusable
+  focusable: boolean;
+};
+
+interface LibraryState {
+  focusItems: Record<FocusId, FocusItem>;
+}
+
+// Looks like:
+{
+	focusItems: {
+		"asa1281238asd93d902": {
+			parent: "vnvb81221298129",
+			position: {
+				width: 420,
+				height: 710,
+				focusable: true,
+			}
+		}
+		"vnvb81221298129": {}, // more objects all relating to eachother
+	}
+}
+```
+
+We check if the focus already exists (using a `ref`) and bail early. Otherwise it grabs the elements current position using `getPosition()` (a wrapper around `getClientRectBounds()`) and adds it to the data store along with the `focusId` we created earlier.
+
+```tsx
+// Sync focus item with store
+useEffect(() => {
+  console.log("syncing focus position with store", focusId, focusAdded.current);
+
+  // If we already added it, don't add again
+  if (focusAdded.current) return;
+
+  // Check if focus name exists, if so, make a new one
+  // Ideally this will run again
+  if (focusId in focusItems) {
+    console.log("duplicate ID found, generating new one");
+    return setFocusId(generateId());
+  }
+  console.log("focus not found, syncing");
+  // Get position
+  const position = getPosition();
+  if (!position) {
+    console.error("couldnt get position");
+    // throw new Error(`Couldn't find element position for focus ${focusId}`);
+    return;
+  }
+  console.log("adding to focus store", focusId);
+  addFocusItem(focusId, { parent: parentKey, position, focusable });
+  ref.current?.setAttribute("focus-id", focusId);
+  focusAdded.current = true;
+}, [focusId, addFocusItem, removeFocusItem, focusItems, parentKey, focusable]);
+```
+
+And that’s the most important part of it.
+
+There’s a lot of other conditional logic in place if you’d like to dig in deeper:
+
+- When the user presses enter on keyboard, it should trigger `onClick` of element.
+- Lots of accessibility stuff like using the native `.focus()` method on our element and keeping it synced with tab navigation (or other factors changing focus).
+- Cleanup cycles if component is unmounted (so we don’t focus something that’s gone)
+
+But we’re only getting started here! Let’s talk about the concept of “focus containers”.
+
+## Focus Containers
+
+When building a UI with focus in mind, you often want to “encapsulate” the focus momentarily. This is like opening a modal on a webpage, you usually want to keep the user inside there - instead of being able to tab navigate outside (or “behind” the modal).
+
+You’ll notice in the earlier example when I mentioned spatial navigation, I showed this diagram of movement:
+
+![Same diagram as earlier for slightly more complex spatial navigation.](<Focus%20Management%20and%20Spatial%20Navigation%20in%20React%2054af838ca0594f5486924681e535c6cd/Input_-_Offset_Focus_Nav_(1).png>)
+
+But what if we had a set of focus items we want to prioritize over other items? Like say, a carousel of cards, or a menu with list of items. Even if another item comes kinda close, we want to prefer elements that are in the same “group” (often referred to as “children” of the same “parent” — but in this case we abstract it away from the DOM since focus items may not be direct DOM descendants of a parent).
+
+![Diagram for focus container. There are 2 menus of buttons, one vertical and one horizontal. The vertical buttons have a gap in between the first and second button, where the horizontal menu is slightly overlapping inside. Each menu has a box surrounding it with a dotted border representing a “focus container”. The focus is shown traveling from the first vertical menu item to the second (despite the overlap with horizontal).](Focus%20Management%20and%20Spatial%20Navigation%20in%20React%2054af838ca0594f5486924681e535c6cd/Focus_Container_Example.png)
+
+That’s why I created the `<FocusContainer>` component. It groups together any nested focus items, and the collision detection algorithm knows to prioritize it.
+
+```tsx
+<FocusContainer>
+  <ExampleFocusComponent initialFocus />
+  <ExampleFocusComponent />
+  <ExampleFocusComponent />
+  <ExampleFocusComponent />
+</FocusContainer>
+```
+
+So how does a focus item know it’s inside a certain focus container? The `<FocusContainer>` leverages React Context. Every container is basically a context provider for `FocusContext`. In this context we store the `focusId` we get from our `useFocusable()` hook.
+
+```tsx
+import { PropsWithChildren } from "react";
+import { FocusContext } from "../../context/FocusContext";
+import useFocusable from "../../hooks/useFocusable";
+
+type Props = {
+  style: React.CSSProperties;
+};
+
+const FocusContainer = ({ children, ...props }: PropsWithChildren<Props>) => {
+  const { ref, focusId } = useFocusable<HTMLDivElement>({ focusable: false });
+
+  return (
+    <FocusContext.Provider value={focusId}>
+      <div ref={ref} {...props}>
+        {children}
+      </div>
+    </FocusContext.Provider>
+  );
+};
+
+export default FocusContainer;
+```
+
+Then in our `useFocusable()` hook, we can also check for this context — and provide it as a parent:
+
+```tsx
+const parentKey = useFocusContext();
+
+// Later in a `useEffect`
+addFocusItem(focusId, { parent: parentKey, position, focusable });
+```
+
+This works really well in React-land.
+
+## Keyboard + Gamepad Navigation.
+
+I won’t dive to deep into this concept because I’ve covered it plenty in past blog posts. But like I mentioned earlier, the high level `<InputManager />` component that’s required in the application contains the logic for input management.
+
+```tsx
+import KeyboardInput from "./Keyboard";
+import Navigator from "./Navigator";
+import { GamepadInput } from "./Gamepad";
+
+type Props = {
+  disableGamepad?: boolean;
+  disableKeyboard?: boolean;
+  disableNavigation?: boolean;
+};
+
+const InputManager = ({
+  disableGamepad,
+  disableKeyboard,
+  disableNavigation,
+}: Props) => {
+  return (
+    <>
+      {!disableNavigation && <Navigator />}
+      {!disableKeyboard && <KeyboardInput />}
+      {!disableGamepad && <GamepadInput />}
+    </>
+  );
+};
+
+InputManager.defaultProps = {
+  disableGamepad: false,
+  disableKeyboard: false,
+  disableNavigation: false,
+};
+
+export default InputManager;
+```
+
+The `<KeyboardInput>` and `<GamepadInput>` are in charge of getting input from each device. They both sync their data to the data store. This allows us to use a gamepad, put it down at any time, and use the keyboard, or swap back and forth as needed.
+
+The input is normalized to a single source: `input` - which we keep inside the Zustand data store to share across the app. The input mapping is pretty simple, just the navigational directions (up, down, left, and right) and a “confirm” and “cancel” so we can trigger click events and close modals. It looks like this:
+
+```tsx
+export const DEFAULT_USER_INPUT = {
+  up: false,
+  down: false,
+  left: false,
+  right: false,
+  confirm: false,
+  cancel: false,
+};
+
+/**
+ * The main input map we use at a core level. All devices update this state.
+ */
+export type UserInputMap = typeof DEFAULT_USER_INPUT;
+```
+
+Each device has a mapping to this “normalized input”:
+
+```tsx
+/**
+ * The keys for the main input map
+ */
+export type UserInputKeys = keyof typeof DEFAULT_USER_INPUT;
+
+/**
+ * Used when mapping device "button" to the input map.
+ * We store using the device "button" as the object key for quick lookup
+ */
+export type UserInputDeviceKeys = Record<string, UserInputKeys>;
+
+export const DEFAULT_KEYBOARD_MAP: UserInputDeviceKeys = {
+  ArrowUp: "up",
+  ArrowDown: "down",
+  ArrowLeft: "left",
+  ArrowRight: "right",
+  Enter: "confirm",
+  Escape: "cancel",
+};
+
+// Gamepad uses array index based keys.
+export const DEFAULT_GAMEPAD_MAP: UserInputDeviceKeys = {
+  12: "up",
+  13: "down",
+  14: "left",
+  15: "right",
+  3: "confirm",
+  1: "cancel",
+};
+```
+
+Here you can see an example of taking gamepad input, mapping it against our keymap, and then storing that input data:
+
+```tsx
+const { input, gamepadMap, setInputs } = useFocusStore();
+
+// Convert Gamepad input to generic input
+const gamepadMapArray = Object.keys(gamepadMap);
+// In order to prevent some unecessary re-renders,
+// we have a dirty check to see if any input has changed
+let dirtyInput = false;
+const newInput: Partial<UserInputMap> = {};
+gamepadMapArray.forEach((gamepadKey) => {
+  const inputKey = gamepadMap[gamepadKey];
+  const previousInput = input[inputKey];
+  const currentInput = gamepad.buttons[parseInt(gamepadKey)].pressed;
+  if (previousInput !== currentInput) {
+    newInput[inputKey] = currentInput;
+    dirtyInput = true;
+  }
+});
+if (dirtyInput) setInputs(newInput);
+```
+
+This aligns closely with the concepts I set out with the [input-manager library](https://github.com/whoisryosuke/input-manager) if you’re interested in a platform agnostic solution for game or app development.
+
+> ☑️ In the future I’d like to create a way to make the architecture more agnostic to allow for more devices at the same time (not just keyboard + gamepad) — like adding a Bluetooth remote or another type of input device.
+
+Let’s cover that `<Navigator />` component where most of the navigation magic happens.
+
+## Spatial Navigation Component
+
+So we’ve got focus items and keyboard + gamepad input synced up to a store — how do we use that input to power focus navigation now?
+
+I created a `<Navigator />` component that checks the data store for input changes, checks all the focus items, finds the current one, and finally does the “algorithm” part to determine the next focus element.
+
+We define “navigation” as 4 directions - up, down, left, and right.
+
+```tsx
+type NavigationDirections = "up" | "down" | "left" | "right";
+```
+
+We check for `input` using the `useFocusStore()` hook (a Zustand hook for accessing the shared data store). The actual check happens inside a `useEffect()` hook so it can fire off whenever the input changes. When a certain direction is detected it runs the corresponding navigation function like `navigateUp` for “up”. But since this is user input, we want to make sure we throttle it (so the press doesn’t go off 20 times per second) — so it’s technically `navigateUpThrottled`.
+
+```tsx
+const checkInput = useCallback(() => {
+  if (input.up) {
+    console.log("[NAVIGATOR] navigated up");
+    navigateUpThrottled();
+  }
+  if (input.down) {
+    console.log("[NAVIGATOR] navigated down");
+    navigateDownThrottled();
+  }
+  if (input.left) {
+    console.log("[NAVIGATOR] navigated left");
+    navigateLeftThrottled();
+  }
+  if (input.right) {
+    console.log("[NAVIGATOR] navigated right");
+    navigateRightThrottled();
+  }
+}, [
+  input,
+  navigateUpThrottled,
+  navigateDownThrottled,
+  navigateLeftThrottled,
+  navigateRightThrottled,
+]);
+
+// Check for input and navigate
+useEffect(() => {
+  checkInput();
+}, [input, checkInput]);
+```
+
+The `navigateUp()` function is pretty simple, it just runs a `navigate()` function with the direction we need.
+
+The `navigate()` function is where we actually do most of the collision detection logic (aka the “algorithm”). In this function a lot happens so let’s take it step by step:
+
+1. We grab the latest state from the data store. Since callbacks cache the results of outside function calls, we can’t rely on the top-level hook data in this function. Instead, we use the `getState()` method on the hook to force it to provide the latest state when we run it.
+2. Because our function uses the DOM to check elements, we need to have an early bail out if we’re running this component server-side (like in a NextJS app). This is easily checked using a `if` statement checking for the global `window` object.
+3. We grab the current focus item using the `focusedItem` property which contains the current focused item’s ID. And if we don’t have an item focused we just grab the first item we find and focus it.
+4. Then we can finally run through all the focus items. But first if the focus element is inside a focus container, we want to check any other siblings. We also update the position of each item - in case they’ve moved.
+5. Then we finally check for collisions! I’ll cover this function separately, but it accepts an array of focus items, a direction, and the current item (to compare against).
+6. If we find a collision, we update the focus to the new item using `setFocusedItem()`.
+7. If we don’t find a match we do steps 4-5 again for all the other focus items.
+
+```tsx
+const navigate = (direction: NavigationDirections) => {
+  const { focusItems, focusedItem, setFocusedItem, setFocusPosition } =
+    useFocusStore.getState();
+
+  if (typeof window == "undefined") return;
+  console.log("navigating", direction);
+  // Logic
+  // Get current focus item
+  const currentItem = focusItems[focusedItem];
+  if (!currentItem) {
+    // No focus item to navigate, just select something?
+    // Ideally a root element with no parent
+    const focusMap = Object.entries(focusItems);
+    const firstFocusableItem = focusMap.find(([_, focusItem]) => {
+      return focusItem.parent === "";
+    });
+    if (firstFocusableItem) {
+      setFocusedItem(firstFocusableItem[0]);
+    } else {
+      const [focusKey, _] = focusMap[0];
+      setFocusedItem(focusKey);
+    }
+  }
+  // Filter the focus items by children of the parent
+  const focusMap = Object.entries(focusItems);
+  const focusChildren = focusMap.filter(([_, focusItem]) => {
+    return focusItem.parent === currentItem.parent;
+  });
+  // Update positions of children
+  focusChildren.forEach(([focusId, focusItem]) => {
+    const focusRef = document.querySelector(`[focus-id="${focusId}"]`);
+    if (!focusRef) return;
+
+    const newPosition = focusRef.getBoundingClientRect();
+    setFocusPosition(focusId, newPosition);
+    focusItem.position = newPosition;
+  });
+
+  // Look for something below
+  const foundKey = checkForCollisions(focusChildren, direction, currentItem);
+
+  // Found something? Focus it!
+  if (foundKey) {
+    console.log("navigating to", foundKey);
+    return setFocusedItem(foundKey);
+  }
+
+  // Nothing? Search through remaining focus items? (helps enforce container-first logic)
+  console.log("couldnt find a sibling - going outside");
+  const outsideMap = focusMap.filter(([_, focusItem]) => {
+    return focusItem.parent !== currentItem.parent && focusItem.focusable;
+  });
+  // Update positions of children
+  outsideMap.forEach(([focusId, focusItem]) => {
+    const focusRef = document.querySelector(`[focus-id="${focusId}"]`);
+    if (!focusRef) return;
+
+    const newPosition = focusRef.getBoundingClientRect();
+    setFocusPosition(focusId, newPosition);
+    focusItem.position = newPosition;
+  });
+  const foundOutsideKey = checkForCollisions(
+    outsideMap,
+    direction,
+    currentItem
+  );
+
+  if (foundOutsideKey) {
+    console.log("navigating to", foundKey);
+    return setFocusedItem(foundOutsideKey);
+  }
+};
+```
+
+Phew! That’s a lot! And we haven’t even gotten to the collision logic yet 😆.
+
+> ⌨️ Keen performance eyes will be caught up on the recalculation of the element positions on each focus movement. I tried a few different methods to avoid this, like event listeners in the hook to update position locally, or even using the new `ResizeObserver` API. But each had issues when I introduced animated focus elements into the mix. The focus items wouldn’t update fast enough, and the the focus position would lag behind the element.
+
+## Collision detection
+
+The collision detection has a 2 layers - a quick filter, then the actual “algorithm” for finding the nearest object. On the top of the function we keep a `foundItem`, this way when we think we’ve found the closest item — we can compare the following items to it and ensure it really is the closest.
+
+The first thing we do is filter the focus items by the direction we’re traveling. If we’re moving up, we only want items that are a greater `Y` value than the current item. This limits our scope immensely so we’re running expensive math on lots of focus items.
+
+Now we can get to the actual collision detection. We loop over each item and do a bit of math to determine the distance between the focused element and the current focus item.
+
+```tsx
+const checkForCollisions = (
+  focusChildren: [string, FocusItem][],
+  direction: NavigationDirections,
+  currentItem: FocusItem
+) => {
+  // If we find a new focus item we store it here to compare against other options
+  let foundKey: FocusId | undefined;
+  let foundItem: FocusItem | undefined;
+  // Filter items based on the direction we're searching
+  // Then loop over each one and check which is actually closest
+  focusChildren
+    .filter(([_, focusItem]) => {
+      switch (direction) {
+        case "up":
+          return focusItem.position.y < currentItem.position.y;
+        case "down":
+          return focusItem.position.y > currentItem.position.y;
+        case "left":
+          return focusItem.position.x < currentItem.position.x;
+        case "right":
+          return focusItem.position.x > currentItem.position.x;
+      }
+    })
+    .forEach(([key, focusItem]) => {
+      console.log(
+        "found container child focus item",
+        direction,
+        key,
+        currentItem.position,
+        focusItem.position
+      );
+      // Check if it's the closest item
+      // Change logic depending on the direction
+      switch (direction) {
+        case "up": {
+          if (!foundItem) break;
+
+          // This basically works with a "weight" system.
+          // Inspired by Norigin's Spatial Navigation priority system.
+          // We compare the "found" element to the current one
+          // And the original focus element vs the current one
+          // using the vertical and side measurements.
+          // But since certain directions care more about certain sides
+          // we give more "weight"/priority to the matching side (vertical dir = vertical side)
+          // This helps navigate more in the direction we want
+          const foundComparisonVertical =
+            Math.abs(foundItem.position.y - currentItem.position.y) *
+            FOCUS_WEIGHT_LOW;
+          const baseComparisonVertical =
+            Math.abs(focusItem.position.y - currentItem.position.y) *
+            FOCUS_WEIGHT_LOW;
+
+          const foundComparisonSide =
+            Math.abs(foundItem.position.x - currentItem.position.x) *
+            FOCUS_WEIGHT_HIGH;
+          const baseComparisonSide =
+            Math.abs(focusItem.position.x - currentItem.position.x) *
+            FOCUS_WEIGHT_HIGH;
+
+          const foundComparisonTotal =
+            foundComparisonVertical + foundComparisonSide;
+
+          const baseComparisonTotal =
+            baseComparisonVertical + baseComparisonSide;
+
+          // Is the new object closer than the old object?
+          if (foundComparisonTotal > baseComparisonTotal) {
+            foundKey = key;
+            foundItem = focusItem;
+          }
+          break;
+        }
+        // ...Other directions omitted...
+        default: {
+          break;
+        }
+      }
+      console.log("done checking");
+      // No item to check against? This one wins then.
+      if (!foundItem) {
+        console.log("default item selected", key, focusItem);
+        foundKey = key;
+        foundItem = focusItem;
+      }
+    });
+
+  return foundKey;
+};
+```
+
+Let’s talk about this math - aka the algorithm.
+
+When you’re trying to figure out what object is **above** or **below** something, all you care about is the `y` right? But what if the object is so far to the left or right that another object is technically “closer” - but has a larger `y`. We saw this earlier with my diagram about focus containers (and solved the “problem” using those).
+
+But if we aren’t using focus containers, how would this logic work? We’d need way of comparing not only the `y` - but the `x` - and have a system that understands that one is more important than the other?
+
+### The “simple” system
+
+We could just check and compare against both sides…**but that’s pretty tedious and inaccurate.**
+
+```tsx
+const foundItemDistanceY = foundItem.position.y - currentItem.position.y;
+const focusItemDistanceY = focusItem.position.y - currentItem.position.y;
+// Is new item closer vertically?
+const isCloserY = foundItemDistanceY > focusItemDistanceY;
+
+const foundItemDistanceX = foundItem.position.x - currentItem.position.x;
+const focusItemDistanceX = focusItem.position.x - currentItem.position.x;
+// Is new item closer horizontally?
+const isCloserX = foundItemDistanceX > focusItemDistanceX;
+
+if (isCloserY && isCloserX) {
+  /* something */
+}
+```
+
+**This doesn’t work in every case**, because not every item will match the criteria in both directions. And if we do secondary loop (one for vertical check, then another for the side) — it lowers the performance of the library greatly.
+
+### Weight based system
+
+**This is why I use a “weight” based system** inspired by the Norigin library’s navigation algorithm.
+
+We still take the difference between the `y` and `x` to figure out the distance of either direction, but we also multiply each one by a “weight” value. One side (like the `y`) gets a higher weight, the other side (like `x`) would get the lower weight.
+
+```tsx
+const FOCUS_WEIGHT_HIGH = 5;
+const FOCUS_WEIGHT_LOW = 1;
+
+const foundComparisonVertical =
+  Math.abs(foundItem.position.y - currentItem.position.y) * FOCUS_WEIGHT_LOW;
+const baseComparisonVertical =
+  Math.abs(focusItem.position.y - currentItem.position.y) * FOCUS_WEIGHT_LOW;
+
+const foundComparisonSide =
+  Math.abs(foundItem.position.x - currentItem.position.x) * FOCUS_WEIGHT_HIGH;
+const baseComparisonSide =
+  Math.abs(focusItem.position.x - currentItem.position.x) * FOCUS_WEIGHT_HIGH;
+```
+
+Then we can add the two side comparisons together - and this gives us a single number we can use to compare against the focus item.
+
+```tsx
+const foundComparisonTotal = foundComparisonVertical + foundComparisonSide;
+
+const baseComparisonTotal = baseComparisonVertical + baseComparisonSide;
+
+// Is the new object closer than the old object?
+if (foundComparisonTotal > baseComparisonTotal) {
+  foundKey = key;
+  foundItem = focusItem;
+}
+```
+
+And that’s kinda the bulk of it. This method proves to be much more accurate with navigating when compared to the “simpler’ method.
+
+> ☑️ The one thing that I do need to account for in the next iteration is the actual size of elements. Norigin tracks the width and height of each element and accounts for it during the collision detection - that way wider or taller items reach out farther. If you experiment with my library now, you’ll find a couple edge cases that could be resolved with this consideration.
+
+# Research
+
+For sake of transparency, and because I feel like nobody does it, here are some of my notes when I finally reverse engineered [Norigin](https://github.com/NoriginMedia/Norigin-Spatial-Navigation) and [react-tv-space-navigation](https://github.com/bamlab/react-tv-space-navigation) (and [LRUD](https://github.com/bbc/lrud/) subsequently).
+
+## Norigin
+
+I tried not to look at their code at first (for the challenge) - then took a peek once I needed to optimize and squash bugs. This should help you break down their library and walk through it step by step.
+
+- Navigation happens [in SpatialNavigation.ts file](https://github.com/NoriginMedia/Norigin-Spatial-Navigation/blob/main/src/SpatialNavigation.ts)
+- Key press is detected and they fire off [the `smartNavigate()` function](https://github.com/NoriginMedia/Norigin-Spatial-Navigation/blob/main/src/SpatialNavigation.ts#L876) with the direction pressed
+
+The smart nav function:
+
+- That refreshes the focus element’s positional data in the DB
+- It gets [a “cut off coordinate”](https://github.com/NoriginMedia/Norigin-Spatial-Navigation/blob/main/src/SpatialNavigation.ts#L233)
+  - This basically returns the X or Y and width or height depending on nav direction
+  - If it’ a “sibling” it also includes item width?
+- Filters the focus elements by siblings and checks that first
+  - Updates the sibling element layout
+  - Grabs “cut off coodinate” for the sibling
+  - then uses that to filter the elements - basically if you go left, it grabs all left elements (or anything “less” than current focus cut off coordinates).
+  - Basically what I do I think?
+- [Sorts the filtered siblings by “priority”?](https://github.com/NoriginMedia/Norigin-Spatial-Navigation/blob/main/src/SpatialNavigation.ts#L424)
+  - Based on Mozilla’s Firefox OS for TV [remote control nav algorithm](https://developer.mozilla.org/en-US/docs/Mozilla/Firefox_OS_for_TV/TV_remote_control_navigation#Algorithm_design)
+  - Grabs [“ref corners”?](https://github.com/NoriginMedia/Norigin-Spatial-Navigation/blob/main/src/SpatialNavigation.ts#L261)
+    - Returns an object with the top left corner, and bottom left corner
+  - Uses [Lodash sortBy](https://lodash.com/docs/#sortBy) to sort the siblings
+    - This function basically can sort multiple properties on objects in an array (prob each corner in this case)
+    - Grabs ref corners of sibling
+    - [Checks for “adjacent slice”](https://github.com/NoriginMedia/Norigin-Spatial-Navigation/blob/main/src/SpatialNavigation.ts#L357)
+      - This checks if a sibling intersects too much with current object
+      - Basically grabs width of current object and checks that vs the difference between the focus and sibling
+    - Depending on the adjacent slice (aka intersection?) — it swaps two functions to measure the distance to the object
+      - [Primary axis](https://github.com/NoriginMedia/Norigin-Spatial-Navigation/blob/main/src/SpatialNavigation.ts#L383) is a simple difference (subtract) and absolute wrapper
+      - Secondary axis is more interesting. It measures the distance of each corner of focus and sibling (4 calcs) then just returns the minimum
+        - Neat little way of using `Math.min()` here spreading an array inside
+    - It calculates [“total distance points”](https://github.com/NoriginMedia/Norigin-Spatial-Navigation/blob/main/src/SpatialNavigation.ts#L474) by combining the two axis functions
+      - It also applies a “priority” based on if it’s adjacent or “diagonal”? Adjacent de-priorities the number (by dividing it by a larger “weight” number
+    - Returns the priority
+  - It grabs the first sibling and sets focus
+    - or if none — it basically repeats process with everything else
+
+This isn’t too different from my current process. And I appreciate how well commented some of the code was where it referenced other libraries where they pinched code or concepts from themselves.
+
+## lrud / react-tv-space-navigation
+
+I also recommend looking into https://github.com/bamlab/react-tv-space-navigation and it’s underlying navigation algorithm https://github.com/bbc/lrud. They’re a more recent library that tries to solve the problem of cross platform input as well.
+
+They came out after I’d done most of my research and development, so I’m just now looking at the code as a I write this article to see how they approached the problem.
+
+Starting with react-tv-space-navigation:
+
+- It’s cross-platform, meaning web and native using React Native.
+- It uses [the BBC spatial navigation library LRUD](https://github.com/bbc/lrud/tree/master) as the basis for the core functionality (focus management + spatial navigation).
+  - It’s a wrapper around it that provides components for React Native (like a `<FocusableView>` and a focusable `<ScrollView>`)
+- You can [read a blog post here](https://medium.com/xite-engineering/revolutionizing-focus-management-in-tv-applications-with-react-native-10ba69bd90) that breaks some of it down, and [a video here](https://www.youtube.com/watch?v=Asn1TmCH2b0). But I really had to dig into the code to see what was going on.
+- The code we’re interested in starts mostly in [SpatialNavigator.ts](https://github.com/bamlab/react-tv-space-navigation/blob/main/packages/lib/src/spatial-navigation/SpatialNavigator.ts), specifically the [`handleKeyDown` function](https://github.com/bamlab/react-tv-space-navigation/blob/main/packages/lib/src/spatial-navigation/SpatialNavigator.ts#L62). You can see here it’s just a wrapper around LRUD, calling an identical method on an instance of that class: `this.lrud.handleKeyEvent()`.
+
+Popping over to the LRUD library:
+
+- We can see the `handleKeyEvent` in [their index.ts file](https://github.com/bbc/lrud/blob/master/src/index.ts#L726).
+  - This function handles a lot of stuff.
+  - First we get the direction we’re going based on the key event (e.g. “KeyUp” on keyboard). It does some key mapping to determine the direction based on the input (using `getDirectionForKeyCode()`).
+  - If the user presses “enter”, they activate the `onClick` (or technically `onSelect`?)
+- Then we finally get into the focus navigation aspect. Their algorithm might look really familiar to the “simple” focus navigation I talked about at the beginning of the blog post, but they expand on it to actually support multiple directions. I’ll touch on that later.
+  - Similar to my algo - they do a local check with siblings first,
+  - We get the parent node (aka `topNode`) which contains siblings of this focus element.
+  - Then we try and get the next child using `getNextFocusableChildInDirection()` which checks the siblings and the direction
+- The [`getNextFocusableChildInDirection()` function](https://github.com/bbc/lrud/blob/master/src/index.ts#L555) is actually very short and simple.
+  - Since this library only works by moving in 2 directions at a time (up and down, or left and right), the function basically runs 2 functions: `getNextFocusableChild` and `getPrevFocusableChild` — a “next” and “previous” function.
+  - And the `getNextFocusableChild` function works probably like you think it does. It looks through the siblings after the focused item (starting it’s `for` loop after the `node.activeChild.index`). We [check if the node is focusable](https://github.com/bbc/lrud/blob/master/src/index.ts#L1084), we return it back to the previous function (ending the loop).
+- How does all this work?
+  - In the video I mentioned before for the React library — they show a graph of how all the nodes relate to each other. It’s similar to my system - they have layers of focus items that are related by parent/child relationships.
+  - Because the movement is 2 directions at a time (left/right or up/down), they can navigate logically that way. If they reach the end, they go to the next child of the parent. If they reach the beginning, they go to the previous child of the parent.
+  - It works in theory, but it requires the developer to structure their UI in a way that this flow always works. For instance, if I place 2 menus side by side, I need to wrap them both in a container that’s set to horizontal. And if I switch between them - it’d take me to the top of the other list (not halfway through maybe if my focus was lower). You can [see this in the recipes section](https://github.com/bbc/lrud/blob/master/docs/recipes.md), where every focus container is either vertical or horizontal. They even have `indexRange` properties to “size” the focus elements larger or smaller…it’s a little rigid and clunky…
+
+![Diagram of how focus travels in the LRUD algorithm with horizontal and vertical containers nested in each other.  A top level horizontal container has vertical and horizontal containers inside. The user presses down to travel down the vertical container, then right takes them over to the horizontal container.](<Focus%20Management%20and%20Spatial%20Navigation%20in%20React%2054af838ca0594f5486924681e535c6cd/LRUD_Example_(2).png>)
+
+I think it’s cool the react-tv-space-navigation team were able to accomplish a cross platform library - that’s always a really impressive feat, especially with edge cases like dealing with scrolling containers.
+
+I’m personally just not a huge fan of this particular algorithm for spatial navigation, I feel like it creates more rigid UIs and a less desirable developer experience when trying to map out the proper focus flow on a page.
+
+# What’s next
+
+There’s a few bugs to squash with any new library (like a couple edge cases with scrolling components).
+
+Though if I’d continue with this project I’d probably focus more on the native side next and adding support for that. This library works great on web now — but if you wanted to use this in a React Native app it would work at all. Norigin handles this by allowing the user to opt out of element measurement - circumventing the need for any DOM APIs like `getBoundingClientRect()`. But it also sacrifices spatial navigation, meaning it becomes similar in implementation to BBC’s LRUD.
+
+I’d want to create a native module for iOS and Android that would support the measurement — but handle it on the native side. That way you’re not doing expensive calculations on the JS layer, and you can leverage the native layer (much faster and efficient).
+
+# Still focused?
+
+Glad you made it this far! Here’s a piece of Cuban bread and a cafecito - you’ve earned it.
+
+As always, if you make anything cool using this or have any questions feel free to share or reach out on [Threads](https://threads.net/@whoisryosuke/), [Mastodon](https://mastodon.gamedev.place/@whoisryosuke), or [Twitter](https://twitter.com/whoisryosuke/).
+
+Stay curious,<br />
+Ryo
