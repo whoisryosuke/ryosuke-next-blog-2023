@@ -24,7 +24,7 @@ So with all that being said — let’s talk focus navigation!
 
 In UI development terms, it’s when an element on the page is clearly indicated as being **selected** or “focused” (usually by default with a solid outline, provided by most web browsers).
 
-![The MDN web page footer with the About link element focused using tab based navigation. Focus appears as a solid white rounded outline in the Chrome browser.](Focus%20Management%20and%20Spatial%20Navigation%20in%20React%2054af838ca0594f5486924681e535c6cd/Untitled.png)
+![The MDN web page footer with the About link element focused using tab based navigation. Focus appears as a solid white rounded outline in the Chrome browser.](./Untitled.png)
 
 Why is it important? It allows users to navigate the page and interact with it using their keyboard. By pressing the **Tab key** users can cycle through the focusable elements on a page. And using the **Enter key** they can activate the `onPress` method of a DOM element. This allows users that can’t use devices like mice to navigate content using their keyboard (or another assistive device mapped to those functions).
 
@@ -32,7 +32,7 @@ Why is it important? It allows users to navigate the page and interact with it u
 
 But it’s not just the web! The concept of a “focused” element can be carried over to any UI, as seen by games like Assassins Creed. They use a gamepad to imitate a mouse cursor that can hover over interactive UI elements like buttons. Then the UI responds by “focusing” the component by drawing a glow around the element.
 
-![The start screen for Assassin’s Creed Odyssey with a circle representing the cursor which is hovered over a menu item. The menu item is lighter than others, and has a white stroke around it. [Courtesy of the Game UI Database.](https://www.gameuidatabase.com/gameData.php?id=536#&gid=1&pid=2)](Focus%20Management%20and%20Spatial%20Navigation%20in%20React%2054af838ca0594f5486924681e535c6cd/Untitled%201.png)
+![The start screen for Assassin’s Creed Odyssey with a circle representing the cursor which is hovered over a menu item. The menu item is lighter than others, and has a white stroke around it. [Courtesy of the Game UI Database.](https://www.gameuidatabase.com/gameData.php?id=536#&gid=1&pid=2)](./Untitled%201.png)
 
 My goal was to basically make the site work more like a PC game and extend the existing browser APIs to create a more holistic input and navigation experience for all users.
 
@@ -85,17 +85,17 @@ Instead, what if when the user pressed up, down, left, or right — we have a sy
 
 It refers to an object (in this case “focus”) moving in a 2D or 3D space. What direction is it moving in? How far? These are what spatial navigation is all about. For example, if the user presses down, they would expect to move or “navigate” down on the web page or “space”.
 
-![A diagram for spatial navigation in a 2D space. A 2D graph with X and Y axis going from 0 to 4 on each. A player sprite is positioned at the coordinates 1,1. Above the sprite is an arrow representing movement up, and a circle shows where the sprite will end up at 3,1. [Thanks for Kenney for the sprite.](https://kenney.nl/assets/rpg-urban-pack)](<Focus%20Management%20and%20Spatial%20Navigation%20in%20React%2054af838ca0594f5486924681e535c6cd/Spatial_Navigation_in_a_2D_Space_(1).png>)
+![A diagram for spatial navigation in a 2D space. A 2D graph with X and Y axis going from 0 to 4 on each. A player sprite is positioned at the coordinates 1,1. Above the sprite is an arrow representing movement up, and a circle shows where the sprite will end up at 3,1. [Thanks for Kenney for the sprite.](https://kenney.nl/assets/rpg-urban-pack)](<./Spatial_Navigation_in_a_2D_Space_(1).png>)
 
 In our case, we’re talking about navigating focus elements - so it’d look more like this:
 
-![Diagram for focus management using spatial navigation. An button labeled Add to Cart is focused on middle top with an arrow leading down and a label next to arrow with text Input: Down. Below is a horizontal list of 3 buttons, with the arrow leading to the middle button.](<Focus%20Management%20and%20Spatial%20Navigation%20in%20React%2054af838ca0594f5486924681e535c6cd/Input_-_Simple_Focus_Nav_(2).png>)
+![Diagram for focus management using spatial navigation. An button labeled Add to Cart is focused on middle top with an arrow leading down and a label next to arrow with text Input: Down. Below is a horizontal list of 3 buttons, with the arrow leading to the middle button.](<./Input_-_Simple_Focus_Nav_(2).png>)
 
 But navigation is more complex than simply just moving in a single direction. It encompasses the logic behind picking the next object. It’s vaguely similar to pathfinding in game development - where an NPC may need to move to a certain place, but needs to check for colliding objects in the way first. In our case, we’re checking for the closest object in the direction we’re traveling (the closest “focus” item).
 
 In this example you can see the user presses down, but the next item isn’t exactly directly below, but it’s technically the closest and still within range (instead of going to the “Comments” button - which is directly below - but farther).
 
-![A slightly more complex example of spatial navigation using focus. The next element that will be focused is offset to the right slightly, while another menu below lines up perfectly with top button.](<Focus%20Management%20and%20Spatial%20Navigation%20in%20React%2054af838ca0594f5486924681e535c6cd/Input_-_Offset_Focus_Nav_(1).png>)
+![A slightly more complex example of spatial navigation using focus. The next element that will be focused is offset to the right slightly, while another menu below lines up perfectly with top button.](<./Input_-_Offset_Focus_Nav_(1).png>)
 
 If you’ve done low level game development or UI work, you’re probably familiar with this kind of vector (as in _direction_) math. One of the most basic functions you can find yourself writing is a collision detection “algorithm”. In a game, you may need to check if the player has collided with a set of objects in the scene (like other enemies, hazards or bonuses, etc). You can see an example of this in [my blog post on making Asteroids with Bevy and Rust](https://whoisryosuke.com/blog/2023/making-galaga-in-rust-with-bevy-part-1).
 
@@ -266,11 +266,11 @@ When building a UI with focus in mind, you often want to “encapsulate” the f
 
 You’ll notice in the earlier example when I mentioned spatial navigation, I showed this diagram of movement:
 
-![Same diagram as earlier for slightly more complex spatial navigation.](<Focus%20Management%20and%20Spatial%20Navigation%20in%20React%2054af838ca0594f5486924681e535c6cd/Input_-_Offset_Focus_Nav_(1).png>)
+![Same diagram as earlier for slightly more complex spatial navigation.](<./Input_-_Offset_Focus_Nav_(1).png>)
 
 But what if we had a set of focus items we want to prioritize over other items? Like say, a carousel of cards, or a menu with list of items. Even if another item comes kinda close, we want to prefer elements that are in the same “group” (often referred to as “children” of the same “parent” — but in this case we abstract it away from the DOM since focus items may not be direct DOM descendants of a parent).
 
-![Diagram for focus container. There are 2 menus of buttons, one vertical and one horizontal. The vertical buttons have a gap in between the first and second button, where the horizontal menu is slightly overlapping inside. Each menu has a box surrounding it with a dotted border representing a “focus container”. The focus is shown traveling from the first vertical menu item to the second (despite the overlap with horizontal).](Focus%20Management%20and%20Spatial%20Navigation%20in%20React%2054af838ca0594f5486924681e535c6cd/Focus_Container_Example.png)
+![Diagram for focus container. There are 2 menus of buttons, one vertical and one horizontal. The vertical buttons have a gap in between the first and second button, where the horizontal menu is slightly overlapping inside. Each menu has a box surrounding it with a dotted border representing a “focus container”. The focus is shown traveling from the first vertical menu item to the second (despite the overlap with horizontal).](./Focus_Container_Example.png)
 
 That’s why I created the `<FocusContainer>` component. It groups together any nested focus items, and the collision detection algorithm knows to prioritize it.
 
@@ -820,7 +820,7 @@ Popping over to the LRUD library:
   - Because the movement is 2 directions at a time (left/right or up/down), they can navigate logically that way. If they reach the end, they go to the next child of the parent. If they reach the beginning, they go to the previous child of the parent.
   - It works in theory, but it requires the developer to structure their UI in a way that this flow always works. For instance, if I place 2 menus side by side, I need to wrap them both in a container that’s set to horizontal. And if I switch between them - it’d take me to the top of the other list (not halfway through maybe if my focus was lower). You can [see this in the recipes section](https://github.com/bbc/lrud/blob/master/docs/recipes.md), where every focus container is either vertical or horizontal. They even have `indexRange` properties to “size” the focus elements larger or smaller…it’s a little rigid and clunky…
 
-![Diagram of how focus travels in the LRUD algorithm with horizontal and vertical containers nested in each other.  A top level horizontal container has vertical and horizontal containers inside. The user presses down to travel down the vertical container, then right takes them over to the horizontal container.](<Focus%20Management%20and%20Spatial%20Navigation%20in%20React%2054af838ca0594f5486924681e535c6cd/LRUD_Example_(2).png>)
+![Diagram of how focus travels in the LRUD algorithm with horizontal and vertical containers nested in each other.  A top level horizontal container has vertical and horizontal containers inside. The user presses down to travel down the vertical container, then right takes them over to the horizontal container.](<./LRUD_Example_(2).png>)
 
 I think it’s cool the react-tv-space-navigation team were able to accomplish a cross platform library - that’s always a really impressive feat, especially with edge cases like dealing with scrolling containers.
 
