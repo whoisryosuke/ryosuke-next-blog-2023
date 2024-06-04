@@ -1,8 +1,9 @@
 import Fonts from "@components/dom/Fonts/Fonts";
+import Html from "@components/dom/Html/Html";
 import Document, {
   DocumentContext,
   Head,
-  Html,
+  Html as NextHtml,
   Main,
   NextScript,
 } from "next/document";
@@ -32,14 +33,16 @@ export default class MyDocument extends Document {
 
   render() {
     return (
-      <Html>
-        <Head></Head>
-        <body>
-          <Main />
-          <NextScript />
-          <Fonts />
-        </body>
-      </Html>
+      <NextHtml>
+        <Html>
+          <Head></Head>
+          <body>
+            <Main />
+            <NextScript />
+            <Fonts />
+          </body>
+        </Html>
+      </NextHtml>
     );
   }
 }
