@@ -2,6 +2,7 @@ import BlogPage from "@components/dom/BlogPage/BlogPage";
 import Page from "@components/dom/Page/Page";
 import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "next/router";
+import Html from "@components/dom/Html/Html";
 
 export default function MyApp({ Component, pageProps }) {
   const router = useRouter();
@@ -18,8 +19,10 @@ export default function MyApp({ Component, pageProps }) {
   );
 
   return (
-    <Page>
-      <AnimatePresence>{content}</AnimatePresence>
-    </Page>
+    <Html>
+      <Page>
+        <AnimatePresence>{content}</AnimatePresence>
+      </Page>
+    </Html>
   );
 }
