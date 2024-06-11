@@ -14,56 +14,15 @@ const work: WorkCardInitialData[] = [
     category: ["Game Dev"],
   },
   {
-    src: "/work/art/2023/custom-final2-f206-50mm.png",
-    title: "Sci-fi Floor",
-    date: "2023-07-24",
-    category: ["3D"],
-  },
-  {
-    src: "/work/art/2023/animation-540p-watermarked.png",
-    video: {
-      src: "/work/art/2023/animation-540p-watermarked.mp4",
-      width: 960 / 2,
-      height: 540 / 2,
-    },
-    title: "Psy Tunnel",
-    date: "2023-07-27",
-    category: ["3D"],
-  },
-  {
     src: "/work/art/2023/Test6-mml-psx-servbot.png",
     title: "Mega Man Legends Tribute",
     date: "2023-09-06",
     category: ["3D"],
   },
   {
-    src: "/work/art/2023/Test6-Angle-Denoise.png",
-    title: "Simulation Node Test",
-    date: "2023-09-07",
-    category: ["3D"],
-  },
-  {
     src: "/work/art/2023/final-square-web.png",
     title: "Circles",
     date: "2023-09-13",
-    category: ["3D"],
-  },
-  {
-    src: "/work/art/2023/glass-test1.png",
-    title: "Glass Shader Experiments",
-    date: "2023-09-26",
-    category: ["3D"],
-  },
-  {
-    src: "/work/art/2023/depthcore-final-r1-1.png",
-    title: "DepthCore Layers",
-    date: "2023-09-25",
-    category: ["3D"],
-  },
-  {
-    src: "/work/art/2023/r1-final2.png",
-    title: "DepthCore Experiment",
-    date: "2023-09-26",
     category: ["3D"],
   },
   {

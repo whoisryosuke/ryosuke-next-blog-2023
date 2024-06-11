@@ -6,7 +6,8 @@
     "dev:watch": "next-remote-watch ./posts",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "portfolio:optimize": "node scripts/generate-thumbnails.js"
   },
   "dependencies": {
     "@emotion/is-prop-valid": "^1.2.1",

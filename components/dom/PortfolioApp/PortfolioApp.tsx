@@ -16,9 +16,12 @@ import PortfolioCategorySort from "./PortfolioCategorySort";
 import Head from "../Head/Head";
 
 const condensePortfolio = (work: PortfolioContent) => {
-  return Object.values(work).reduce((merge, workItems) => {
+  const merged = Object.values(work).reduce((merge, workItems) => {
     return (merge = [...merge, ...workItems]);
   }, []);
+  // @ts-ignore you can totally subtract dates - you're drunk TS
+  const sorted = merged.sort((a, b) => new Date(b.date) - new Date(a.date));
+  return sorted;
 };
 
 const categoryPortfolio = (

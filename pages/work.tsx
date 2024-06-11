@@ -26,8 +26,8 @@ export default function WorkPage() {
     });
 
     prev = {
-      ...prev,
       [year]: indexedItems,
+      ...prev,
     };
 
     return prev;
