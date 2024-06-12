@@ -40,6 +40,12 @@ const useBlogPostRead = () => {
         case 5:
           key = "READ_5";
           break;
+        case 10:
+          key = "READ_10";
+          break;
+        case 20:
+          key = "READ_20";
+          break;
       }
       // console.log("[ACHIEVEMENT] Blog post read added", blogsRead);
 

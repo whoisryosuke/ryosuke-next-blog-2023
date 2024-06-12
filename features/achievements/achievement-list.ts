@@ -16,6 +16,14 @@ const BLOG_ACHIEVEMENTS = {
     title: "My Name is Captain Page Turner",
     message: "Read 5 posts",
   },
+  READ_10: {
+    title: "Free Pizza Hut Personal Pan",
+    message: "Read 10 posts",
+  },
+  READ_20: {
+    title: "Invested in the plot",
+    message: "Read 20 posts",
+  },
 };
 
 const META_ACHIEVEMENTS = {
