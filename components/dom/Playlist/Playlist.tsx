@@ -134,7 +134,7 @@ export default function Playlist() {
               }}
             >
               <WindowHeader
-                title="Library"
+                title="Music Library"
                 subtitle="Playlists"
                 // icon={<BiDotsHorizontal />}
                 sidebar
@@ -175,7 +175,7 @@ export default function Playlist() {
             </Box>
             <Box id="content" py={4} px={5} flex={1}>
               <WindowHeader
-                title="Music"
+                title="Recommended songs"
                 subtitle={`${filteredMusic.length} albums`}
                 icon={<BiShare />}
                 buttonPress={shareMenu}
