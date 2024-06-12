@@ -4,8 +4,8 @@ const work: WorkCardInitialData[] = [
   {
     src: "/work/art/2024/PS1 Memory Card - R9m - Color BG - Red.png",
     video: {
-      src: "/work/art/2024/PS1 Memory Card - R9m - Color BG - Combined.mp4",
-      width: 960 / 2,
+      src: "/work/art/2024/PS1 Memory Card - R9m - Color BG - Combined Grid",
+      width: 540 / 2,
       height: 540 / 2,
     },
     title: "PS1 Memory Card - Colored BG",
