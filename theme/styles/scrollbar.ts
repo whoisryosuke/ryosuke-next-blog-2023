@@ -5,8 +5,6 @@ export type ScrollbarProps = {
 };
 
 export const scrollbarStyles = () => css<ScrollbarProps>`
-  scrollbar-color: #999 #333;
-
   &::-webkit-scrollbar {
     width: 15px; /* for vertical scrollbars */
     height: 15px; /* for horizontal scrollbars */
