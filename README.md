@@ -1,36 +1,38 @@
-# MDX Remote Example
+![Screenshot of site's frontpage](./docs/screenshot.png)
+![Screenshot of site's portfolio page](./docs/screenshot2.png)
 
-This example shows how a simple blog might be built using the [next-mdx-remote](https://github.com/hashicorp/next-mdx-remote) library, which allows mdx content to be loaded via `getStaticProps` or `getServerSideProps`. The mdx content is loaded from a local folder, but it could be loaded from a database or anywhere else.
+# Ryosuke's Blog
 
-The example also showcases [next-remote-watch](https://github.com/hashicorp/next-remote-watch), a library that allows next.js to watch files outside the `pages` folder that are not explicitly imported, which enables the mdx content here to trigger a live reload on change.
+Redesigned in 2023, this is the personal blog and portfolio of Ryosuke Hana.
 
-Since `next-remote-watch` uses undocumented Next.js APIs, it doesn't replace the default `dev` script for this example. To use it, run `npm run dev:watch` or `yarn dev:watch`.
+## Features
 
-## Deploy your own
+- ⚛️ ReactJS
+- 🔺 NextJS
+- ✏️ MDX
+- 🪟 Focus management
+- 🎮 Gamepad support
+- 🌈 Styled Components + System
+- 🎥 Custom video player
+- 📦 3D using ThreeJS + R3F
+- 🧑‍🎨 Visualizations using P5.js
+- 🐇 Animation using framer-motion + react-spring
 
-Deploy the example using [Vercel](https://vercel.com?utm_source=github&utm_medium=readme&utm_campaign=next-example):
+## Getting started
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/vercel/next.js/tree/canary/examples/with-mdx-remote&project-name=with-mdx-remote&repository-name=with-mdx-remote)
-
-## How to use
-
-Execute [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app) with [npm](https://docs.npmjs.com/cli/init), [Yarn](https://yarnpkg.com/lang/en/docs/cli/create/), or [pnpm](https://pnpm.io) to bootstrap the example:
-
-```bash
-npx create-next-app --example with-mdx-remote with-mdx-remote-app
-```
-
-```bash
-yarn create next-app --example with-mdx-remote with-mdx-remote-app
-```
-
-```bash
-pnpm create next-app --example with-mdx-remote with-mdx-remote-app
-```
-
-Deploy it to the cloud with [Vercel](https://vercel.com/new?utm_source=github&utm_medium=readme&utm_campaign=next-example) ([Documentation](https://nextjs.org/docs/deployment)).
+1. Clone repo.
+1. `yarn`
+1. `yarn dev`
 
 ## Notes
+
+### MDX content
+
+MDX content is stored in `/content/blog` folder and separated by the year of publication.
+
+The content is queried by `/pages/blog/index.ts` for the blog archive and `[slug].ts` for each individual blog page.
+
+> But if you want to use P5.js, you need to place the MDX file inside `/pages/blog/` and copy the existing template. Make sure to include frontmatter and a variable that exports the frontmatter data.
 
 ### Conditional custom components
 
@@ -39,22 +41,22 @@ When using `next-mdx-remote`, you can pass custom components to the MDX renderer
 For example, here's how you can change `getStaticProps` to pass a list of component names, checking the names in the page render function to see which components need to be dynamically loaded.
 
 ```js
-import dynamic from 'next/dynamic'
-import Test from '../components/test'
+import dynamic from "next/dynamic";
+import Test from "../components/test";
 
-const SomeHeavyComponent = dynamic(() => import('SomeHeavyComponent'))
+const SomeHeavyComponent = dynamic(() => import("SomeHeavyComponent"));
 
-const defaultComponents = { Test }
+const defaultComponents = { Test };
 
 export function SomePage({ mdxSource, componentNames }) {
   const components = {
     ...defaultComponents,
-    SomeHeavyComponent: componentNames.includes('SomeHeavyComponent')
+    SomeHeavyComponent: componentNames.includes("SomeHeavyComponent")
       ? SomeHeavyComponent
       : null,
-  }
+  };
 
-  return <MDXRemote {...mdxSource} components={components} />
+  return <MDXRemote {...mdxSource} components={components} />;
 }
 
 export async function getStaticProps() {
@@ -63,21 +65,21 @@ export async function getStaticProps() {
   ---
 
   Some **mdx** text, with a default component <Test name={title}/> and a Heavy component <SomeHeavyComponent />
-  `
+  `;
 
-  const { content, data } = matter(source)
+  const { content, data } = matter(source);
 
   const componentNames = [
-    /<SomeHeavyComponent/.test(content) ? 'SomeHeavyComponent' : null,
-  ].filter(Boolean)
+    /<SomeHeavyComponent/.test(content) ? "SomeHeavyComponent" : null,
+  ].filter(Boolean);
 
-  const mdxSource = await serialize(content)
+  const mdxSource = await serialize(content);
 
   return {
     props: {
       mdxSource,
       componentNames,
     },
-  }
+  };
 }
 ```
