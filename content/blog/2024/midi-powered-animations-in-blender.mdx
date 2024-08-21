@@ -1,0 +1,439 @@
+---
+title: MIDI-powered animations in Blender
+date: "2024-08-21"
+section: blog
+tags: ["blender", "midi", "music", "python", "animation"]
+cover_image: "./MIDI-powered_animations_in_Blender.png"
+---
+
+Recently I put together [a Blender plugin to take gamepad input](https://github.com/whoisryosuke/blender-gamepad) and translate it to the 3D scene (like moving the camera around and saving keyframes). I took that a step further by [adding support for MIDI devices](https://whoisryosuke.com/blog/2024/midi-keyboard-in-blender) - taking the playback from a piano and converting it to animation keyframes.
+
+While working on the MIDI version, I said to myself: _“How practical is it to use live playback in Blender?”_. There are use cases, but it’d probably be more realistic for someone to pre-record their performance as MIDI file. Then they could import it anytime and use it across multiple apps with uniformity (important for syncing the music up across media you might be layering).
+
+So I put together a quick little plugin based on the Gamepad/MIDI input plugin that reads MIDI files and converts the notes to animation in Blender. The user can assign any object (like a mesh or bone) to a specific note (like “C#”). And when the note is “pressed” or “released”, we animate the object the user assigns up and down.
+
+<ThreadsEmbed id="C904iEsvSbM" />
+
+As always, I thought I’d break down the process of creating the plugin and provide any insight if you’re doing similar work. I also streamed myself working on most of it - so make sure to [subscribe to my Twitch](https://www.twitch.tv/whoisryosuke/videos) or [YouTube](https://www.youtube.com/@whoisryosuke) to catch me working again.
+
+> 💡 Want to try it out or browse the source code? Find the project [on GitHub here.](https://github.com/whoisryosuke/blender-midi-keyframes)
+
+# Process
+
+Like I mentioned, I started using the Gamepad/MIDI input addon as a basis. I tore out most of the input code and just kept the skeleton of UI properties, functions, and a UI panel.
+
+You can follow along using [the git commits here](https://github.com/whoisryosuke/blender-midi-keyframes/commits/main/) starting from `e0b327ddfa...`.
+
+> 💡 This won’t be a step-by-step tutorial. If you’re interested in learning more about Blender addon / plugin development I’d recommend reading my previous articles. I go over the basics of developing plugins, and talk more advance concepts like multithreading.
+
+It’d also help if you learn about MIDI files and how they work a little bit. I recommend downloading Audacity to get a visual of the MIDI data.
+
+## Parsing MIDI files
+
+The first step is figuring out how to read a MIDI file inside Blender. We know that Blender addons are written in Python, so if there’s a Python library that can handle it — we’re good to go.
+
+I found one pretty quickly called [mido](https://mido.readthedocs.io/en/stable/files/midi.html#opening) that seems promising.
+
+Taking a look at their README, the code to read a file was pretty straightforward:
+
+```python
+from mido import MidiFile
+
+mid = MidiFile('song.mid')
+
+for i, track in enumerate(mid.tracks):
+    print('Track {}: {}'.format(i, track.name))
+    for msg in track:
+        print(msg)
+```
+
+Cool. But in order to use this in Blender, we need to import the Python library (you can see `from mido` on top). For the gamepad input addon, I just included the input library’s source code. However, this library was a little more complicated, so I need to rely on `pip` to install it. I did a similar process for the MIDI input addon too.
+
+I created a button in the UI panel that runs a `pip install` for the `mido` library.
+
+```python
+class GI_install_midi(bpy.types.Operator):
+    """Test function for gamepads"""
+    bl_idname = "wm.install_midi"
+    bl_label = "Install dependencies"
+    bl_description = "Installs necessary Python modules for handling MIDI files"
+
+    def execute(self, context: bpy.types.Context):
+
+        print("Installing MIDI library...")
+        python_exe = os.path.join(sys.prefix, 'bin', 'python.exe')
+        target = os.path.join(sys.prefix, 'lib', 'site-packages')
+
+        subprocess.call([python_exe, '-m', 'ensurepip'])
+        subprocess.call([python_exe, '-m', 'pip', 'install', '--upgrade', 'pip'])
+
+        subprocess.call([python_exe, '-m', 'pip', 'install', '--upgrade', 'mido', '-t', target])
+
+        return {"FINISHED"}
+```
+
+Now that we have the library installed, let’s use it. But we need a path to a MIDI file. We could hardcode one, but why not start setting up how the user would do it?
+
+I created a new property called `midi_file` that is a `StringProperty` (since a path to a file is just a string). But how do we get a nice “select a file” type dialog box instead of the user manually copy/pasting a path into the input? If we add a `subtype` property with `FILE_PATH` - we’ll get exactly that! Check out [the Blender docs on that here.](https://docs.blender.org/api/current/bpy_types_enum_items/property_subtype_items.html)
+
+```python
+# UI properties
+class GI_SceneProperties(PropertyGroup):
+
+    # User Settings
+    midi_file: StringProperty(
+        name="MIDI File",
+        description="Music file you want to import",
+        subtype = 'FILE_PATH'
+        )
+
+```
+
+Nice, we have a file to parse, let’s see what kind of output we get from the MIDI library.
+
+I created a new function called `generate_keyframes()` that will handle reading the MIDI file and generating the necessary keyframes. We grab the `midi_file` from the Blender context (where we store our properties). Then just copy paste the `mido` example code in:
+
+```python
+class GI_generate_keyframes(bpy.types.Operator):
+    """Test function for gamepads"""
+    bl_idname = "wm.generate_keyframes"
+    bl_label = "Generate keyframes"
+    bl_description = "Creates keyframes using MIDI file and assigned objects"
+
+    def execute(self, context: bpy.types.Context):
+        midi_file_path = context.scene.gamepad_props.midi_file
+
+        # Check input and ensure it's actually MIDI
+        print("Checking if it's a MIDI file")
+        is_midi_file = ".mid" in midi_file_path
+        # TODO: Return error to user somehow??
+        if not is_midi_file:
+            return {"FINISHED"}
+
+        # Import the MIDI file
+        print("Loading MIDI file...")
+        from mido import MidiFile
+
+        mid = MidiFile(midi_file_path)
+
+        # Loop over each MIDI track
+        for i, track in enumerate(mid.tracks):
+            print('Track {}: {}'.format(i, track.name))
+            # Loop over each note in the track
+            for msg in track:
+                # mido returns "metadata" embedded alongside music
+                # we don't need so we filter out
+                if not msg.is_meta:
+                    print(msg)
+
+        return {"FINISHED"}
+```
+
+Returns something like this for the test [C MIDI file (Triad Major)](https://github.com/ldrolez/free-midi-chords):
+
+```python
+Track 0:
+MetaMessage('set_tempo', tempo=750000, time=0)
+MetaMessage('end_of_track', time=0)
+Track 1: I - C
+MetaMessage('track_name', name='I - C', time=0)
+note_on channel=0 note=60 velocity=100 time=0
+note_on channel=0 note=64 velocity=100 time=0
+note_on channel=0 note=67 velocity=100 time=0
+note_on channel=0 note=36 velocity=100 time=0
+note_off channel=0 note=60 velocity=100 time=3840
+note_off channel=0 note=64 velocity=100 time=0
+note_off channel=0 note=67 velocity=100 time=0
+note_off channel=0 note=36 velocity=100 time=0
+MetaMessage('end_of_track', time=0)
+```
+
+Cool cool, so we have multiple tracks in a MIDI file and each track has “notes” and “meta messages”.
+
+The “meta messages” are used to convey information about the track, like when it starts and ends — or if the tempo changes (we’ll touch on that later).
+
+The “notes” are what we’re primarily looking for. They have a few properties that you might be familiar with if you’ve worked with MIDI libraries before (like input devices). Like is the note pressed or not? Or how hard was the note pressed (`velocity`)?
+
+You’ll also notice that we have a `time` variable that’s mostly `0`, and then becomes `3840` at some point. As the track progresses and you read notes, the `time` will increment.
+
+A lot of this is described in the `mido` [documentation](https://mido.readthedocs.io/en/stable/). I recommend digging into it as you dive deeper into the library. Let me break down some of the concepts I ended up using and the utility functions I created around them.
+
+## Parsing the note data
+
+Did you notice the note numbers in the previous section that ranged from `36` to `67`.
+
+The note numbers are standardized to the MIDI format. There’s a few references online:
+
+![MIDI Note Chart via [Medium](https://gmcerveny.medium.com/midi-note-number-chart-for-ios-music-apps-b3c01df3cb19)](MIDI%20animation%20Blender%20plugin%205128f322a81b4bf88c4a9339efb114e6/Untitled.png)
+
+This makes sense if you have an understanding of music theory. There’s 12 notes in each octave, so the note number increments as you progress through each octave. Or you can think of it as `octave_number * base_note_index`.
+
+So if we divide the large note number by 12, we should know what octave we’re talking about. And from there we can determine the note count by multiplying the octave again by 12, subtracting the large note index, and using the remainder as the “base note index” (aka first column above).
+
+```python
+# Get the octave
+octave = round(msg.note / 12)
+
+# Figure out the actual note "letter" (e.g. C, C#, etc)
+# MIDI note number = current octave * 12 + the note index (0-11)
+octave_offset = octave * 12
+note_index = msg.note - octave_offset
+note_letter = midi_note_map[note_index]
+print("Note: {}{}".format(note_letter, octave))
+```
+
+You could also do the remainder operator to figure out the note immediately (same math - you just don’t get octave # if needed):
+
+```python
+note_index = msg.note % 12
+```
+
+Both of these will return a note “index” between 0 and 11. We can use this index to map to an array of hardcoded notes:
+
+```python
+ midi_note_map = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
+```
+
+So when the `note_index` is `0` - we’d get the `C` note. Similar to the table diagram I showed above.
+
+## Animating the notes
+
+We have a MIDI file, we have tracks with notes, and we know what “note letter” (e.g. C, C#, etc) is being pressed — how do we create some keyframes from here?
+
+We have two more concepts to tackle: **time** and **tempo**.
+
+### Time
+
+You might have noticed earlier when we logged out the MIDI file, the notes had a `time` property that incremented as the song progressed. But what does that `time` number mean - and how do we convert it to a unit of measurement we can work with easily (like seconds and minutes)?
+
+Luckily `mido` has a function they provide for calculating this for you called `tick2second()` ([docs here](https://mido.readthedocs.io/en/stable/api.html#mido.tick2second)).
+
+```python
+for msg in mid.tracks[int(selected_track)]:
+	# Increment the time as
+	time += msg.time
+	real_time = tick2second(time, mid.ticks_per_beat, tempo)
+```
+
+Essentially the `time` number represents “**ticks**”, a unit of measurement made for MIDI files. We need to figure out **how many ticks represents 1 “quarter note”** (which is the standard measurement for music). Each MIDI file has a property at the top level (`midi_file.ticks_per_beat`) that we can use figure out what the “time scale” is.
+
+But if you notice, we also need to pass a `tempo` variable to the function…what’s that?
+
+### Tempo
+
+Normally with music we have a concept of **BPM** or “beats per minute”. This lets us know how fast or slow a song is played. With MIDI files, you use a concept of “**tempo**”. It’s the same thing basically. mido has a function called `bpm2tempo()` to help you convert if you want to provide easier UX for the user.
+
+But where is the `tempo` in the MIDI file?
+
+I mentioned earlier that mido uses “**meta messages**” to convey track information to the user. One of the messages is `set_tempo`. To find it we loop over the current track and check for that message. Then we can store the tempo locally inside the function which allows us to change it later (which songs might do - speed up or slow down midway — very uncommon tho…).
+
+```python
+# Get tempo from the first track
+for msg in mid.tracks[0]:
+    if msg.is_meta and msg.type == 'set_tempo':
+        tempo = msg.tempo
+        break
+```
+
+So now that we know how long 1 quarter note is, and how fast the song should be played - we can derive the time in seconds. But how do we correlate the note time to a keyframe number?
+
+### Convert to FPS
+
+Keyframes in Blender are numbers that increment from 0 to infinity, and represent time in an animation. But what does 1 keyframe equal in time? That’s where FPS comes in.
+
+FPS means “frames per second”, and in this case, we can think of it as “keyframes per second”. Normally Blender files are set to `24fps` by default, which means that every at the 24th keyframe we’re at 1 second (or 48th keyframe = 2 seconds, etc).
+
+Knowing that, we can calculate the keyframe by multiplying our “time in seconds” by our scene’s FPS. This works because if `real_time` = `1` (aka 1 second) and we multiply it by `24` (the FPS), it’d give us the right keyframe (`1 second / n FPS`).
+
+```python
+fps = context.scene.render.fps
+# ... the tick2second code from above ...
+real_keyframe = real_time * fps
+```
+
+### Creating the keyframe
+
+Now that we have a keyframe number for each note press, we can start animating some objects.
+
+The first thing we need to get is the object we’re animating. I do this with a very crude function that maps the object props in the scene to the note letter:
+
+```python
+# The mapping between the note letter and it's object
+def get_note_obj(self, gamepad_props, noteLetter):
+    if noteLetter == "C":
+        return gamepad_props.obj_c
+    if noteLetter == "D":
+        return gamepad_props.obj_d
+    if noteLetter == "E":
+        return gamepad_props.obj_e
+    if noteLetter == "F":
+        return gamepad_props.obj_f
+    if noteLetter == "G":
+        return gamepad_props.obj_g
+    if noteLetter == "A":
+        return gamepad_props.obj_a
+    if noteLetter == "B":
+        return gamepad_props.obj_b
+    if noteLetter == "C#":
+        return gamepad_props.obj_csharp
+    if noteLetter == "D#":
+        return gamepad_props.obj_dsharp
+    if noteLetter == "F#":
+        return gamepad_props.obj_fsharp
+    if noteLetter == "G#":
+        return gamepad_props.obj_gsharp
+    if noteLetter == "A#":
+        return gamepad_props.obj_asharp
+
+# Keyframe generation
+# Get the right object corresponding to the note
+move_obj = self.get_note_obj(gamepad_props, note_letter)
+if move_obj == None:
+    break
+```
+
+Once we have the object, we can animate it. In this case, we’ll keep the animation simple. We’ll move the object from 2 positions in the Z axis (up and down in Blender) — `0` for released and `1` for pressed. Ideally you’d want to just increment and decrement based on the objects current position (that way not every object has to have it’s position applied).
+
+Then let’s talk keyframes. I’ve discussed this before with the [MIDI input addon blog post](https://whoisryosuke.com/blog/2024/midi-keyboard-in-blender) — but when you’re animating a button that’s being pressed, it requires 3 keyframes. One for the starting position (unpressed), another for the pressed position, and one for it returning back (once it’s released).
+
+This is where things get a little tricky. Not every MIDI file has “released” messages - only “pressed”. So we also have to have an edge case that checks if there’s no release, and automatically release after a set period of time (ideally the length of a note — but I just do `10` keyframes here).
+
+Here’s how that all looks:
+
+```python
+# Keyframe generation
+# Get the right object corresponding to the note
+move_obj = self.get_note_obj(gamepad_props, note_letter)
+if move_obj == None:
+    break
+
+# Save initial position as previous frame
+move_obj.location.z = 0
+move_obj.keyframe_insert(data_path="location", frame=real_keyframe - 1)
+
+# Move the object
+move_distance = 1 if pressed else 0
+move_obj.location.z = move_distance
+
+# Create keyframes
+move_obj.keyframe_insert(data_path="location", frame=real_keyframe)
+
+# Does the file not have "released" notes? Create one if not
+# TODO: Figure out proper "hold" time based on time scale
+if not has_release:
+    move_obj.location.z = 0
+    move_obj.keyframe_insert(data_path="location", frame=real_keyframe + 10)
+```
+
+And with that - we have our “piano key” objects animating along to our song when we press the “Generate Keyframes” button.
+
+# Taking it to the next level
+
+Now that we have the keys animating, what else can we do with this data? Obviously I’ll probably put more toggles into the UI for the user to edit the animation (like scaling the tempo, changing the
+distance a key moves, etc) — but what kind of cool stuff could you make?
+
+I made this plugin because I was originally inspired by [an artist on Instagram](https://www.instagram.com/p/C0jvWlQsgZj/) that makes 3D animations where characters dance on piano keys timed to the music.
+
+What if I could automate most of this process - so the animator save time setting up the rough animation flow and focus on more fun parts (like little flourishes and movements).
+
+Here’s what I ended up - using a character from Loco Roco to bounce between notes in one of the game’s songs.
+
+<ThreadsEmbed id="C-qzkqwStNw" />
+
+First, we need an object to jump between notes, so I created a new property for that:
+
+```python
+# UI properties
+class GI_SceneProperties(PropertyGroup):
+    # MIDI Keys
+    obj_jump: PointerProperty(
+        name="Jumping Object",
+        description="Object that 'jumps' between key objects",
+        type=bpy.types.Object,
+        )
+```
+
+In order to support this functionality, I had to refactor the addon a bit to make it more modular. I created a `for_each_key()` method in a `MidiFile` class that hands looping over each MIDI track and handles all the data massaging (like converting ticks to keyframe).
+
+```python
+def for_each_key(self, context, key_callback):
+  # ...local state like `last_keyframe` below...
+
+  for msg in self.midi.tracks[int(self.selected_track)]:
+
+	        # ... all the tick to keyframe magic ...
+
+          key_callback(context, note_letter, real_keyframe, pressed, self.has_release, last_keyframe, last_note)
+
+          last_keyframe = real_keyframe
+          last_note = note_letter
+```
+
+This works using a callback function that we can pass, and we’ll send that callback all the data it may need (like the scene context, note letter, or keyframe number).
+
+Then we can use it in dedicated functions:
+
+```python
+# Simplified example
+# Animate piano keys
+class GI_generate_piano_animation(bpy.types.Operator):
+	midi_file.for_each_key(context, animate_keys)
+
+# "Jumping between keys" animation
+class GI_generate_jumping_animation(bpy.types.Operator):
+    midi_file.for_each_key(context, animate_jump)
+```
+
+Now that we can loop over the MIDI data easily, let’s look at the “jumping” functionality. For the jumping animation we need 3 keyframes like the “pressed/released” animation. One for the initial placement, one keyframe in the air between the two keys, and one back down on the next key.
+
+```python
+# Animates an object to "jump" between keys
+def animate_jump(context, note_letter, real_keyframe, pressed, has_release, prev_keyframe, prev_note):
+    gamepad_props = context.scene.gamepad_props
+    # Keyframe generation
+    # Get the right object corresponding to the note
+    piano_key = get_note_obj(gamepad_props, note_letter)
+    if piano_key == None:
+        return
+
+    move_obj = gamepad_props.obj_jump
+
+    if pressed:
+        piano_key_world_pos = piano_key.matrix_world.to_translation()
+
+        # Create jumping keyframes in between
+        if prev_note != None:
+            frame_between = int((real_keyframe - prev_keyframe) / 2) + prev_keyframe
+            print("Jumping!!: {} {} {}".format(real_keyframe, prev_keyframe, frame_between))
+            prev_piano_key = get_note_obj(gamepad_props, prev_note)
+            prev_piano_key_world_pos = prev_piano_key.matrix_world.to_translation()
+            move_obj.location.x = (prev_piano_key_world_pos.x - piano_key_world_pos.x) / 2
+            move_obj.location.z += 1
+            move_obj.keyframe_insert(data_path="location", frame=frame_between)
+            print("Moving back down")
+            # Place it back down
+            move_obj.location.z -= 1
+
+        # Move object to current key (the "down" moment)
+        print("pressed keyframe: {}".format(real_keyframe))
+        # print("Setting jump keyframe: {} {}".format(piano_key.location.x, str(mathutils.Matrix.decompose(piano_key.matrix_world)[0])))
+        # print("Setting jump keyframe: {} {}".format(note_letter, piano_key_world_pos.x))
+        move_obj.location.x = piano_key_world_pos.x
+        move_obj.keyframe_insert(data_path="location", frame=real_keyframe)
+
+```
+
+The process is fairly similar to before, but we keep track of 3 objects: the “jumping” object — and the 2 piano key we’re jumping between. Like I mentioned before, we need a “jumping” keyframe where the object is in the air and in the middle of the previous note and next note. We do a simple distance calculation (aka subtraction) and divide the result by 2 to find the middle.
+
+You’ll notice I use the “world position” of the object instead of just accessing the `position` property. This is because objects might be nested inside other objects, and when they are, the position becomes relative to the parent. So if I have a piano key nested inside a piano object, unless the jumping object is also nested inside, the position’s won’t match up. This is how positioning tends to work in 3D graphics, we take the transformation matrices for each nested object and add them up (so piano at `(3,4)` and piano key at `(1,2)` would make the piano key `(4,6)` in world coordinates).
+
+Other than that — nothing too wild here. In fact, there’s lots of room for improvement - like making the jumping animation based on an actual bezier curve (so it doesn’t just tween in a triangle movement).
+
+# That’s a wrap
+
+I had fun working on this one, it’s always cool getting to mix audio with other mediums and see it visualized. And I’m looking forward to incorporating this addon into my motion design pipeline and see how creative I can get with the input.
+
+But yeah, as always, if you make anything cool using this or have any questions feel free to share or reach out on [**Threads**](https://threads.net/@whoisryosuke/), [**Mastodon**](https://mastodon.gamedev.place/@whoisryosuke), or [**Twitter**](https://twitter.com/whoisryosuke/).
+
+Stay curious, <br />
+Ryo
