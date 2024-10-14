@@ -1,0 +1,338 @@
+---
+title: Bringing print to Blender with a DPI plugin
+date: "2024-10-14"
+section: blog
+tags: ["blender", "print", "python"]
+cover_image: "./DPI_plugin_for_Blender.png"
+---
+
+A few days ago my partner was working on a Blender project and needed to render out some assets for a printed asset. They asked me how they could set the DPI of their image in Blender, and I had to explain there is no DPI setting in Blender.
+
+Then I had to watch them go into Photoshop, create a new image with the physical dimensions they needed - at 300 dpi - then copy over the pixel values to Blender.
+
+It wasn’t a huge amount of effort, but for my partner, they’d probably have to do this every time they sets up a new file — and maybe even partially through the process when camera angles change. So I thought I’d make a quick addon to solve this issue.
+
+![Plugin Panel in Blender](./plugin-panel.png)
+
+The **[addon is up on GitHub](https://github.com/whoisryosuke/blender-render-dpi)** if you want to try it out or take a peek under the hood. I thought I’d quickly talk about the process.
+
+# What is DPI?
+
+The acronym DPI stands for “dots per inch”. It’s a unit of measurement of the resolution or “density” of an image.
+
+It basically means, how many “dots” are printed per square inch. Like I mentioned before, it’s a kind of unit of “density”. If you have more “dots” per inch, the dots can be closer together, creating a cleaner looking image.
+
+But if you have a lower DPI, the dots will naturally have to spread apart, allowing for the background color to peek through (meaning images often get washed out and look less crisp). It’s a similar effect when you look at a 480p, 1080p, or 4K image blown up to the same size. The 4K image will always look better, because it has more information inside of it (literally a higher resolution).
+
+Images you see on the **web** are often at **72dpi**. Whenever you want to **print** something however, it’s recommended that you use at least **300dpi**. You’ll commonly see **150dpi** also used for some lower quality print assets.
+
+# How does Blender handle DPI?
+
+Blender renders and saves images at **72dpi**.
+
+When you set the “Resolution X/Y” pixel dimensions in the Output window, the image will be that width and height — at 72dpi.
+
+If you need to create a 300dpi image, you need to figure out how many pixels it makes up (which usually requires an app like Photoshop).
+
+There is currently [an active PR](https://projects.blender.org/blender/blender/pulls/127831) that is looking to add the concept of “resolution” to the render pipeline. But the fact that they’re arguing whether or not people even use it, I don’t see it getting added anytime soon.
+
+# No one’s solved this yet?
+
+Before making the addon I did the obligatory search for “dpi blender addon” and I discovered that there were at least 2 in the Blender Extensions website.
+
+But they were both stuck in [the limbo of the approval process](https://extensions.blender.org/approval-queue/dpi-tool/) - sitting unapproved with a slew of comments going back and forth nitpicking aspects of the plugin. One particular moderator even had the audacity to question
+
+I took a deeper look at one of the addons, “[dpi_tool](https://github.com/AIGODLIKE/dpi_tool)”, and it was pretty fully featured. If you’re interested in this kind of tool, I’d check that one out for sure.
+
+I just personally wasn’t a huge fan and thought I could improve on some of the processes (or maybe learn something in the process).
+
+# Process
+
+Let’s make the plugin! I’ll first go over the math involved in converting image sizes based on DPI that’ll power everything, then we’ll just throw together a quick panel UI in Blender to make buttons to make the math gears go whir.
+
+## The Math
+
+So the first step was to figure out the “formula” for figuring out how many pixels are in a image with a set size (width/height) and DPI.
+
+The equation was apparently very simple. Here we solve for the width, but you could use the same formula for height.
+
+```python
+ds4width_in_cm = width_in_pixels * (2.54 / dpi)
+```
+
+To get the size in centimeters, we multiply the size in pixels by the dividend of a magic number (2.54) and the DPI.
+
+The magic number represents 1 inch as centimeters (since there’s 2.54cm in 1 inch).
+
+In my case though, I wasn’t interested in centimeters, I needed the pixel size. This means I needed to reverse the formula:
+
+```python
+# Original formula
+width_in_cm = width_in_pixels * (2.54 / dpi)
+
+# To isolate `width_in_pixels`, we divide both sides (since we multiplied - math rules)
+width_in_cm / (2.54 / dpi) = width_in_pixels * (2.54 / dpi) / (2.54 / dpi)
+
+# And after we simplify, we get this
+width_in_cm / (2.54 / dpi) = width_in_pixels
+```
+
+With this formula, I was able to write a Python function to give me pixel units when I provide a size in centimeters and DPI.
+
+```python
+def convert_dpi_to_px(centimeters: float, dpi: int) -> float:
+    return centimeters / (2.54 / dpi)
+```
+
+And of course, because I’d be working with inches usually, I needed to convert those to centimeters, so I made a quick function for that:
+
+```python
+# 1 inch = 2.54 cm
+def convert_inch_to_cm(inches: float) -> float:
+    return inches * 2.54
+```
+
+Now we had all the math we needed!
+
+```python
+width = 8.5
+height = 11
+dpi = 300
+
+# We convert inches to cm
+width_in_cm = convert_inch_to_cm(width)
+height_in_cm = convert_inch_to_cm(height)
+
+# Then we can convert that to pixels (using DPI too)
+width_in_px = convert_dpi_to_px(width_in_cm, dpi)
+height_in_px = convert_dpi_to_px(height_in_cm , dpi)
+```
+
+## The Plugin
+
+I copied over one of my existing plugins as the basis and got started. The “template” basically gave me a class with scene properties I could toggle, a UI panel, and boilerplate code for a button.
+
+> 💡 If you’re interested in Blender plugin development, I recommend checking out my previous blog articles. They cover more beginner-friendly concepts.
+
+I made UI properties for the `width`, `height`, and the `dpi` of the image.
+
+```python
+# UI properties
+class GI_SceneProperties(PropertyGroup):
+    width: FloatProperty(
+        name = "Width (in)",
+        description = "Width in inches",
+        default = 8.5,
+        min = 0.01,
+        max = 1000.0
+        )
+    height: FloatProperty(
+        name = "Height (in)",
+        description = "Height in inches",
+        default = 11.0,
+        min = 0.01,
+        max = 1000.0
+        )
+    dpi: IntProperty(
+        name = "DPI",
+        description = "DPI (dots per inch) or resolution of image",
+        default = 300,
+        min = 1,
+        max = 1000
+        )
+```
+
+Then I added these as input for the plugin. I initially just made a new panel for this in the Output window.
+
+```python
+# UI Panel
+def draw_func(self, context):
+        layout = self.layout
+
+        scene = context.scene
+        dpi_props = scene.dpi_props
+
+        layout.label(text="DPI Settings")
+        row = layout.column()
+        row.prop(dpi_props, "width")
+        row.prop(dpi_props, "height")
+        row.prop(dpi_props, "dpi")
+```
+
+This allowed the user to set a custom image size and resolution.
+
+Now I needed a button to convert the size, and update Blender with the new dimensions.
+
+```python
+class DPI_SETTINGS_sync_size(bpy.types.Operator):
+    bl_idname = "dpi_settings.sync_size"
+    bl_label = "Sync Size with Pixels"
+    bl_description = "Converts your image size to pixels and updates the Blender Render Output settings"
+    bl_options = {"UNDO"}
+
+    def execute(self, context: bpy.types.Context) -> set[str]:
+        scene = context.scene
+        dpi_props = scene.dpi_props
+
+        # Convert Inches to Centimeters (necessary to DPI formula)
+        width_cm = convert_inch_to_cm(dpi_props.width)
+        height_cm = convert_inch_to_cm(dpi_props.height)
+
+        # Get DPI value for each side
+        dpi = dpi_props.dpi
+        width_px = convert_dpi_to_px(width_cm, dpi)
+        height_px = convert_dpi_to_px(height_cm, dpi)
+
+        bpy.context.scene.render.resolution_x = round(width_px);
+        bpy.context.scene.render.resolution_y = round(height_px);
+        return {"FINISHED"}
+```
+
+This function should look familiar to the math we were doing above. We basically do all the conversions, then change the Blender’s scene “render resolution”: `bpy.context.scene.render.resolution_x`.
+
+I added a button to the UI to run this function:
+
+```python
+row.operator("dpi_settings.sync_size")
+```
+
+And then we were good to go! Press the button, and we convert inches + DPI to pixels ♻️
+
+### Placement placement
+
+But I wanted to make this a bit easier to use and find - so instead of creating a new panel, I decided to “append” my addon UI to an existing panel.
+
+I wanted to basically shove it in the Format panel underneath the Resolution settings. That way, the user could clearly see the conversion worked, and wouldn’t have to dig when changing the image size.
+
+This was pretty easy in Blender, you can modify an existing panel by using the `prepend` or `append` on the Panel’s type.
+
+```python
+def register():
+	# We target the "format" panel and "append" our UI
+	bpy.types.RENDER_PT_format.append(draw_func)
+```
+
+But I’ll be honest, I didn’t know the name of the panel. So I had to just look through all of them to find it 😅
+
+```python
+for d in dir(bpy.types):
+	print(d)
+```
+
+I put this code in the register function. This printed out all the types in Blender in the log, and I just did a `CTRL + F` and searched for the word “format” cause I figured they’d call it that. There were a couple, though I figured mine was the one with `RENDER` in the name.
+
+> 💡 Normally you can enable “Python Tooltips” in the Blender preferences to hover over various aspects of the UI and see what the property name is to quickly access it. Sadly this doesn’t work for panels.
+
+# Saving with proper DPI
+
+The only issue with the addon in it’s current state: Blender still saves images as 72dpi. So despite having the correct pixel dimensions to correctly match our physical dimensions and DPI - we still would need to open the image in a photo editing app like Photoshop and convert it to the correct DPI.
+
+This isn’t a big deal, but it’s another mild inconvenience I’d like to remove from the process. The dpi_tool addon I mentioned before circumvents this issue by using the `pillow` Python library to save the image with the correct DPI. They add a callback to the “render complete” handler which opens the image Blender saved and resizes it to the correct dimensions and DPI (using `pillow`).
+
+Here’s a summarization of [their code](https://github.com/AIGODLIKE/dpi_tool/blob/main/__init__.py):
+
+```python
+# Running the post-render function
+def render_complete(scene):
+    ps = bpy.context.scene.my_custom_properties
+    if ps.switch:
+		    # They run their image conversion function directly here
+		    # which is in `ops.py` as a Process_images class
+        bpy.ops.file.process_images()
+
+# Attaching the function to when the render completes
+@persistent
+def post_load_handler(dummy):
+    try:
+        bpy.app.handlers.render_complete.remove(render_complete)
+    except:
+        pass
+    bpy.app.handlers.render_complete.append(render_complete)
+
+
+# Setup the attachments when plugin initially loads
+def register():
+	bpy.app.handlers.load_pre.append(pre_load_handler)
+	bpy.app.handlers.load_post.append(post_load_handler)
+```
+
+I did something very similar using Blender’s App Handlers. I opted to append my function to the `render_post` handler which runs the render is complete.
+
+```python
+def register():
+    bpy.app.handlers.render_post.append(auto_save_render)
+
+def unregister():
+    bpy.app.handlers.render_post.remove(auto_save_render)
+```
+
+And my function is pretty simple, it’s just long for how much path parsing we need to do for the image.
+
+```python
+
+@persistent
+def auto_save_render(scene):
+    print("auto saving...")
+    dpi_props = scene.dpi_props
+    width = dpi_props.width
+    height = dpi_props.height
+    dpi = dpi_props.dpi
+    should_auto_save = dpi_props.should_auto_save
+
+    if not should_auto_save or not bpy.data.filepath:
+        return
+
+    render = scene.render
+    extension = render.image_settings.file_format
+
+    # Generate a file path
+    # We pick the same folder as current Blender file and save inside a `/renders` folder
+    # And we use the Blender filename as the basis for the image name
+    blender_filepath = bpy.data.filepath
+    blender_file_dir = os.path.dirname(blender_filepath)
+    image_dir = os.path.join(blender_file_dir, "renders")
+    image_base_name = basename(bpy.data.filepath).rpartition('.')[0]
+
+    # We generate the current date to make a unique identifier for file
+    now = datetime.now() # current date and time
+    date_time = now.strftime("%m-%d-%Y-%H-%M-%S")
+
+    # We also append the file info for quick ref
+    image_size_info = str(round(width)) + "x" + str(round(height)) + "in-" + str(dpi) + "dpi"
+
+    # Merge them all together
+    image_name = image_base_name + "_" + image_size_info + "_" + date_time + "." + extension
+    image_final_path = os.path.join(image_dir, image_name)
+
+    print("blender_filepath", blender_filepath)
+    print("blender_file_dir", blender_file_dir)
+    print("image path", image_final_path)
+
+    # Save image
+    image = bpy.data.images['Render Result']
+    try:
+        image.save_render(image_final_path, scene=None)
+    except:
+        print("Couldn't save")
+
+    # Resave image as proper DPI
+    with Image.open(image_final_path) as img:
+        img.save(image_final_path, dpi=(dpi,dpi))
+
+```
+
+Here I essentially get the rendered image from `bpy.data.images` (literally “Render Result” that you see in the render window). Then you can just save the image using it’s `save_render()` method, and I save it basically to the same folder as the Blender file.
+
+Then at the bottom in the last 2 lines the magic happens. We take the image that Blender just saved and then we re-save it using the Pillow library with the correct DPI. I couldn’t find this example in their docs, but searching on StackOverflow yielded the right API and formatting for the DPI (a tuple, who would have thought?).
+
+With this code the user can now render their images and have them automatically saved in the correct DPI. Less time wasted shuffling between apps!
+
+# Print is not dead 💀
+
+Despite what some developers on Blender, or other people in the community might think - there’s still a lot of people that work in printed and physical mediums. And they need their tools to adapt to their workflows - even tools like Blender - which finds it’s way into most artists toolbox nowadays.
+
+It was funny, I was mentioned it to my partner that I’d recently watched a video on the Blender Studios YouTube that covered one of the artists there having to make Blender meetup / convention posters and other printed assets in Blender itself. You can see it [right at the beginning of this video](https://www.youtube.com/watch?v=XerHqRuRem4&t=105s). So it blows me away that people question whether or not people would even use DPI in Blender — when they have internal teams that use it that way!
+
+But rant aside, hope you all dug the usual deep dive into my process. As always if you make anything cool using this or have any questions feel free to share or reach out on [**Threads**](https://threads.net/@whoisryosuke/), [**Mastodon**](https://mastodon.gamedev.place/@whoisryosuke), or [**Twitter**](https://twitter.com/whoisryosuke/).
+
+Stay curious!<br />Ryo
