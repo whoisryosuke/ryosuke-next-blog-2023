@@ -1,0 +1,871 @@
+---
+title: Using Bluesky Firehose for Generative Art
+date: "2024-12-09"
+section: blog
+tags: ["react", "p5js", "bluesky", "animation"]
+cover_image: "./Making_art_with_Bluesky.png"
+---
+
+I’ve been using Bluesky more lately and it’s been cool exploring the underlying architecture (the “AT Protocol”) and the APIs they make available. One notable API I’ve noticed a few people playing with is the “Bluesky Firehose”, which is a stream of every single post on Bluesky in real-time.
+
+I recently put together a “sketchbook” for p5.js to experiment with some low level graphic techniques. I thought it’d be interesting to visualize the Bluesky Firehose data using p5. So I did just that, and made a few visualizations and animations using the API.
+
+In this article I’ll break down the process for using the Bluesky Firehose, show off a React hook I created to quickly access it, and I’ll show off some of the sketches I’ve been cooking up in p5.js.
+
+# What is Bluesky?
+
+You might be asking yourself, what even is Bluesky? It’s a social media platform that’s very similar to Twitter back in the day, or Mastodon and Threads now. You can make text, photo, or video posts, reply on posts, follow friends — most of the standard social media features. And they’re adding more as they go - like fairly recently they added video and DM support.
+
+## What is the AT Protocol?
+
+This is the topic for an entire other article, but the AT protocol is the architecture that Bluesky uses to do it’s “social media”.
+
+It’s similar in concept to the Activity Pub protocol that powers Mastodon. It’s a system for defining a federated set of social media servers that can communicate with each other in a network. Basically, it lets anyone spin up their own “Twitter” server, and users of Bluesky or Mastodon (depending on the protocol) would be able to see the content.
+
+It’s kinda like RSS feeds back in the day, but on a much more developed level.
+
+## What is the Bluesky Firehose?
+
+Like I mentioned in the intro, the firehose is an API that you can access to get a stream of the latest Bluesky posts.
+
+The firehose API is a web socket server, which allows for you to connect and “subscribe” to “messages” (aka the post data). [You can find the documentation here.](https://docs.bsky.app/docs/advanced-guides/firehose)
+
+So how do you connect to it? You use a Web Socket URL to a “Jetstream” server they host. You provide a type of collection, in this case, we get posts:
+
+```tsx
+wss://jetstream2.us-east.bsky.network/subscribe?wantedCollections=app.bsky.feed.post
+```
+
+> 💡I’ve noticed some people use a `jetstream1` URL as well, so I’m assuming as Bluesky scales they’ll just increment the name. If the server is slow for you, maybe try another “Jetstream” (ideally in your zone).
+
+# The setup
+
+I mentioned that I’m using [my p5.js sketchbook](https://github.com/whoisryosuke/p5-experiments). It’s essentially a static NextJS app where each page represents a p5 sketch. I create React components that contain each p5 sketch. And I even have a nice little script where I can run `yarn sketch:new TheSketchName` to scaffold out all the content I need with my own handy p5 starter template.
+
+The p5 “sketch” should look very similar to their tutorials, I just shove it inside a React component:
+
+```tsx
+import P5Sketch from "@/components/P5Sketch";
+import { drawCircle } from "@/helpers/drawing/drawCircle";
+import { saveArt } from "@/helpers/drawing/saveArt";
+import p5 from "p5";
+import React from "react";
+import { BASE_COLORS } from "themes/colors/base";
+
+type Props = {};
+
+const FILENAME = "ExampleComponent";
+
+const ExampleComponent = (props: Props) => {
+  const Sketch = (p: p5) => {
+    let y = 100;
+    p.setup = () => {
+      console.log("setup canvas");
+      p.createCanvas(window.innerWidth, window.innerHeight);
+      p.stroke(255); // Set line drawing color to white
+      p.frameRate(30);
+    };
+    p.keyPressed = () => {
+      saveArt(p, FILENAME);
+    };
+    p.draw = () => {
+      // console.log('drawing!!')
+      p.background(p.color(BASE_COLORS["gray-9"])); // Set the background to black
+
+      p.strokeWeight(3);
+      p.stroke(p.color(BASE_COLORS["gray-5"]));
+      const resolution = 40;
+      const biggestEdge = p.width < p.height ? p.width : p.height;
+      const radius = biggestEdge / 4;
+      const startX = p.width / 2;
+      const startY = p.height / 2;
+      drawCircle(p, radius, resolution, startX, startY);
+    };
+  };
+
+  return <P5Sketch sketch={Sketch} />;
+};
+
+export default ExampleComponent;
+```
+
+Feel free to clone my sketchbook and use it as a basis to get started.
+
+# Bluesky Firehose process
+
+So how do we pipe the Bluesky data into our sketches? Well it’s a web socket server - so we need to establish a connection to the server, and then attach a callback to receive messages.
+
+The (unoptimized) process basically looks like this:
+
+```tsx
+const MyReactComponent = () => {
+  useEffect(() => {
+    const exampleSocket = new WebSocket(
+      "wss://jetstream2.us-east.bsky.network/subscribe?wantedCollections=app.bsky.feed.post"
+    );
+
+    exampleSocket.onmessage = (event) => {
+      console.log("event", event);
+    };
+
+    return () => {
+      exampleSocket.close();
+    };
+  }, []);
+};
+```
+
+Once you connect, you should start getting messages. They look like this:
+
+```tsx
+{
+  data: `{"did":"did:plc:s5gcyzrmuupjo3fi5cq6ri5b","time_us":1732649444717213,"type":"com","kind":"commit","commit":{"rev":"3lburleoga42r","type":"c","operation":"create","collection":"app.bsky.feed.post","rkey":"3lburleeozs26","record":{"$type":"app.bsky.feed.post","createdAt":"2024-11-26T19:30:44.267Z","langs":["en"],"reply":{"parent":{"cid":"bafyreighnkms6yc7il6j2xl324t3w6hojehljif5gmdl537seh76h7kdae","uri":"at://did:plc:s5gcyzrmuupjo3fi5cq6ri5b/app.bsky.feed.post/3lbtekpnlf22u"},"root":{"cid":"bafyreighnkms6yc7il6j2xl324t3w6hojehljif5gmdl537seh76h7kdae","uri":"at://did:plc:s5gcyzrmuupjo3fi5cq6ri5b/app.bsky.feed.post/3lbtekpnlf22u"}},"text":"Just like, an excuse for making up a ton of cartoony ironic punishments based on the author's personal grudges against certain people or types of people"},"cid":"bafyreiflnyfbri7j4t6sox7woqlpoey6spvcl7gdyylgpizt5fvahaw2f4"}}`;
+}
+```
+
+Once you parse the JSON string, it looks like this as a JS object:
+
+```tsx
+{
+    "did": "did:plc:kgcacc6mukti2ijb354lra4m",
+    "time_us": 1732649516004596,
+    "type": "com",
+    "kind": "commit",
+    "commit": {
+        "rev": "3lburninkpm24",
+        "type": "c",
+        "operation": "create",
+        "collection": "app.bsky.feed.post",
+        "rkey": "3lburniaqvc2w",
+        "record": {
+            "$type": "app.bsky.feed.post",
+            "createdAt": "2024-11-26T19:31:55.442Z",
+            "langs": [
+                "en"
+            ],
+            "reply": {
+                "parent": {
+                    "cid": "bafyreieq24pdgvobdz7pd7c2e3j7qyj23lzpgnm3i2nutmkgf55f4lzh7u",
+                    "uri": "at://did:plc:seegm4al2zcebfejozxyxtre/app.bsky.feed.post/3lbuqpvtb5k2t"
+                },
+                "root": {
+                    "cid": "bafyreiex7bfi67s7awsnpuwt7endmlwqomg6ejpqyz6tizr52t3o3a5k6q",
+                    "uri": "at://did:plc:kgcacc6mukti2ijb354lra4m/app.bsky.feed.post/3lbuk6ra4h22w"
+                }
+            },
+            "text": "Thank you!"
+        },
+        "cid": "bafyreiajry7b7b4ayblwmenwykao2wliovt22266lhrb72spsgmt2ol74i"
+    }
+}
+```
+
+You can see the post data is contained in the `commit` property, nested deeply depending on the type of post. The one above is a reply (to a quote post?).
+
+## Examples of different post types
+
+### Text post
+
+```tsx
+{
+    "did": "did:plc:lgvoguzwf4gfmxtgxenblj3x",
+    "time_us": 1732649516096013,
+    "type": "com",
+    "kind": "commit",
+    "commit": {
+        "rev": "3lburnip6xo2u",
+        "type": "c",
+        "operation": "create",
+        "collection": "app.bsky.feed.post",
+        "rkey": "3lburniklds2o",
+        "record": {
+            "$type": "app.bsky.feed.post",
+            "createdAt": "2024-11-26T19:31:55.764Z",
+            "langs": [
+                "en"
+            ],
+            "text": "Unless your job is directly impacted you shouldn’t give tariff-by-tweet oxygen. It’s the same story each time: stupid tweets, small concessions that cost nothing, victory tweets."
+        },
+        "cid": "bafyreiakxnzxlaamwvwxyye575jkgon7aesthq67gy7xsg4yrlzbwwoe6i"
+    }
+}
+```
+
+### Image
+
+```tsx
+{
+    "did": "did:plc:nog5wll7otewv23atvp6l73z",
+    "time_us": 1732649516005754,
+    "type": "com",
+    "kind": "commit",
+    "commit": {
+        "rev": "3lburnhobbr2f",
+        "type": "c",
+        "operation": "create",
+        "collection": "app.bsky.feed.post",
+        "rkey": "3lburngyisk2w",
+        "record": {
+            "$type": "app.bsky.feed.post",
+            "createdAt": "2024-11-26T19:31:54.121Z",
+            "embed": {
+                "$type": "app.bsky.embed.images",
+                "images": [
+                    {
+                        "alt": "",
+                        "aspectRatio": {
+                            "height": 490,
+                            "width": 539
+                        },
+                        "image": {
+                            "$type": "blob",
+                            "ref": {
+                                "$link": "bafkreiaelquzdebj4yai2a355c2xj5ppfeojf6n62i6536lfc5muqv5pza"
+                            },
+                            "mimeType": "image/jpeg",
+                            "size": 194256
+                        }
+                    }
+                ]
+            },
+            "langs": [
+                "en"
+            ],
+            "text": ""
+        },
+        "cid": "bafyreia5iyemoin7hhmwdgvzvwur5g4l2dzxbsc2lduv45w5wkmo6mbtwu"
+    }
+}
+```
+
+### Tags
+
+```tsx
+{
+    "did": "did:plc:ctzliu3o3bfxgbe2gmj6sfzs",
+    "time_us": 1732649516007311,
+    "type": "com",
+    "kind": "commit",
+    "commit": {
+        "rev": "3lburnibv6o2u",
+        "type": "c",
+        "operation": "create",
+        "collection": "app.bsky.feed.post",
+        "rkey": "3lburnig3s22w",
+        "record": {
+            "$type": "app.bsky.feed.post",
+            "createdAt": "2024-11-26T19:31:55.615Z",
+            "embed": {
+                "$type": "app.bsky.embed.images",
+                "images": [
+                    {
+                        "alt": "",
+                        "aspectRatio": {
+                            "height": 482,
+                            "width": 608
+                        },
+                        "image": {
+                            "$type": "blob",
+                            "ref": {
+                                "$link": "bafkreibtoiadccqbhgogbnqy5tsov4676yeuugqlae5daled2s2a2cgyme"
+                            },
+                            "mimeType": "image/jpeg",
+                            "size": 80138
+                        }
+                    }
+                ]
+            },
+            "facets": [
+                {
+                    "features": [
+                        {
+                            "$type": "app.bsky.richtext.facet#tag",
+                            "tag": "nowwatching"
+                        }
+                    ],
+                    "index": {
+                        "byteEnd": 45,
+                        "byteStart": 33
+                    }
+                },
+                {
+                    "features": [
+                        {
+                            "$type": "app.bsky.richtext.facet#tag",
+                            "tag": "filmsky"
+                        }
+                    ],
+                    "index": {
+                        "byteEnd": 54,
+                        "byteStart": 46
+                    }
+                },
+                {
+                    "features": [
+                        {
+                            "$type": "app.bsky.richtext.facet#tag",
+                            "tag": "GeorgeOrwell"
+                        }
+                    ],
+                    "index": {
+                        "byteEnd": 68,
+                        "byteStart": 55
+                    }
+                },
+                {
+                    "features": [
+                        {
+                            "$type": "app.bsky.richtext.facet#tag",
+                            "tag": "PeterCushing"
+                        }
+                    ],
+                    "index": {
+                        "byteEnd": 82,
+                        "byteStart": 69
+                    }
+                },
+                {
+                    "features": [
+                        {
+                            "$type": "app.bsky.richtext.facet#tag",
+                            "tag": "BBc"
+                        }
+                    ],
+                    "index": {
+                        "byteEnd": 87,
+                        "byteStart": 83
+                    }
+                },
+                {
+                    "features": [
+                        {
+                            "$type": "app.bsky.richtext.facet#tag",
+                            "tag": "DonaldPleasance"
+                        }
+                    ],
+                    "index": {
+                        "byteEnd": 104,
+                        "byteStart": 88
+                    }
+                },
+                {
+                    "features": [
+                        {
+                            "$type": "app.bsky.richtext.facet#tag",
+                            "tag": "dystopia"
+                        }
+                    ],
+                    "index": {
+                        "byteEnd": 114,
+                        "byteStart": 105
+                    }
+                },
+                {
+                    "features": [
+                        {
+                            "$type": "app.bsky.richtext.facet#tag",
+                            "tag": "WinstonSmith"
+                        }
+                    ],
+                    "index": {
+                        "byteEnd": 128,
+                        "byteStart": 115
+                    }
+                },
+                {
+                    "features": [
+                        {
+                            "$type": "app.bsky.richtext.facet#tag",
+                            "tag": "NigelKneale"
+                        }
+                    ],
+                    "index": {
+                        "byteEnd": 141,
+                        "byteStart": 129
+                    }
+                }
+            ],
+            "langs": [
+                "en"
+            ],
+            "text": "1984 (1954)\nDir: Rudolph Cartier\n#nowwatching #filmsky #GeorgeOrwell #PeterCushing #BBc #DonaldPleasance #dystopia #WinstonSmith #NigelKneale"
+        },
+        "cid": "bafyreidbrkl5exe2cycgw3g27chpwcgm5loim3kt45o62pafysilyvopgm"
+    }
+}
+```
+
+### Reply
+
+```tsx
+{
+    "did": "did:plc:iwwlums2rhukxgrrpwcj7paq",
+    "time_us": 1732649516011361,
+    "type": "com",
+    "kind": "commit",
+    "commit": {
+        "rev": "3lburnint4z2r",
+        "type": "c",
+        "operation": "create",
+        "collection": "app.bsky.feed.post",
+        "rkey": "3lburnie5c222",
+        "record": {
+            "$type": "app.bsky.feed.post",
+            "createdAt": "2024-11-26T19:31:55.553Z",
+            "langs": [
+                "fr"
+            ],
+            "reply": {
+                "parent": {
+                    "cid": "bafyreibsh3ol3mxodz4qniz77diwwktsgoaetmc2zr2hbgqnjenh3vnzda",
+                    "uri": "at://did:plc:vcgln7bhywyxcz5t4blgebd5/app.bsky.feed.post/3lbure37j7s2r"
+                },
+                "root": {
+                    "cid": "bafyreibsh3ol3mxodz4qniz77diwwktsgoaetmc2zr2hbgqnjenh3vnzda",
+                    "uri": "at://did:plc:vcgln7bhywyxcz5t4blgebd5/app.bsky.feed.post/3lbure37j7s2r"
+                }
+            },
+            "text": "😅 Ouais, mais tu as des horaires de boulot un peu spéciaux non ?\nMoi juste un peu de sommeil en retard."
+        },
+        "cid": "bafyreih2mofkeibzxgjwhu33uiug6emzsxfglmqn3tlomzr4qdwzxpsd24"
+    }
+}
+```
+
+### Record?
+
+```tsx
+{
+    "did": "did:plc:rpa3uxlax2evutvhith47kdm",
+    "time_us": 1732649516031847,
+    "type": "com",
+    "kind": "commit",
+    "commit": {
+        "rev": "3lburnip3fn2i",
+        "type": "c",
+        "operation": "create",
+        "collection": "app.bsky.feed.post",
+        "rkey": "3lburnivjwk2w",
+        "record": {
+            "$type": "app.bsky.feed.post",
+            "createdAt": "2024-11-26T19:31:56.123Z",
+            "embed": {
+                "$type": "app.bsky.embed.record",
+                "record": {
+                    "cid": "bafyreiahewhlzy5evqga7oha4siz62nrcdrjxina4rdvktjt26uypztgvi",
+                    "uri": "at://did:plc:5dxjm7pukfez2afyfbgxrk4x/app.bsky.feed.post/3lbtnk7b4qs26"
+                }
+            },
+            "langs": [
+                "en"
+            ],
+            "text": "Sounds right!"
+        },
+        "cid": "bafyreidfpykf2gzrfttwbz574fb2j4ozsvyjzrpvvyrjskwge434w5as6y"
+    }
+}
+```
+
+You can get the text in a post like this:
+
+```tsx
+try {
+  const data = JSON.parse(event.data);
+
+  // The post data
+  const post = data.commit.record;
+
+  // Get text from the post (might be undefined)
+  const text = post.text;
+  text && console.log("text", text);
+} catch (error) {
+  console.log("Couldnt parse data", error);
+}
+```
+
+> 💡We’ll cover images later, they’re not as simple to get as the text.
+
+This is a lot of data though. It really is a firehose. So you’ll probably want to filter this out or throttle saving the data to your app.
+
+# useBlueskyFirehose hook
+
+So now that we can connect to the firehose socket server, let’s abstract that into a React hook that we can use in any component we need.
+
+```tsx
+import { useEffect, useRef } from "react";
+
+const useBlueskyFirehose = () => {
+  const socket = useRef<WebSocket | null>(null);
+
+  useEffect(() => {
+    socket.current = new WebSocket(
+      "wss://jetstream2.us-east.bsky.network/subscribe?wantedCollections=app.bsky.feed.post"
+    );
+
+    return () => {
+      socket.current.close();
+    };
+  }, []);
+
+  return {
+    socket,
+  };
+};
+
+export default useBlueskyFirehose;
+```
+
+Nice, so when we want to use it, we can run the hook and attach a callback. But there’s a small problem with this in p5 land. Usually p5 will load before the socket connection has been established.
+
+To avoid this, we need to attach our `onmessage` callback in p5’s `draw()` method. To make this happen without re-creating it every frame, we create a `loaded` ref using the `useRef()` hook to keep track if we’ve attached the message.
+
+```tsx
+const BlueskyFirehoseGraffiti = (props: Props) => {
+  const { socket } = useBlueskyFirehose();
+  const loaded = useRef(false);
+
+  const Sketch = (p: p5) => {
+    p.draw = () => {
+      // Track web socket messages
+      if (!loaded.current) {
+        if (socket.current)
+          socket.current.onmessage = (event) => {
+            // console.log("event", event.data);
+            try {
+              const data = JSON.parse(event.data);
+            } catch (error) {
+              console.log("Couldnt parse data", error);
+            }
+          };
+        loaded.current = true;
+      }
+    };
+  };
+};
+```
+
+> 💡You could also just do the web socket in the p5 setup as a vanilla JS kinda thing (instead of going through all the React business I do). p5 just doesn’t have a cleanup method, so it’s hard to remove the socket connection without React stuff going on anyway.
+
+# Sketches
+
+## Layered text
+
+The first thing that came to mind was just displaying the text in random places, and letting the text layer infinitely like stickers on a wall.
+
+![A web browser with a canvas element rendering the text of thousands of Bluesky posts in random places and sizes.](./BlueskyFirehoseExample-2024102-91.png)
+
+This is easy to achieve in p5, since we’re drawing each frame. We just draw the background in the setup, then never draw it again. This way the frame only fills what we draw “next” — which will only be text.
+
+But how do we get the text to show up? We’ll create a “text pool”, basically an array of text strings, that we can tap into while drawing each frame. It’s kinda like a cheap particle system - we “spawn” the text into the pool, the loop checks the pool for new text to draw, then removes the text when it draws it.
+
+```tsx
+const Sketch = (p: p5) => {
+  let textPool = [];
+  p.draw = () => {
+    // Track web socket messages
+    if (!loaded.current) {
+      if (firehoseSocket.current)
+        firehoseSocket.current.onmessage = (event) => {
+          // console.log("event", event.data);
+          try {
+	          // Parse the web socket data into something we can use
+            const data = JSON.parse(event.data);
+            // Get the post data from the message
+            const post = data.commit.record;
+            // Get text from the post (might be undefined)
+            const text = post.text;
+            console.log("text", text);
+
+            // Limit the pool to a certain number of posts
+            if (textPool.length < 2000) {
+              textPool.push(text);
+            }
+          } catch (error) {
+            console.log("Couldnt parse data", error);
+          }
+        };
+      loaded.current = true;
+    }
+    // Do we have text to draw?
+    if (textPool.length > 0) {
+	    // We scale the text randomly from 10px to 60px in size
+      p.textSize(p.random(10, 60));
+      p.text(
+        textPool[0],
+        // We pick a random spot basically anywhere on the canvas
+        // But we extend the boundaries so text looks like it's cropped sometimes
+        p.random(-500, p.width - 200),
+        p.random(-500, p.height - 200)
+      );
+      // Remove text from "pool"
+      textPool.shift();
+    }
+  };
+```
+
+Here’s what this looks like animated:
+
+[https://www.threads.net/@whoisryosuke/post/DC2aS0gCKex](https://www.threads.net/@whoisryosuke/post/DC2aS0gCKex)
+
+You can find [the full source code here](https://github.com/whoisryosuke/p5-experiments/blob/main/src/experiments/BlueskyFirehoseExample.tsx) for reference.
+
+Cool, now that we have a rough idea on how to use the firehose API combined with p5, let’s have more fun with it.
+
+## Only emojis
+
+Here’s a simple one. Now that we have text, let’s isolate it to only emojis. We can use a bit of RegEx magic to check if text has an emoji, and then remove any text that isn’t an emoji.
+
+```tsx
+const text = post.text;
+const hasEmojis = /\p{Extended_Pictographic}/u.test(text);
+
+// Limit the pool to a certain number of posts
+if (hasEmojis && textPool.length < 2000) {
+  textPool.push(text.replace(/[^\p{Extended_Pictographic}]/gu, ""));
+}
+```
+
+This looks similar to before, but now we’ve got a bunch of emoji:
+
+![A web browser with a canvas element rendering emojis from Bluesky posts in random places and sizes.](./vlcsnap-2024-12-05-16h59m45s202.png)
+
+## Using images
+
+So now that we’ve got text, let’s try using some images.
+
+If you go back above, you’ll see I have an example of an image post from the API. They basically give you an array of images with “links” that don’t actually work.
+
+You need to take all the image links and “transform” them into real CDN links. To do this, you need to use the “DID” (kinda like a user ID), the image “link” we got, and the image’s MIME type.
+
+Now that’s cool, but to display the image in p5 we need to use p5’s `loadImage()` method. This basically fetches the image and loads the binary data for us to draw on the canvas later. Similar to the text method, we’ll create an array (or “pool”) of images and push the image data to it when it’s loaded.
+
+```tsx
+socket.current.onmessage = (event) => {
+  // console.log("event", event.data);
+  try {
+    const data = JSON.parse(event.data);
+
+    const did = data.did;
+    const profileLinkUrl = `https://bsky.app/profile/${did}`;
+    const post = data.commit.record;
+    // Get text from the post (might be undefined)
+    const text = post.text;
+    // console.log("text", text);
+
+    // Get image from the post
+    const hasImages =
+      post.embed?.$type && post.embed.$type == "app.bsky.embed.images";
+    const images = hasImages ? post.embed.images : [];
+    // hasImages && console.log("images", images);
+
+    if (images.length < 0) return;
+    images.map((image) => {
+      const link = image.image.ref["$link"];
+      const mimeType = image.image.mimeType.split("/")[1];
+      // The main issue here is that the CDN serves these images on HTTPS and doesn't allow for localhost
+      // So you'll need to run this on a server to be able to fetch the images
+      const imageUrl = `https://cdn.bsky.app/img/feed_thumbnail/plain/${did}/${link}@${mimeType}`;
+      console.log("imageUrl", imageUrl);
+      // Limit the pool to a certain number of posts
+      if (imagePool.length < 10) {
+        p.loadImage(imageUrl, (loadedImg) => imagePool.push(loadedImg));
+      }
+    });
+  } catch (error) {
+    console.log("Couldnt parse data", error);
+  }
+};
+```
+
+> 💡I found most of this methodology in someone else’s code on GitHub but I didn’t write down the reference. But shoutout to that homie, wherever you are.
+
+But there’s one last hurdle we need to face - CORS. Since the Bluesky CDN is served over HTTPS, our app also needs to be served over HTTPS in order to fetch the data.
+
+You can try cheap tricks like changing the CDN URL from HTTPS to HTTP - but the server will redirect you to HTTPS and ultimately reject the request.
+
+So keep that in mind with this one. I personally didn’t test it yet because I didn’t feel like deploying the site or making a proxy API.
+
+## Notification animations
+
+So if images are off the table for local development, let’s take a step back and return to the text. What if we animated the text instead of just spawning and stacking it? And what if it looked like a notification from an app?
+
+![Bluesky posts styled as notifications in random places across the screen.](./BlueskyNotificationAnimation-2024102-975.png)
+
+First things first - I mentioned how the text pool was a lo-fi “particle” system before…now we need a full on particle system. Let’s define the data structure of that “particle” or in this case, `Notification`:
+
+```tsx
+type Notification = {
+  time: string;
+  msg: string;
+  active: boolean;
+  destroy: boolean;
+  created: number;
+  initialPosition: {
+    x: number;
+    y: number;
+  };
+};
+```
+
+The most important property is the `created` property. This keeps track of when the particle is spawned. This will be the core of our animation. We also need to know if our particle is `active` in the scene or not (so notifications can sit in a “queue” until we want them). And we’ll keep track of the `initialPosition` so we can spawn it in a specific spot, and animate to (and from) that spot.
+
+Making a notification is pretty simple, we just add the post data (some text and the date), and add defaults for everything off.
+
+```tsx
+notifications.push({
+  time,
+  msg,
+  active: false,
+  destroy: false,
+  created: 0,
+  initialPosition: {
+    x: 0,
+    y: 0,
+  },
+});
+```
+
+So to handle animation in p5, we need a sense of time. We’ll be spawning these notifications at specific times and we want those to fade out after a certain amount of time. So to measure that time, we need to keep track of the current time. We do this by incrementing the time in our `draw()` call by the `deltaTime` (basically the time that’s passed since the last frame).
+
+```tsx
+const Sketch = (p: p5) => {
+  let currentTime = 0;
+
+  p.draw = () => {
+	  currentTime += p.deltaTime;
+```
+
+Once we’re ready to show the notification, we mark it as `active` , set the spawn time as `created`, and generate a random position on the screen for the `initialPosition`.
+
+```tsx
+// Handle spawning new notifications
+// Has enough time passed?
+const timeDiff = currentTime - lastSpawn;
+if (timeDiff >= NOTIFICATION_DURATION) {
+  // Spawn a notification
+  const nextNotificationIndex = notifications.findIndex(
+    (notification) => !notification.active
+  );
+  if (nextNotificationIndex >= 0) {
+    const notification = notifications[nextNotificationIndex];
+    notification.active = true;
+    notification.created = currentTime;
+    notification.initialPosition = {
+      x: p.random(-500, p.width - 200),
+      y: p.random(-500, p.height + 50),
+    };
+    lastSpawn = currentTime;
+  }
+}
+```
+
+So far we have Bluesky posts turned into `Notification` data, and we have a system of “spawning” the text at regular intervals (essentially the `NOTIFICATION_DURATION`). We’ll handle “destroying” the notifications later, but let’s see what rendering the notifications looks like.
+
+We want to loop over our notifications and only render `active` ones.
+
+```tsx
+// Show and animate all notifications
+notifications
+  .filter((notification) => notification.active)
+  .forEach((notification) => {});
+```
+
+With each notification we have do a few things:
+
+- Render a notification background
+- Render the text
+- Render the date as text
+- Animate all those things together
+
+Let’s tackle it one by one. First let’s talk the cool part - **animation**.
+
+I want the notifications to fade in and slide up, then fade out and slide down — kinda like most notifications transition in and out of a scene. So we basically have 3 “states” to animate between — “initial” (the fade in), “loaded” (where we want it seen), “exiting” (the fade out).
+
+![Diagram with 3 states of animation - fading in, staying around, and fading out - compared to the time they start and end](./image.png)
+
+When we want to animate, we take the `currentTime` and compare it to the notification’s `created` time. When I say compare, I literally mean just subtract. Since the time is just an incrementing number, we subtract the `currentTime` from the notification time. This gives us the amount of time since the notification has spawned. For example, if we spawn a notification at `100` (100 milliseconds), and the `currentTime` is `420` - we know that it’s been `320` milliseconds since it spawned.
+
+Now when we animate, we want to move between 2 numbers — the “initial” state and “loaded” state. You can do this in a few different ways, but we’ll use a process called “linear interpolation” aka the `lerp()` function. This function takes 2 values (like a start and end position) and figures out where we are between them based on a number between `0` and `1`.
+
+But how do we get a value between `0` and `1` using the time? Well we can set an arbitrary time that is the `NOTIFICATION_DURATION` and say - it should fade after `300` milliseconds. Then when we subtract our current and notification times — we can divide it by our duration. So if a notification fires off at `100`, and it’s currently `420` time, we can divide the difference `320 / 300` and get a number from `0` to `1` — and if we go past the time it’s larger than `1`.
+
+Using that core math, we can create our “initial” animation. We use `Math.min()` and `max()` to prevent the number from exceeding `1` and keep it from going below `-1`.
+
+```tsx
+const fadeUpAmount =
+  (currentTime - notification.created) / NOTIFICATION_DURATION;
+const animate = Math.max(Math.min(fadeUpAmount, 1), -1);
+```
+
+Each notification has an `initialPosition`. This is where the notification will end up once it fades in. We can think of this like the “loaded” state (not “initial” - a little confusing I know). We create a `lerp()` that goes between the `initialPosition.y` and the same spot but 30 pixels down.
+
+```tsx
+const x = notification.initialPosition.x;
+const startY = notification.initialPosition.y;
+const y = p.lerp(startY + 30, startY, animate);
+```
+
+Using that `animate` variable we can even animate the opacity or `alpha` of the text. Since our variable goes from `0` to `1`, we need to multiply by `255` to go from `0` to `255` to get it working with p5’s alpha.
+
+```tsx
+// Message text
+const textColor = p.color(p.color(BASE_COLORS["gray-2"]));
+textColor.setAlpha(animate * 255);
+```
+
+I repeat the concept for the fade out transition / animation. But since it has to trigger after it happens, I add a `NOTIFICATION_LINGER_DURATION`.
+
+```tsx
+const fadeDownAmount =
+  (currentTime - notification.created) /
+  (NOTIFICATION_DURATION * NOTIFICATION_LINGER_DURATION);
+```
+
+I also reverse the value when I need to use it, since I used the same animation, but just needed it to play backwards:
+
+```tsx
+1 - Math.abs(1 - fadeDownAmount);
+```
+
+This could all be implemented a bit “smarter” in a similar way - you can definitely see the progression through this methodology.
+
+## Grafitti
+
+Going back to the text example, it’d also be interesting to see Bluesky posts visualized as graffiti “tags” on a wall.
+
+![Bluesky post text written in a graffiti font on a brick wall texture in random places, colors, and sizes](./BlueskyFirehoseGraffiti-2024114-159.png)
+
+This process is pretty simple, it’s basically the same code as our first text example that prints it randomly on the screen — but we add a brick wall texture and graffiti font.
+
+```tsx
+p.setup = () => {
+  console.log("setup canvas");
+  p.createCanvas(window.innerWidth, window.innerHeight);
+  p.stroke(255); // Set line drawing color to white
+  p.frameRate(30);
+  // p.background(p.color(BASE_COLORS["gray-9"])); // Set the background to black
+
+  // Load the grafitti fonts
+  // Note: the second one doesn't load fast enough, gotta find a way push after
+  fonts.push(p.loadFont("../fonts/GraffitiCity.otf"));
+  fonts.push(p.loadFont("../fonts/DonGraffiti.otf"));
+
+  // Load image and then render it once it's ready here.
+  // We want the background to render only once, so the text can stack on top
+  // and not get "erased" by rendering the background each frame
+  p.loadImage("../assets/brick-wall-pexels-shonejai-1080p.jpg", (img) =>
+    p.image(img, 0, 0, p.width, p.height)
+  );
+};
+```
+
+For brick wall we render it in the setup, similar to our last setup, so that the brick wall shows once - then the text can just render infinitely on top and keep stacking without getting “reset” by the background drawing again.
+
+# What would you make?
+
+Now that the API is demystified a bit more, what kind of art would you make with it? You could enable physics to “drop in” posts into a scene, or transform the data and then use it (like turning words into an audio waveform). There’s lots of cool potential, particularly with how much data you get at a time.
+
+If you have any questions or want to share your own project, feel free to reach out on **[social](https://threads.net/@whoisryosuke/)** **[platforms](https://bsky.app/profile/whoisryosuke.bsky.social)**.
+
+Stay curious,<br />
+Ryo
