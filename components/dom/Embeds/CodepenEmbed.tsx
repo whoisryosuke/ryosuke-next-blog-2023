@@ -13,6 +13,7 @@ const CodepenContainer = styled.div`
 type Props = {
   id: string;
   title: string;
+  defaultTab: string;
 };
 
 const CodepenEmbed = ({ title, id, defaultTab = "js,result" }: Props) => {
