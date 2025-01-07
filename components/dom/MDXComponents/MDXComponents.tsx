@@ -14,6 +14,7 @@ import Paragraph from "../Text/Paragraph";
 import Strong from "../Text/Strong";
 import ThreadsEmbed from "../Embeds/ThreadsEmbed";
 import TweetEmbed from "../Embeds/TweetEmbed";
+import CodepenEmbed from "../Embeds/CodepenEmbed";
 
 export const components = {
   h1: (props) => (
@@ -45,4 +46,5 @@ export const components = {
   Stack: (props) => <Stack marginBottom={2} {...props} />,
   ThreadsEmbed: (props) => <ThreadsEmbed {...props} />,
   TweetEmbed: (props) => <TweetEmbed {...props} />,
+  CodepenEmbed: (props) => <CodepenEmbed {...props} />,
 };
