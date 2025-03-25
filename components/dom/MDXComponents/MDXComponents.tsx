@@ -24,7 +24,7 @@ export const components = {
   ),
   h2: (props) => (
     <BlogHeadline title={props.children} level={2}>
-      <H2 {...props} />
+      <H2 slug {...props} />
     </BlogHeadline>
   ),
   h3: (props) => <H3 {...props} />,
