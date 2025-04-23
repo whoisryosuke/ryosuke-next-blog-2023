@@ -1,0 +1,415 @@
+---
+title: Releasing a React Library in 2025
+date: "2025-04-23"
+section: blog
+tags: ["react", "vite", "npm", "open source", "tutorial"]
+cover_image: "./Releasing_a_React_library_using_Vite.png"
+---
+
+This year one of my goals was to get organized. That includes my code. One of the things that most developers are guilty of (including me) is that I like starting new projects. And when I do, I often just copy and paste code over from one project to the next. It ranges from things like UI components to management systems (input, music, etc) to helpful utility functions (a simple `generateHash()`).
+
+Since I do a lot of prototyping in JavaScript, I thought it’d behoove me to take this already nice and modular code and make it easily distributed for future projects - aka releasing to NPM. But since this process is a bit convoluted, I opted to make a template for myself to quickly copy and create new projects.
+
+This article goes over the process of creating [a template](https://github.com/whoisryosuke/react-vite-library-boilerplate/blob/main/vite.config.js) for releasing JS code to NPM. I use Vite for bundling the Typescript code to JavaScript, and I setup an automated release workflow so we can just push to GitHub and subsequently NPM.
+
+Don’t feel like reading? Try out the [**react-vite-library-boilerplate**](https://github.com/whoisryosuke/react-vite-library-boilerplate/blob/main/vite.config.js) here.
+
+# Why make another library template?
+
+I used to use [**create-react-library**](https://github.com/transitive-bullshit/create-react-library) to generate new projects I wanted to release as NPM libraries. Then I slowly migrated to tools like [tsup](https://github.com/egoist/tsup), [tsdx](https://github.com/jaredpalmer/tsdx), and [microbundle](https://github.com/developit/microbundle).
+
+These worked great, but required lots of custom setup, or in some cases didn’t work well. Like tsdx - it felt like I was adding weights to my legs while trying to run with new projects.
+
+Cut to 2025, the ecosystem of build tools has evolved a bit so I thought I’d re-approach the problem. And I’d already used Vite to [release a library last year](https://github.com/whoisryosuke/geometry-node-graph/) - which proved to be simple and effective.
+
+I searched and found a few library templates using Vite, though most added a lot of bloat (like Tailwind or Storybook), leading me back to wanting my own workflow.
+
+# The Release Process
+
+When I say “release code to NPM” what does this process look like?
+
+1. Write code
+2. Build it
+3. Release to NPM
+
+It’s actually kind of simple ultimately. But for the sake of convenience, I’ll add a bunch of libraries and bells and whistles on top.
+
+For example, in the simplest JavaScript project: you could just write code, make a `package.json` as a config for NPM (so it knows the package `name` and `version`), and then just run `npm publish` to release your code.
+
+But this process assumes a few things: you’re ok with people using your source code directly (and not minified in any way), your JavaScript is supported by the user (and you don’t have to account for ESM or CommonJS), and you want to increment your libraries version manually (aka going into `package.json` and changing `v0.0.1` to `v0.0.2`).
+
+Because I want to run Typescript and automate my release workflow so I don’t have to think about it — we’ll try to avoid these pitfalls by creating a “release workflow”.
+
+Let’s tackle each part of the workflow step by step.
+
+# Bundling code
+
+The first step, after writing some code we want to share, is to “build” or “bundle” our code. Since I’m using Typescript, I want a bundler that supports converting that to JavaScript.
+
+I settled on using [Vite](https://vite.dev/), a popular build tool in the JS ecosystem. You can spin up a new Vite project by using `npm create vite@latest`.
+
+You’ll find that Vite is setup primarily to make an app or website. It includes an `index.html` that runs your script code, and allows you to preview it in the browser. This is useful for me, since most libraries I’ll be writing will have some sort of UI or require running in the browser context.
+
+## Bundling “library” code
+
+If we try and run the Vite build process now, it tries to build it as an app (like NextJS would). But we don’t need any `.html` files in our build — just the `.js` code.
+
+[Vite supports bundling code as library](https://vite.dev/guide/build.html#library-mode) with a small change to the `vite.config.js` adding a `lib` property:
+
+```tsx
+import { defineConfig } from "vite";
+import { resolve } from "node:path";
+import { name } from "./package.json";
+
+export default defineConfig({
+  build: {
+    lib: {
+      entry: resolve("src", "index.ts"),
+      name,
+      formats: ["es", "umd"],
+      fileName: (format) => `${name}.${format}.js`,
+    },
+  },
+});
+```
+
+Here we point to an `entry` for the bundler, as well as the end-user. Ideally this is an `index.ts` file where you export all the code and components you want the user to access. The `formats` is set to ESM and UMD modules (basically browser formats — since my code doesn’t need to run in NodeJS/server). And for the `name` we just pull it from the `package.json`.
+
+Now we can convert our Typescript code to JavaScript. And even release it to NPM if we wanted.
+
+## Typescript types
+
+The one thing missing from our build? Typescript type definitions for our code. So when someone uses the library from NPM, they won’t be able to get any type hints from their IDE.
+
+To enable this, we need to add a plugin called [vite-plugin-dts](https://github.com/qmhc/vite-plugin-dts). In the `vite.config.js` file:
+
+```tsx
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import dts from "vite-plugin-dts";
+import { resolve } from "node:path";
+import { name } from "./package.json";
+
+// https://vitejs.dev/config/
+export default defineConfig({
+  plugins: [react(), dts()],
+```
+
+By adding the `dts()` to our `plugins` array, Vite will now generate `.d.ts` files for each Typescript file.
+
+We also need to add the root `.d.ts` file to our `package.json` to make sure the IDE picks it up - but I’ll cover that later.
+
+## Peer dependencies
+
+One last thing - if you build your code now you’ll notice that you also include all the dependencies. In most cases, you don’t want to do this, since the user may already be using the library in their own code.
+
+For example, we might have React installed in our library — and the user also has it in their app. If the versions differ, React will give us an error about the mismatch.
+
+To circumvent this, we define any dependencies that we assume the user will install themselves as “peer” dependencies (aka the `peerDependencies` property in the `package.json`). NPM will inform the user when they install the library that they need to also have these installed as well.
+
+This works great for NPM - but Vite doesn’t automatically grab our peer deps and remove them from the build. We have to manually configure it to.
+
+[Using the Rollup configuration](https://vite.dev/config/build-options.html#build-rollupoptions) part of the `vite.config.js`, we need to set [the `external` property](https://rollupjs.org/configuration-options/#external) with an array of all deps we want to exclude:
+
+```tsx
+export default defineConfig({
+  // ...Other stuff...
+
+  rollupOptions: {
+    external: ["react", "react/jsx-runtime", "react-dom", "styled-components"],
+    output: {
+      globals: {
+        react: "React",
+        "styled-components": "styled-components",
+        "react-dom": "ReactDOM",
+        "react/jsx-runtime": "react/jsx-runtime",
+      },
+    },
+  },
+});
+```
+
+> 💡 I also set the `output.globals` here as well, but not sure it’s necessary. [You can find the Rollup docs on it here](https://rollupjs.org/configuration-options/#output-globals), and it seems more for global libraries than all peer deps.
+
+# Releasing to NPM
+
+So now that we have code bundled, let’s figure out how to get it on NPM.
+
+Ultimately, we just need change the `version` in our `package.json` and run `npm publish`.
+
+We’ll have GitHub do this for us automatically using “[Actions](https://github.com/features/actions)”. GitHub Actions is a CI/CD service offered by GitHub that spins up containers (like Docker) to run commands (like building and releasing our code).
+
+We’ll define a few “workflows”, which are `.yml` files that contain the configuration for these dev containers and CLI commands for them to run (like `yarn build`).
+
+> 💡 If you don’t want to use GitHub for whatever reason, you can find any other CI/CD service to use. Though you will likely have to create new workflows that use each service’s proprietary APIs. GitLab has offered this service for a long time (and has the Git repo integrated), or there’s plenty of 3rd party services out there too.
+
+### Setting up `package.json`
+
+If you don’t have one already, you can create a new `package.json` for your library by using `npm init`.
+
+But our file is still missing some key configurations that NPM needs to handle the release. Before we release to NPM, we need to tell NPM a few things:
+
+1. The `name` of our package - literally what the user types when they type `npm i your-pkg-name`
+2. The `version`
+3. What `files` or folders (ideally full of code) we want to distribute
+4. Where the code “entry points” are (aka when someone does a `import` - what exact file does it grab first?)
+
+Here’s an example of the bare minimum for an ESM module:
+
+```tsx
+{
+  "name": "react-vite-library-boilerplate",
+  "version": "0.0.2",
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/react-vite-library-boilerplate.umd.js",
+  "module": "./dist/react-vite-library-boilerplate.es.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/react-vite-library-boilerplate.es.js",
+      "require": "./dist/react-vite-library-boilerplate.umd.js"
+    }
+  },
+}
+```
+
+This also includes our Typescript type definition that was generated by the `vite-plugin-dts` earlier. If we don’t add it here, the user won’t get access to all the types we generated.
+
+> 💡 This setup is for a ESM and UMD module. If you need to use CommonJS, you’ll need to remove the `type` property that defines it as a `module` (aka “ESM module”), change the `main` property to point to your Common JS bundle, and finally remove any other ESM and UMD references. But you probably wouldn’t want to use this setup anyway — maybe try using [microbundle](https://github.com/developit/microbundle/).
+
+## Creating a release “workflow”
+
+Now that we have our code bundled (and a [proper](https://docs.npmjs.com/creating-a-package-json-file) `package.json`) we can just release it to NPM now using `npm publish`.
+
+But like I mentioned earlier, this process also requires us to manually increment our libraries version and release it on our own PC (which might have differences in setup than others — causing unknown build failures later). Lots of possible problems. So let’s simplify this process by making our lives much more complicated for the next 30 minutes.
+
+I’ll cover **two** release flows here - both will build and release our code using GitHub Actions as a CI/CD.
+
+**The first flow** is **simple** - but it requires more manual input. And **the second flow** is **fully automated**, but requires you to write Git commits in a specific way (more on that later…).
+
+## Simple Release Flow
+
+With this flow, you release your library like this:
+
+1. Write new code.
+2. Make a commit.
+3. Push to GitHub `main` branch.
+4. Go to GitHub Actions and run the “Generate Version Tag” action - and pick how to increment the version. If it’s major for example, your version would jump from `v1.0.2` to `v2.0.0`.
+5. Create a new release using the new version tag you created.
+6. Code gets automatically built and released using a GitHub action.
+
+As you can see - this requires you to run a GitHub action and even manually make a release yourself. This works great for really small libraries where you don’t change very often, and especially if it’s a personal project that doesn’t require terse documentation.
+
+> 💡 This setup is copied over from [this blog](https://articles.wesionary.team/react-component-library-with-vite-and-deploy-in-npm-579c2880d6ff), check it out for a deeper dive into their process.
+
+### GitHub settings
+
+To enable this flow, we’ll need to change some GitHub settings on whichever repo you want to release from.
+
+1. Go to [the project settings](https://github.com/whoisryosuke/react-vite-library-boilerplate/settings/actions) and allow Read/Write access for Actions (Settings > Code and Automation > Actions > General - the Workflow permissions part of the page)
+2. Add your [`NPM_TOKEN`](https://www.npmjs.com/settings/your-username/tokens) as [a repository secret](https://github.com/whoisryosuke/react-vite-library-boilerplate/settings/secrets/actions) for Actions. Make sure it's a **"Granular access token"** - the legacy type requires a one-time password (which doesn't work with this workflow).
+
+### GitHub Actions
+
+Now that the repo is setup, we can add the actions. GitHub Actions are defined in by `.yml` files in a `/.github/workflows/` folder at the root of your project. You can also make a new Action using the UI and commit it directly to your repo.
+
+Here’s the action to generate a new version tag:
+
+```tsx
+name: Generate tag version
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: New version
+        required: true
+        default: "patch"
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+
+jobs:
+  version:
+    name: Create new version ${{ github.event.inputs.version }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: main
+      - run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+
+      - name: Generate new version
+        run: npm version ${{ github.event.inputs.version }}
+
+      - name: Push new version tag to repository
+        run: git push origin main --tags
+```
+
+This basically spins up a new container with Ubuntu and NodeJS, it checks out the code using Git, generates a new version using the `npm` CLI (and the user input from the dropdown), then updates the repo with the new version using `git push`.
+
+And here’s the action to release to NPM:
+
+```tsx
+name: Publish package on NPM
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 16.x
+          registry-url: https://registry.npmjs.org/
+      - run: yarn
+      - run: yarn build
+      - run: npm publish --access=public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+```
+
+This runs whenever a new release is made and similar to above - installs Ubuntu + NodeJS, runs the build process (`yarn && yarn build`), and then releases to NPM using the token we saved in the settings earlier.
+
+Very simple actions, should be easy to add an extra step if you need to run an extra command before build or something.
+
+## Automated Release Flow
+
+With this flow, your process looks like this:
+
+1. Write new code.
+2. Make a commit using Conventional Commits format.
+3. Push to GitHub `main` branch.
+4. GitHub automatically generates a new version tag and GitHub release (as well as release a build to NPM).
+
+This process leverages Google’s [release-please](https://github.com/googleapis/release-please-action) library to automate most of the process on GitHub.
+
+> 💡 You can find the full process on [this branch on GitHub](https://github.com/whoisryosuke/react-vite-library-boilerplate/tree/semantic-release/.github/workflows). And you can see it in action with my [react-music](https://github.com/whoisryosuke/react-music) library.
+
+### Conventional Commits
+
+This process uses [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) to automatically increment the version based on semantic versioning.
+
+That basically means that when we write commits, we need to write them in a specific format with key details about the changes. For example, if we do a bug fix, the commit might look like `bug: fixed this thing`.
+
+To simplify this process, we’ll use [Commitizen CLI](https://github.com/commitizen/cz-cli) (aka `cz-cli`). You run `cz` and it walks you through step by step the process of writing the commit.
+
+You select from a list of commit types (bug, feature, etc), write the title and description, and even note if it’s a breaking change or not. Then it generates the commit for you - so you don’t have to remember the perfect format each time (since even a small typo can throw off the system - like pluralizing a type “feats” vs “feat” or missing a colon).
+
+We’ll install the library:
+
+```tsx
+yarn add -D commitizen
+```
+
+And then add an entry to our `package.json` `scripts` property to create commits:
+
+```tsx
+"scripts": {
+  "commit": "cz"
+}
+```
+
+Now we can write commits using `yarn commit` instead of `git commit`.
+
+### GitHub settings
+
+Similar to the simple release, we’ll need to open up our GitHub repo’s settings page and change a couple things:
+
+1. Add your [`NPM_TOKEN`](https://www.npmjs.com/settings/your-username/tokens) as [a repository secret](https://github.com/whoisryosuke/react-vite-library-boilerplate/settings/secrets/actions) for Actions. Make sure it's a **"Granular access token"** - the legacy type requires a one-time password (which doesn't work with this workflow).
+2. Go to Actions > General > Workflow Permissions and make sure "**Allow GitHub Actions to create and approve pull requests**” is enabled/checked.
+
+### GitHub Action
+
+This GitHub action is where most of the “action” happens if I may. It’s similar to the example template provided in the release-please repo.
+
+```tsx
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pull-requests: write
+
+name: release-please
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Release
+        id: release
+        if: ${{ github.ref_name == 'main' }}
+        uses: google-github-actions/release-please-action@v4
+        with:
+          release-type: node
+          default-branch: main
+          skip-github-pull-request: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Checkout
+        uses: actions/checkout@v3
+        if: ${{ steps.release.outputs.releases_created }}
+
+      # Setup .npmrc file to publish to npm
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+          registry-url: "https://registry.npmjs.org"
+        if: ${{ steps.release.outputs.releases_created }}
+
+      - name: CI
+        run: yarn
+        if: ${{ steps.release.outputs.releases_created }}
+
+      - name: Build
+        run: yarn build
+        if: ${{ steps.release.outputs.releases_created }}
+
+      - name: Publish
+        run: yarn publish --access=public
+        if: ${{ steps.release.outputs.releases_created }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+```
+
+This workflow runs when we push code to the `main` branch. You could change this to be a `release` branch if you prefer. Make sure to also change the `default-branch` under the `release-please-action` settings.
+
+When it runs, it creates an Ubuntu container, installs NodeJS, runs our build process (`yarn && yarn build`), then publishes to NPM.
+
+One key note here is that I disable GitHub pull requests using the `skip-github-pull-request: true` config. When release-please runs by default, it creates a pull request that contains the release - and you have to manually approve that in the GitHub UI. I wanted the process to be completely automated (at the sake of maybe compromising a little safety) - so it skips this step and just releases instantly. If you manage this repo with other people - or have a more formal release process, you may want to disable this. You can find more info about this process and other config options [in the release-please-action README](https://github.com/googleapis/release-please-action?tab=readme-ov-file#action-inputs).
+
+> 💡 You’ll notice here we use the `--access` CLI tag with `public`. This essentially allows us to create scoped package (aka `@whoisryosuke/my-package-name`). Normally if you released a package with a scoped name, it’d be private to only you. This makes it so anyone can use it. Great for branding a project — or just using a cool name that’s already in use.
+
+# Feeling lazy?
+
+I created [this template on GitHub](https://github.com/whoisryosuke/react-vite-library-boilerplate) so you can just click “Use Template” and generate a new project. Once you edit a couple things, you’ll be releasing your code to NPM (maybe even automated!).
+
+If you do use the template, make sure to share your project with me. Always cool to see what others make - and I can boost your project on the social feeds.
+
+# Get creating!
+
+Now that there’s no friction between you and releasing your code, you have no excuse not to release those cool new UI components you made — or that awesome library that makes life easier for people.
+
+As always, if you make anything cool after learning from this - or have any questions - feel free to reach out on [**social**](https://threads.net/@whoisryosuke/) [**media**](https://bsky.app/profile/whoisryosuke.bsky.social).
+
+Stay curious, <br />
+Ryo
