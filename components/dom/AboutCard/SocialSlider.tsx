@@ -103,6 +103,12 @@ const SocialSlider = (props: Props) => {
           title="Find me on LinkedIn"
           href="https://www.linkedin.com/in/whoisryosuke/"
         />
+        <SocialPlatform
+          image="/images/rss.png"
+          alt="RSS"
+          title="Subscribe to my RSS feed"
+          href="https://whoisryosuke.com/rss.xml"
+        />
       </Stack>
     </HorizontalScroll>
   );

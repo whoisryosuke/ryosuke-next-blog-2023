@@ -32,7 +32,11 @@ const InfoCards = (props: Props) => {
   return (
     <Stack vertical gap={3}>
       <InfoCard title="San Francisco, CA" subtitle="Location" Icon={BiMapAlt} />
-      <InfoCard title="PlayStation" subtitle="Currently at" Icon={BiBuilding} />
+      <InfoCard
+        title="PlayStation"
+        subtitle="Previously at"
+        Icon={BiBuilding}
+      />
     </Stack>
   );
 };
