@@ -10,6 +10,7 @@ import BlogCard, { BlogPostData } from "@components/dom/BlogCard/BlogCard";
 import { useBlogStore } from "@store/blog";
 import Head from "@components/dom/Head/Head";
 import BlogTagSearch from "@components/dom/BlogTagSearch/BlogTagSearch";
+import generateRssFeed from "@utils/rss";
 
 type Props = {
   posts: BlogPostData[];
@@ -132,6 +133,9 @@ export async function getStaticProps() {
   let allTags = [];
   tagSet.forEach((tag) => allTags.push(tag));
   allTags = allTags.sort();
+
+  // Generate RSS feed
+  generateRssFeed(posts);
 
   return { props: { posts, allTags } };
 }
