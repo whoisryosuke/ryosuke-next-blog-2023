@@ -62,6 +62,18 @@ const SocialSlider = (props: Props) => {
     <HorizontalScroll p={3} {...props}>
       <Stack gap={4} responsive={false}>
         <SocialPlatform
+          image="/images/social-github.png"
+          alt="GitHub"
+          title="@whoisryosuke on GitHub"
+          href="https://github.com/whoisryosuke"
+        />
+        <SocialPlatform
+          image="/images/social-patreon.png"
+          alt="Patreon"
+          title="@whoisryosuke on Patreon"
+          href="https://www.patreon.com/c/whoisryosuke"
+        />
+        <SocialPlatform
           image="/images/social-patreon.png"
           alt="Patreon"
           title="@whoisryosuke on Patreon"
