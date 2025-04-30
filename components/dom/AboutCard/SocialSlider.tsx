@@ -8,11 +8,13 @@ import { BREAKPOINTS } from "@theme/tokens";
 const SocialIconImage = styled("img")`
   @media (min-width: ${BREAKPOINTS.default}) {
     width: auto;
+    min-width: 32px;
     max-width: 32px;
   }
 
   @media (min-width: ${BREAKPOINTS.computer}) {
     width: 100%;
+    min-width: 32px;
     max-width: 100%;
   }
 `;
@@ -66,12 +68,6 @@ const SocialSlider = (props: Props) => {
           alt="GitHub"
           title="@whoisryosuke on GitHub"
           href="https://github.com/whoisryosuke"
-        />
-        <SocialPlatform
-          image="/images/social-patreon.png"
-          alt="Patreon"
-          title="@whoisryosuke on Patreon"
-          href="https://www.patreon.com/c/whoisryosuke"
         />
         <SocialPlatform
           image="/images/social-patreon.png"
