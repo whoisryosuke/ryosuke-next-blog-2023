@@ -15,6 +15,7 @@ import Strong from "../Text/Strong";
 import ThreadsEmbed from "../Embeds/ThreadsEmbed";
 import TweetEmbed from "../Embeds/TweetEmbed";
 import CodepenEmbed from "../Embeds/CodepenEmbed";
+import BlueskyEmbed from "../Embeds/BlueskyEmbed";
 
 export const components = {
   h1: (props) => (
@@ -47,4 +48,5 @@ export const components = {
   ThreadsEmbed: (props) => <ThreadsEmbed {...props} />,
   TweetEmbed: (props) => <TweetEmbed {...props} />,
   CodepenEmbed: (props) => <CodepenEmbed {...props} />,
+  BlueskyEmbed: (props) => <BlueskyEmbed {...props} />,
 };
