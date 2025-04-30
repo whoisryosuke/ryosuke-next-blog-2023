@@ -10,6 +10,8 @@ const Strong = (props: Props) => {
       display="inline-block"
       fontWeight="bold"
       marginBottom={0}
+      color="inherit"
+      fontSize="inherit"
       {...props}
     />
   );
