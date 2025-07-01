@@ -237,7 +237,7 @@ This setup lets us create separate components for “audio nodes” that we can 
 
 Here’s an example of a “gain” node - aka a way to control the volume of the sound. This hooks into the existing audio context to create the node, then adds the audio node to a global store to use later. Keep this structure in mind as we’ll be using this as the basis for our worklet.
 
-```
+```tsx
 import React, { useEffect, useRef, useState } from "react";
 import useAudioStore from "../../store/audio";
 import { Input, Slider } from "@whoisryosuke/oat-milk-design";
@@ -287,7 +287,6 @@ const Gain = (props: Props) => {
 };
 
 export default Gain;
-
 ```
 
 Now with this setup, we can start experimenting with an audio worklet.
@@ -418,9 +417,7 @@ In order to run Rust code on the web, we’ll need to compile it into a language
 
 We’ll be using [wasm-pack](https://github.com/rustwasm/wasm-pack-template) to compile and bundle our WASM code, as well as automatically generate lots of handy JS and TS glue code. Make sure to install that globally, or in the container/environment running your project.
 
-> 📁
-
-If you’re not familiar with this process, I recommend following [this tutorial](https://rustwasm.github.io/docs/book/game-of-life/hello-world.html) for creating a game of life using Rust and WASM. Or if you’re in a hurry, check out [their project template](https://github.com/rustwasm/wasm-pack-template/) or [my project template](https://github.com/whoisryosuke/rust-wasm-library-template) (simlar and simpler with less debug support).
+> 📁 If you’re not familiar with this process, I recommend following [this tutorial](https://rustwasm.github.io/docs/book/game-of-life/hello-world.html) for creating a game of life using Rust and WASM. Or if you’re in a hurry, check out [their project template](https://github.com/rustwasm/wasm-pack-template/) or [my project template](https://github.com/whoisryosuke/rust-wasm-library-template) (simlar and simpler with less debug support).
 
 ## Setting up from scratch
 
@@ -551,9 +548,7 @@ Now the first instinct might be to create a [polyfill](https://github.com/lukasl
 
 Because the Audio Node needs to load a `.js` file, it needs to be pre-compiled (using a process like Webpack or Vite) so that the browser can run the code. For example, we couldn’t pass in a Typescript file directly because the browser couldn’t read it (unless it magically contained no TS code or something but that’s besides the point).
 
-> 📁
-
-But wait you say - didn’t we use a Typescript file earlier? That’s the benefit of the Vite build system we’re using. It pre-compiles the module for us. It’s pretty nice.
+> 📁 But wait you say - didn’t we use a Typescript file earlier? That’s the benefit of the Vite build system we’re using. It pre-compiles the module for us. It’s pretty nice.
 
 For our WASM library to be able to load in this context, we’ll need to compile it to a `web` target. If we look at [the docs for the `build` command](https://rustwasm.github.io/wasm-pack/book/commands/build.html#target), we can see that if we use a `web` target, we need to manually load and instantiate our WASM.
 
