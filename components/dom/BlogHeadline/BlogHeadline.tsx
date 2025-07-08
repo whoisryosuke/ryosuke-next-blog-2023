@@ -9,10 +9,10 @@ import { kebabCase } from "lodash";
  * @returns
  */
 const fixTitle = (title: Array<string | { props: { children: string } }>) => {
+  const parsedTitle = Array.isArray(title) ? title : [title];
   let newTitle = "";
-  title.forEach((el) => {
+  parsedTitle.forEach((el) => {
     if (typeof el != "string" && "props" in el) {
-      console.log("found a react component");
       return (newTitle += el.props.children);
     }
     return (newTitle += el);
@@ -36,7 +36,7 @@ const BlogHeadline = ({
     // Since we're in React and using `props.children` we need
     // check if it's an array and contains a component
     // like inline code blocks inside header elements
-    const parsedTitle = Array.isArray(title) ? fixTitle(title) : title;
+    const parsedTitle = typeof title == "string" ? title : fixTitle(title);
     const exists = tableOfContents.find(
       (tocItem) => tocItem.title === parsedTitle
     );
