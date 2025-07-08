@@ -1,0 +1,308 @@
+---
+title: Sketchbooks for Creative Coding
+date: "2025-07-08"
+section: blog
+tags: ["react", "creative coding", "javascript", "open source"]
+cover_image: "./Sketchbooks_for_Creative_Coding.png"
+---
+
+Recently I’ve been stacking up quite a few digital sketchbooks with experiments ranging from 3D to web audio to animations. Anything I’ve been interested in tinkering with, with my “sketchbooks” I have a place I can quickly come and iterate on ideas without boundaries.
+
+I thought I’d briefly share my process creating the sketchbooks, how they work, and share a few cool examples of “sketches”.
+
+# Stacks of sketchbooks
+
+I’ve got a “sketchbook” for each topic I’m interested in exploring.
+
+- [2D graphics using p5.js](https://github.com/whoisryosuke/p5-experiments)
+- [Web Audio](https://github.com/whoisryosuke/web-audio-playground)
+- [3D using ThreeJS / R3F](https://github.com/whoisryosuke/3d-web-sketchbook)
+- [Web](https://github.com/whoisryosuke/web-sketchbook-2025) (using ReactJS)
+- [React Native (Expo)](https://github.com/whoisryosuke/expo-experiments)
+
+Whenever I have an idea in one of these topics, I open up one of these projects and get started on it.
+
+# My process
+
+I’ve tried to make the process as streamlined as possible so I can get in and start working on ideas instead of spinning wheels doing file or project management.
+
+So here’s my process for starting a new sketch in my “sketchbook”:
+
+1. Get an idea
+2. Open up the corresponding sketchbook project in VSCode
+3. Run `yarn sketch:new CoolNewExperimentR1`
+4. Start noodling in `/src/sketch/CoolNewExperimentR1.tsx`
+5. Preview my sketch on web at `localhost:4200/sketches/my-cool-experiment-r1`
+6. Create another “round” of sketching `yarn sketch:new CoolNewExperimentR2`
+7. Copy over any relevant code.
+8. Rinse repeat
+
+This flow has been working pretty well for me. I usually challenge myself to work for 20-30 mins max at a time in short sprints, so the ability to pick up one of these “sketchbooks” and start “doodling” with code is essential.
+
+To make it a bit faster, I created an app launcher called Entourage. I added all my sketchbooks so I can quickly click one and open VSCode with the project ready.
+
+![The Entourage app with 5 cards in a row representing different sketchbooks.](image.png)
+
+# Sketchbook Structure
+
+With the p5.js sketchbook I made a nice little architecture for myself to simplify starting up new ideas. Then afterwards, each sketchbook I created was forked from that project.
+
+## `yarn sketch:new`
+
+I used to open up one of the sketchbook projects, create a new branch, and go from there. And all my experiments were sorted into git branches. This works great, but I wanted to be able to see all my experiments at once and share code between them if needed.
+
+Now, I open up the sketchbook and I run `yarn sketch:new MyIdeaName` and it scaffolds a new “sketchbook page” for me to work on. It uses a simple NodeJS CLI script I wrote.
+
+It literally generates a new page in the router, so I can go to `localhost:4200/sketches/my-idea-name` and see my sketch.
+
+It also copies a template for a “hello world” React component for whatever sketchbook I’m using. In the p5.js project, it generates a `SketchComponent` that has an instance of `p5` spun up with sample code.
+
+The CLI script also accepts a template parameter, so I can use a different template for my new sketch. In the p5 project for example, I have a template for offscreen rendering that has all the logic for spinning up an offscreen canvas. All the templates are [stored in a top level](https://github.com/whoisryosuke/p5-experiments/tree/815c872a667064c637f16491d7a83f85872cd86a/templates) `/templates` folder.
+
+The script itself isn’t too wild — it does exactly what we need: copies a few templates, replaces a few placeholders, and creates new files on disk.
+
+```tsx
+const { readFileSync, copyFileSync, writeFileSync, existsSync } = require("fs");
+const path = require("path");
+
+const TEMPLATES = {
+  sketch: "SketchTemplate",
+  offscreen: "OffscreenTemplate",
+  "render-video": "RenderImageSequenceTemplate",
+};
+
+function convertToSlug(componentName) {
+  return (
+    componentName
+      .replace(/([a-z])([A-Z])/g, "$1-$2") // Convert camelCase to kebab-case
+      // .replace(/[^a-z0-9-]+/g, "-") // Remove special characters
+      .toLowerCase()
+  );
+}
+
+function findAndReplaceInFile(sourceFilePath, replaceSearch, replaceTerm) {
+  var data = readFileSync(sourceFilePath, "utf-8");
+
+  var newValue = data.replaceAll(replaceSearch, replaceTerm);
+
+  writeFileSync(sourceFilePath, newValue, "utf-8");
+}
+
+const generateSketch = async () => {
+  if (process.argv.length < 3)
+    throw new Error(
+      "Please provide a name for a new React component for sketching (e.g. 'SketchExample')"
+    );
+
+  const sketchName = process.argv[2];
+  let template = process.argv[3];
+  if (!template) template = "sketch";
+
+  console.log(`⚙️ Creating a new sketch called <${sketchName} />`);
+
+  // Get template for component and copy it
+  const templateFilename = TEMPLATES[template];
+  const componentTemplatePath = path.join(
+    __dirname,
+    "../templates",
+    `${templateFilename}.tsx`
+  );
+  const componentDestinationPath = path.join(
+    __dirname,
+    "../src/experiments/",
+    `${sketchName}.tsx`
+  );
+  const componentFileExists = existsSync(componentDestinationPath);
+  if (componentFileExists) {
+    console.error(
+      "Component already exists! Try picking another name or deleting the old file."
+    );
+    return;
+  }
+  copyFileSync(componentTemplatePath, componentDestinationPath);
+
+  // Swap out placeholder name
+  findAndReplaceInFile(
+    componentDestinationPath,
+    "ExampleComponent",
+    sketchName
+  );
+
+  // Get template for page and copy it
+  const pageTemplatePath = path.join(__dirname, "../templates", "page.tsx");
+  const pageName = convertToSlug(sketchName);
+  const pageDestinationPath = path.join(
+    __dirname,
+    "../src/pages/experiments/",
+    `${pageName}.tsx`
+  );
+  copyFileSync(pageTemplatePath, pageDestinationPath);
+
+  // Swap out placeholder name
+  findAndReplaceInFile(pageDestinationPath, "ExampleComponent", sketchName);
+
+  // Done!
+  console.log("Done! 🤘");
+  console.log(`Created new sketch component: ${componentDestinationPath}`);
+  console.log(`Created new sketch page: ${pageDestinationPath}`);
+  const url = `http://localhost:3000/experiments/${pageName}`;
+  console.log(`Live preview: ${url}`);
+};
+
+generateSketch();
+```
+
+This is nice and extensible for each project. I just provide a solid default template for a “sketch”, a page component (usually just NextJS filler code), and I’m good to go.
+
+I’m able to run this using `yarn sketch:new` by adding the `.js` script to the scripts section of my `package.json`:
+
+```tsx
+"scripts": {
+  "sketch:new": "node scripts/generate-sketch.js"
+},
+```
+
+## Index Page
+
+One of the key things I wanted with the sketchbook was the ability to browse any sketch I’d like - without having to switch git branches.
+
+Using NextJS and their `getStaticProps` API, I was able to fetch all the sketch pages using the NodeJS filesystem API. Since I generate a static page for each route inside a `/pages/sketches/` folder, I just have to check for all files inside there.
+
+```tsx
+import { readdirSync } from "fs";
+import path from "path";
+
+export async function getStaticProps() {
+  const experimentPath = path.join("./src/pages/sketches");
+  const experimentPages = readdirSync(experimentPath);
+  const pages = experimentPages.map((page) => page.replace(".tsx", ""));
+
+  return {
+    props: {
+      title: "",
+      pages,
+    },
+  };
+}
+```
+
+And since the filenames match the URL slug, it doesn’t take much work to link to them.
+
+```tsx
+import { Head } from "next/document";
+import Link from "next/link";
+import path from "path";
+
+type Props = {
+  pages: string[];
+};
+
+export default function Page({ pages }: Props) {
+  return (
+    <>
+      <div style={{ padding: "3rem" }}>
+        <h1>Sketches</h1>
+        <ul>
+          {pages.map((page) => (
+            <li key={page}>
+              <Link href={`/sketches/${page}`}>{page.replace("-", " ")}</Link>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </>
+  );
+}
+```
+
+And it doesn’t look too fancy (yet), but it gets the job done.
+
+![A black web page with a simple list of links to prototypes](image%201.png)
+
+## Page wrappers
+
+Since I was displaying all the sketches in one place, I wanted the be able to control the uniformity of their layout from a single place.
+
+With each sketchbook I tend to create a “page wrapper” type component that wraps each sketch. It could be used to apply a nice frame around the page with the sketch information — or just apply the sketch name to the `<title>` in the meta tags.
+
+Here’s the wrapper I use for the 3D sketchbook, it just displays the name of the current sketch in the page title.
+
+```tsx
+import Head from "next/head";
+import { PropsWithChildren } from "react";
+
+type Props = {
+  title: string;
+};
+
+export default function SketchPage({
+  title,
+  children,
+}: PropsWithChildren<Props>) {
+  return (
+    <>
+      <Head>
+        <title>{title && `${title} - `}Ryo's 3D Web Sketchbook</title>
+      </Head>
+      <div style={{ position: "fixed", inset: 0 }}>{children}</div>
+    </>
+  );
+}
+```
+
+# The top sketches
+
+Here are a few standout sketches I’ve put together this year.
+
+## Circular MIDI Tracks
+
+![A MIDI track visualized as multiple circular tracks for each note with rounded blocks traveling along each](MidiCirclePlayerR6-202544-908_-_Copy.png)
+
+This one was pretty fun, it’s from the p5.js sketchbook. It takes a MIDI file, generates a circle “track” for each note that gets played, and animates line segments representing each note around the circle track. It
+
+You can check out [the source code here.](https://github.com/whoisryosuke/p5-experiments/blob/815c872a667064c637f16491d7a83f85872cd86a/src/experiments/WaveformSamplerR4.tsx)
+
+## Audio Waveform “Slices”
+
+![Rectangles stacked side by side with the top line shapes like a waveform](Screenshot_2025-06-09_162034.png)
+
+This is from the p5.js sketchbook. I play pre-recorded audio of me playing piano I created using Ableton Live and Arturia synths. Then I sample the waveform data at regular intervals to create “slices of audio waves. It’s a bit slow, but it could be optimized in a few clever ways (if I had more time).
+
+You can check out [the source code here](https://github.com/whoisryosuke/p5-experiments/blob/815c872a667064c637f16491d7a83f85872cd86a/src/experiments/WaveformSamplerR4.tsx).
+
+## ADSR Envelope with Visualizer
+
+![A web app with an ADSR curve and waveform visualized on canvas, and buttons below with piano note keys](Screenshot_2025-06-11_142652.png)
+
+Recently in the web audio sketchbook I got a ADSR (attack, delay, sustain, release) envelope setup on a sampler (e.g. plays 1 sound at different “pitches” aka piano keys).
+
+And to better understand the effect of the envelope on the audio output, I created a visualization of the ADSR properties mapped on a line graph.
+
+You can check out [the source code here](https://github.com/whoisryosuke/web-audio-playground/tree/map-for-nodes).
+
+## Frequency Tunnel Viz
+
+![A web app with a black background and blue particles floating in space gathered in a sphere shape and exploding outwards based on keypress](vlcsnap-2025-06-16-17h45m15s308.png)
+
+There’s definitely a trend of audio visualization here. This is in the 3D sketchbook. It takes audio waveform data and animates hundreds of particles based on the frequency - with a bit of extra math to make things look interesting.
+
+You can check out [the source code here](https://github.com/whoisryosuke/3d-web-sketchbook/tree/3b4237ba6bc0706fc98eca548b8678947e8d7e15/src/sketches/WaveformBufferGeoR2).
+
+# What’s left?
+
+There’s 2 key areas missing from the template that would make it perfect for me.
+
+The first, it needs another script for copying sketches. It should be able to take a sketch name and copy it to a new file (similar to the `new` process but using another sketch as the “template”). Currently when I do iterations I tend to just create a new sketch and copy over anything I need.
+
+The second, it needs a way to share code between other sketchbooks of similar types. When I need to do some audio work in my 3D sketchbook, it should be a simple `import` from a shared library that the audio sketchbook also uses.
+
+This ones a little trickier to solve just practically. Technically it’s simple - I have to bite the bullet and just convert my sketchbook to a monorepo, add a shared library as a git submodule, and go from there. But practically — does it just include all my utilities? Do I make submodules for each topic - and just import each sketchbook as a submodule? We’ll find out.
+
+# Get sketching!
+
+Feel free to use my sketchbooks as the basis for your own. They’re all licensed with the “UNLICENSE” usually. Same with the “sketches” really. So go wild.
+
+If you make anything cool make sure to [tag me](https://mastodon.gamedev.place/@whoisryosuke) on [socials](https://bsky.app/profile/whoisryosuke.bsky.social) so I can see it and share it with my circles.
+
+Stay creative,
+Ryo
