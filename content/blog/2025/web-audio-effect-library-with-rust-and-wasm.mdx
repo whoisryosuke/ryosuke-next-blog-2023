@@ -145,7 +145,7 @@ You can see the major shift to monorepo [in this commit](https://github.com/whoi
 
 We’re using `AudioWorkletNode`, which is a kind of [“web worker”](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API/Using_AudioWorklet) that takes code and runs it in a separate thread. When we initialize the worklet node, we need to pass a file path to this worklet/worker.
 
-In the previous blog, I used Vite as my build system, and I was able to leverage their `?url` parameter to get a file path to the web worker. This is required for initializing Web Worklets (and Web Workers in general) - they usually take a whole JS file and then run that in their own isolated JS context. You can [learn more about this process in the Vite docs here](https://v3.vitejs.dev/guide/assets.html#explicit-url-imports).
+In the previous blog, I used Vite as my build system, and I was able to leverage their `?url` parameter to get a file path to the web worker. This is required for initializing Web Worklets (and Web Workers in general) - they usually take a whole JS file and then run that in their own isolated JS context. You can learn more about this process [in the Vite docs here](https://v3.vitejs.dev/guide/assets.html#explicit-url-imports).
 
 ### Missing Typescript types
 
