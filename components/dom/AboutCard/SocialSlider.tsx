@@ -4,6 +4,7 @@ import styled from "styled-components";
 import Text from "../Text/Text";
 import Stack from "../Stack/Stack";
 import { BREAKPOINTS } from "@theme/tokens";
+import SOCIAL_PLATFORMS from "./social";
 
 const SocialIconImage = styled("img")`
   @media (min-width: ${BREAKPOINTS.default}) {
@@ -63,60 +64,15 @@ const SocialSlider = (props: Props) => {
   return (
     <HorizontalScroll p={3} {...props}>
       <Stack gap={4} responsive={false}>
-        <SocialPlatform
-          image="/images/social-github.png"
-          alt="GitHub"
-          title="@whoisryosuke on GitHub"
-          href="https://github.com/whoisryosuke"
-        />
-        <SocialPlatform
-          image="/images/social-patreon.png"
-          alt="Patreon"
-          title="@whoisryosuke on Patreon"
-          href="https://www.patreon.com/c/whoisryosuke"
-        />
-        <SocialPlatform
-          image="/images/social-twitch.png"
-          alt="Twitch"
-          title="@whoisryosuke on Twitch"
-          href="https://www.twitch.tv/whoisryosuke"
-        />
-        <SocialPlatform
-          image="/images/social-bluesky.png"
-          alt="Bluesky"
-          title="@whoisryosuke on Bluesky"
-          href="https://bsky.app/profile/whoisryosuke.bsky.social"
-        />
-        <SocialPlatform
-          image="/images/social-threads.png"
-          alt="Threads"
-          title="@whoisryosuke on Threads"
-          href="https://www.threads.net/@whoisryosuke"
-        />
-        <SocialPlatform
-          image="/images/social-mastodon.png"
-          alt="Mastodon"
-          title="@whoisryosuke on Mastodon"
-          href="https://mastodon.gamedev.place/@whoisryosuke"
-        />
-        <SocialPlatform
-          image="/images/social-youtube.png"
-          alt="YouTube"
-          title="@whoisryosuke on YouTube"
-          href="https://www.youtube.com/@whoisryosuke"
-        />
-        <SocialPlatform
-          image="/images/social-linkedin.png"
-          alt="LinkedIn"
-          title="Find me on LinkedIn"
-          href="https://www.linkedin.com/in/whoisryosuke/"
-        />
-        <SocialPlatform
-          image="/images/rss.png"
-          alt="RSS"
-          title="Subscribe to my RSS feed"
-          href="https://whoisryosuke.com/rss.xml"
-        />
+        {SOCIAL_PLATFORMS.map((platform) => (
+          <SocialPlatform
+            key={platform.alt}
+            image={platform.image}
+            alt={platform.alt}
+            title={platform.title}
+            href={platform.href}
+          />
+        ))}
       </Stack>
     </HorizontalScroll>
   );

@@ -21,8 +21,10 @@ import { useBlogStore } from "@store/blog";
 import Head from "../Head/Head";
 import { useRouter } from "next/router";
 import Link from "next/link";
-import { H1 } from "../Headline/Headers";
+import { H1, H2 } from "../Headline/Headers";
 import { fromUnixTime } from "date-fns";
+import SocialSlider from "../AboutCard/SocialSlider";
+import BlogSocial from "../BlogSocial/BlogSocial";
 
 type Props = {
   title: string;
@@ -167,6 +169,11 @@ const BlogPage = ({ children, ...props }: PropsWithChildren<Props>) => {
                 >
                   <H1 mt={0}>{title}</H1>
                   {children}
+                  <Box>
+                    <H2>Connect</H2>
+                    <BlogSocial />
+                  </Box>
+                  <div style={{ height: 50 }} />
                 </ScrollBox>
               </Glass>
             </ThemeProvider>
