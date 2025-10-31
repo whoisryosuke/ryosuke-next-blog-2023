@@ -1,0 +1,684 @@
+---
+title: Static site generation with Web Components
+date: "2025-10-31"
+section: blog
+tags: ["web components", "react", "javascript"]
+cover_image: "./static-site-generation-with-web-components.png"
+---
+
+I was shocked to see recently that Shopify moved it’s design system from React to Web Components. As someone who’s tried to embrace Web Components and found them completely inadequate, I was amazed they made such a big shift. I was curious if the ecosystem had evolved since I last experimented with them originally, they had massive issues that prevented essential features like SSR.
+
+I spent some time looking into the current state of Web Component libraries and tested out using them inside a few frameworks. I share my limited success, and mostly failures, as a warning for those who are still thinking of using web components seriously in 2025.
+
+I’ll briefly break down what web components are, what SSR and SSG are, and then I’ll test a few frameworks like Preact, React, and Astro to see how they handle Web Components.
+
+# The basics of Web Components
+
+## What are Web Components?
+
+Web Components are [a web API](https://developer.mozilla.org/en-US/docs/Web/API/Web_components) for creating reusable components without a framework like React, Vue, or Angular. They allow you to define logic and UI that can be encapsulated into a single new custom HTML element, like `<your-custom-button>`.
+
+To create a web component, you extend the `HTMLElement` class. Then you access the global `customElements` variable and use the `define()` API to add your new component to the HTML namespace (so you can use the element in HTML code and the browser knows what to do with it).
+
+```tsx
+// Create a class for the element
+class MyCustomElement extends HTMLElement {
+  static observedAttributes = ["size"];
+
+  constructor() {
+    super();
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    console.log(
+      `Attribute ${name} has changed from ${oldValue} to ${newValue}.`
+    );
+  }
+}
+
+customElements.define("my-custom-element", MyCustomElement);
+```
+
+Then you can use it like so in your HTML document:
+
+```html
+<body>
+  <my-custom-element size="100"></my-custom-element>
+</body>
+```
+
+But even in this example, we don’t render UI. To render UI with our Web Component, we need to create `<template>` tags with our UI the component can use. Then in our component, we’ll need to grab the template from the DOM and append it to the DOM where our component is.
+
+```html
+<template id="custom-paragraph">
+  <p>My paragraph</p>
+</template>
+```
+
+```tsx
+customElements.define(
+  "my-paragraph",
+  class extends HTMLElement {
+    constructor() {
+      super();
+      let template = document.getElementById("custom-paragraph");
+      let templateContent = template.content;
+
+      const shadowRoot = this.attachShadow({ mode: "open" });
+      shadowRoot.appendChild(templateContent.cloneNode(true));
+    }
+  }
+);
+```
+
+This takes the HTML we defined inside the `<template>` an copies it to the shadow DOM of our Web Component (which displays it to the user ultimately).
+
+As you can see, like a lot of web APIs: it’s very low level, verbose, and not easy to use. Most people don’t create Web Components like this, they’ll often use a library like Lit or Stencil that exposes a much easier to use API for defining components.
+
+Here’s an example of a Lit component:
+
+```tsx
+import { html, css, LitElement } from "lit";
+import { customElement, property } from "lit/decorators.js";
+
+@customElement("simple-greeting")
+export class SimpleGreeting extends LitElement {
+  static styles = css`
+    p {
+      color: blue;
+    }
+  `;
+
+  @property()
+  name = "Somebody";
+
+  render() {
+    return html`<p>Hello, ${this.name}!</p>`;
+  }
+}
+
+// We use it like this
+<simple-greeting name="World"></simple-greeting>;
+```
+
+There’s definitely some bespoke Lit APIs we’ll have to traverse here (like the use of decorators), but overall you can see how much easier it became to define UI and even CSS inside the web component.
+
+## What is SSR?
+
+Server side rendering is the process of running your app’s code on the server. This is usually used for doing things like querying a DB on a server and passing the data directly to the UI. You might be familiar with this process if you’ve ever coded PHP (or used a framework like Laravel).
+
+Normally your app is consumed by the user, who takes the HTML and JS code and runs it in the web browser. This is called “client-side” application code, because it runs on the “client” (aka the user).
+
+But we can also run our app in the server. For example, a NodeJS server can understand JavaScript code, so it could theoretically run a React app. This takes the app code and returns HTML, which is usually returned to the user (like as a HTTP request page — not like a `fetch` API request).
+
+In React, we can see this very clearly at the top level of our application. When it’s a client-side application, we use the `ReactDOM` library to render our components to HTML. Though when we have a server-side app, we use `react-dom/server` — a different API that supports rendering on the server.
+
+Why do we need a separate library for rendering on the server?
+
+Well most apps use APIs that are only available inside a web browser. For example, I might want to access the user’s microphone using the `navigator` and the `mediaDevices` property. On a server, this API isn’t available. Imagine that a server is like a user, but it runs in a “headless” context, meaning it’ll run the app code - just without a full browser around it.
+
+### What is SSG?
+
+Static site generation (or SSG) takes the concept of SSR a step further. We still use a server to render the code, but export all the HTML we generate to HTML files. This way we can “generate” a “static” version of our website that runs without a server.
+
+A great example of this process is this blog that you’re reading, it’s statically generated at build time. I write my blog posts as MDX files (basically Markdown with ReactJS inside). Then when I build my website (aka `yarn build`) — the “server” (aka my computer) takes my React website and runs it on the server. So it simulates each page opening, getting any data it needs (like my MDX content), then saves the HTML that gets generated by React into HTML files for each page.
+
+This is a fantastic way to save bandwidth and optimize performance of simpler websites (like documentation or landing pages).
+
+## Web Components and SSR
+
+So what if I wanted to use Web Components and have a server render my code? First let’s see why we’d want this.
+
+Let’s say I have a design system (like Shopify) that has components we use everywhere, like a `<polaris-card>` that makes a card with HTML and CSS.
+
+```tsx
+<div>
+  <polaris-card name="User" email="user@domain.com" />
+</div>
+```
+
+We could make an HTML file that contains this element, but this element isn’t good for SEO or accessibility. When a website like Google crawls our website and sees that custom element, it won’t be able to understand it. Normally it’d find native HTML elements like a `<h2>` and `<p>` that’d signify text content. Without those, it can’t pull our data from our Web Component’s custom attribute’s here.
+
+Ideally we’d want to take this web component and expose the underlying HTML, and then “hydrate” it when a user loads it client-side, so it can do any interactive stuff we need.
+
+So instead of above, we’d see this in our HTML file:
+
+```tsx
+<div>
+  <div class="card">
+    <h2>User</h2>
+    <p>user@domain.com</p>
+  </div>
+</div>
+```
+
+This is great for a few reasons. Like I mentioned before, SEO should improve. But you also ensure your website is more usable when JavaScript is disabled. Not every device has JavaScript enabled, or a user may disable it by choice. So being able to display something instead of nothing is way better.
+
+> ℹ️ I will say SEO has changed over time, and while in the past it was absolutely critical to server render everything — nowadays most bots have adapted and will allow client-side scripts to render before crawling. Though the process is still similar, initial HTML is prioritized, then they render the JS at a [lower priority in a queue](https://developers.google.com/search/docs/crawling-indexing/javascript/javascript-seo-basics).
+
+One important thing to know about Web Components - the shadow DOM isn’t rendered to the actual DOM. So when an SEO crawler renders your page, it still won’t see what’s inside a web component (unless you use the “Declarative Shadow DOM” - more on that later).
+
+So how do we SSR our Web Components? Kick back, let’s take a ride.
+
+# Why not X library?
+
+Web Components have been around for a while now and quite a few libraries and frameworks have appeared solving a lot of the key issues and gaps with the core technology. Though as the ecosystem has gained maturity, we still haven’t been able to resolve some core issues (like the [shadow DOM and it’s inability to SSR](https://web.dev/articles/declarative-shadow-dom)).
+
+## Stencil
+
+Stencil was one of the first Web Component frameworks I used because of how similar it was to React with it’s use of JSX. It supports SSR and SSG out of the box.
+
+Though after picking it up after a few years, I discovered that [the Stencil project has recently been abandoned](https://ionic.io/blog/important-announcement-the-future-of-ionics-commercial-products) and left in a kind of maintenance mode.
+
+I also tried forking the project myself to see how easy it’d be to extend and I had a lot of issues just getting it running.
+
+I’m sure this is a viable option for now, but the fact it’s not supported means you get what you get (including any unresolved or future bugs as the web platform grows).
+
+## Lit
+
+Lit is probably one of the most popular frameworks for Web Components. I showed the the syntax for it’s component’s earlier. It’s a little quirky at first with it’s decorators, but you really can’t beat how simple their API makes lots of simple stuff (like using CSS or rendering HTML). I’ve even used Lit’s underyling HTML renderer in [other custom web component frameworks like Haunted.](github.com/whoisryosuke/spooky-ui/)
+
+The big problem? Lit doesn’t actually have an out of box solution for SSR and SSG. It offers [a library to handle the process](https://lit.dev/docs/ssr/overview/), and delegates the responsibility of making an easy to use template to other frameworks. This in concept is a great idea, since it allows anyone to integrate Lit into their architecture. However, because it’s left up to other open source maintainers, your results are mixed.
+
+We’ll get into it later when I try using AstroJS and their Lit integration, but spoilers — it didn’t work and isn’t supported anymore.
+
+# Preact for Web Components
+
+Another popular library/framework option that supports web components is Preact. It’s like React, but much smaller. And they support creating, and converting Preact components into, web components.
+
+Preact supports SSG through their fairly new “prerender” API available through their Vite plugin. It does what I mentioned above when describing SSG — it renders the Preact app on the server, returns the HTML, and even “hydrates” it with any interactivity if needed.
+
+The process seemed fairly straightforward and documented, so I gave it a shot. Apparently the Preact website uses the prerendering/SSG library - [so I dove into their code](https://github.com/preactjs/preact-www/) as a primary reference point for setting things up.
+
+I setup a new Preact project using `npm create preact` and got started. My goal? Basically replicate my blog - a static site that has MDX content.
+
+## Easy mode MDX
+
+I added a test MDX file and installed a rollup plugin for MDX, and I was able to import MDX files using the `import` syntax (like any other JS file or asset). And the content was already pre-parsed by MDX, so I was getting HTML and React components to render. This was a nice start.
+
+```tsx
+yarn add @mdx-js/preact @mdx-js/rollup
+```
+
+And here’s how I can import and use my MDX content inside of say - a blog post page:
+
+```tsx
+import MDXWrapper from "../../components/MDXProvider";
+import Post from "./post.mdx";
+
+export function Test() {
+  return (
+    <MDXWrapper>
+      <div class="test">
+        <p>Test</p>
+        <Post />
+      </div>
+    </MDXWrapper>
+  );
+}
+```
+
+You can see [this full commit here](https://github.com/whoisryosuke/preact-mdx-blog-template/commit/4678ef06f9e7a5b25ae3d369f081192c99667021).
+
+## Dynamic MDX
+
+This works if you create a page for every MDX file and import it manually. But what if you wanted to create a dynamic catch-all route that handled any MDX file?
+
+For example, I might want a `/blog/{slug}` route where I can use that `slug` to find the appropriate MDX file. This is a common setup for a lot of websites, particularly working at scale (or working with dynamic backends like a CMS or DB).
+
+To get this working, we can’t rely on the rollup plugin anymore, and we’ll need to parse the MDX ourselves. But where do we load the MDX? If we take a look at the Preact website source code again.
+
+They basically:
+
+- Use a Vite plugin called `vite-static-copy` that copies files into the `public` folder for use
+- During that plugin process, you can have a custom “transform” script. They use this to basically take Markdown, convert it to HTML (and remove the YAML — which broke on my local build…), and then it returns the HTML and frontmatter as JSON.
+- Then the plugin takes the Markdown file and saves it as a JSON file instead, and inserts the JSON data they created
+- Then on a Blog Post page - it fetches for that JSON (using the path — since that’s how it’s stored on disk and was copied).
+- This runs during the prerender process, which replaces any `fetch` with a custom fetch they write that can load local files instead.
+- The Blog Post page gets the JSON (that is technically Markdown and frontmatter), and it can use that to display it as needed.
+
+It’s quite the convoluted process, particularly with the use of the Vite plugin. It’d be much nicer if it worked like NextJS or GatsbyJS and just let me load the data from files locally and use it directly — without needing static files to keep our blog data as JSON. That data would just be embedded inside our final HTML and JS code for each page (which Next and Gatsby does).
+
+We can use this process ourselves. Let’s go through it piece by piece.
+
+Let’s copy the MDX files and parse them using the `vite-static-copy` plugin:
+
+```tsx
+    // We parse the MDX files and then copy them as `.txt` files into build
+    // Then we fetch the exposed text file on the client-side to render MDX (see `<BlogPostContent />`)
+    viteStaticCopy({
+      hook: "generateBundle",
+      targets: [
+        {
+          src: "./blog/**/*.mdx",
+          dest: "./",
+          rename: (_name, _fileExtension, fullPath) =>
+            path.basename(fullPath).replace(/\.mdx$/, ".txt"),
+          transform: transformMDX,
+        },
+      ],
+      structured: true,
+      watch: {
+        reloadPageOnChange: true,
+      },
+    }),
+```
+
+This finds every MDX file in the `/blog` and uses a `transformMDX` function on it. That basically takes the MDX file content and runs it through MDX’s `compile()` function - which converts MDX into a JavaScript. Then we take that JS and save it into a `.txt` file that’s the same name and path as the original file. Finally the Vite plugin copies it to the Preact `/public/` folder, where we can fetch it during the prerender process.
+
+```tsx
+import { compile } from "@mdx-js/mdx";
+
+export const transformMDX = async (content, path) => {
+  console.log("[TRANSFORM MDX]", content, path);
+
+  const code = String(
+    await compile(content, {
+      outputFormat: "function-body",
+      /* …otherOptions */
+    })
+  );
+  return code;
+};
+```
+
+> ⚠️ We’re basically doing SSR with MDX, which you can find examples of in the [MDX on Demand docs](https://mdxjs.com/guides/mdx-on-demand/).
+
+Now that we have our content available to us, we need to setup a router to access it:
+
+```tsx
+import {
+  LocationProvider,
+  Router,
+  Route,
+  hydrate,
+  prerender as ssr,
+} from "preact-iso";
+
+import { Header } from "./components/Header.jsx";
+import { Home } from "./pages/Home/index.jsx";
+import { NotFound } from "./pages/_404.jsx";
+import "./style.css";
+import { Blog } from "./pages/Blog/Blog.jsx";
+
+export function App() {
+  return (
+    <LocationProvider>
+      <Header />
+      <main>
+        <Router>
+          <Route path="/" component={Home} />
+          <Route path="/blog/*" component={Blog} />
+          <Route default component={NotFound} />
+        </Router>
+      </main>
+    </LocationProvider>
+  );
+}
+
+if (typeof window !== "undefined") {
+  hydrate(<App />, document.getElementById("app"));
+}
+
+export async function prerender(data) {
+  const { html, links } = await ssr(<App {...data} />);
+
+  return {
+    html,
+    links: new Set([...links, "/blog", "/blog/2023/test"]),
+    // head,
+  };
+}
+```
+
+We create a dynamic route for blog posts:
+
+```tsx
+<Route path="/blog/*" component={Blog} />
+```
+
+And then we also export a `prerender` function where we SSR our app. Here we can add any custom routes by appending them to the `links` property.
+
+> ⚠️ Here’s the first major caveat of this setup — even though we have a dynamic route, we need to manually provide an array of all possible routes. This is common, even in NextJS you need to use provide a list of routes if you plan on using their SSG process.
+
+The `<Blog>` component is technically a nested route, that is the blog index (so we can see a list of all posts) and another dynamic route for all the individual blog posts:
+
+```tsx
+<Route default component={BlogIndex} />
+<Route path="/:year/:slug" component={BlogPost} />
+```
+
+The `<BlogPost>` component is fairly simple, it just grabs the URL parameters from the router (the year and slug) and passes it to a `<BlogPostContent>` component that handles actually fetching the blog post.
+
+```tsx
+<Suspense fallback={<p>Loading...</p>}>
+  <BlogPostContent year={params.year} slug={params.slug} />
+</Suspense>
+```
+
+The `<BlogPostContent>` component uses the custom `fetch` I talked about earlier to grab the MDX file for the corresponding blog post.
+
+```tsx
+import { useEffect, useState } from "preact/hooks";
+import { useFetch } from "../../utils/useFetch";
+
+type Props = {
+  year: string;
+  slug: string;
+};
+
+const BlogPostContent = ({ year, slug }: Props) => {
+  /**
+   * This uses a special hook to fetch the blog content from the "server"
+   * We parse MDX and expose it to client-side using a Vite plugin (see: `vite.config.ts`)
+   * Then using Preact's pre-rendering system (see: https://preactjs.com/blog/prerendering-preset-vite/)
+   * this page gets executed on the server-side during build and returns HTML for the static build.
+   */
+  const Post = useFetch(`/blog/${year}/${slug}.txt`);
+
+  return <div>{Post ? <Post /> : "fetching..."}</div>;
+};
+
+export default BlogPostContent;
+```
+
+The `useFetch` hook basically uses `fetch` under the hood to grab the `.txt` file we copied earlier. It’s able to grab the local file because Preact patches the local `fetch` (though I’m still not sure why it has to be in `/public` - it should be able to reach anywhere…).
+
+Then we use the MDX `run()` function to take the `.txt` file contents and turn them into running MDX code (which is basically HTML elements and Preact components). That gets returned from the hook, which we use inside the blog post as a Preact component (kinda like we did with the `import` originally).
+
+```tsx
+// Fetches content from the "server" (aka this repo locally)
+async function load(url) {
+  const res = await fetch(url);
+  if (!res.ok) {
+    throw new Error(`Failed to fetch ${url}!`);
+  }
+  // Our MDX content is stored in a text file
+  const text = await res.text();
+
+  // Debug:
+  // console.log("text", url, text);
+
+  // Compile text into MDX
+  // Warning: This uses `eval()` under the hood
+  // to convert text to a running React component
+  const { default: Content } = await run(text, {
+    ...provider,
+    ...jsxRuntime,
+    baseUrl: import.meta.url,
+  });
+  return Content;
+}
+```
+
+Phew, that’s a lot. But with that, we’ve got ourselves a nice setup for authoring MDX files and generating a static Preact website.
+
+You can see [this full commit here](https://github.com/whoisryosuke/preact-mdx-blog-template/commit/d87b3a3a305d86c75102547c391769eea6e241ad) or [check out the blog template](https://github.com/whoisryosuke/preact-mdx-blog-template/tree/d87b3a3a305d86c75102547c391769eea6e241ad).
+
+## Web Components tho right?
+
+The point of all this was to get Web Components running in this prerender process - the MDX was just a distraction 🤣
+
+I created a simple web component using Lit and their CLI, and then used `yarn link` in the component’s root folder (where the `package.json` is) to link the component library to the Preact project. I imported the component and used it and…got an error that `HTMLElement` didn’t exist…
+
+This is the classic error I talked about earlier when initially discussing issues with server rendering web components. The server has no idea about web tech - so of course Preact is just using a stock NodeJS build - and not running the SSR code through something like Chromium or something to get the full (or mocked) browser APIs.
+
+This means we won’t be able to leverage Preact’s prerendering with Web Components sadly. We can still use Preact components themselves and have them pre-rendered — which is honestly better than Web Components. If you had to just stop here and use this, it’s basically just React, you can’t go wrong.
+
+> ℹ️ If you really wanted this to work, you’d be better off leveraging Lit components and their SSR plugin. But this is where it gets really wild — you’d have to add the Lit SSR as a post-build step to the Preact build, so it can modify the HTML and add the server-rendered content. That means you’re parsing HTML, whether in AST form, or using Regex. I’ll cover that in the next section with React.
+
+# One more try with React
+
+With [React 19](https://react.dev/blog/2024/12/05/react-19#support-for-custom-elements) we got native support for Web Components finally (kinda). Before version 19, React had a hard time with custom elements (aka “Web Components”) because they use [attributes](https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_custom_elements#responding_to_attribute_changes) to manage their “props”. Now React can pick these up and assign them appropriately, instead of passing them as React props (which Web Components can’t see/use).
+
+Before we’d have to install custom wrapper libraries (like [Stencil](https://stenciljs.com/docs/react) and [Lit](https://lit.dev/docs/frameworks/react/) utilities) to wrap Web Components in a React component that passes the attributes appropriately.
+
+```tsx
+// Using @lit/react to create a React component wrapper
+import React from "react";
+import { createComponent } from "@lit/react";
+import { MyElement } from "./my-element.js";
+
+export const MyElementComponent = createComponent({
+  tagName: "my-element",
+  elementClass: MyElement,
+  react: React,
+  events: {
+    onactivate: "activate",
+    onchange: "change",
+  },
+});
+```
+
+Now we can just embed our Web Components directly into our JSX without as much concern.
+
+```tsx
+import React, { useState } from "react";
+// Import the web component
+import "./my-component.js";
+
+function App() {
+  const title = 'Ryosuke';
+
+  return (
+    <div>
+      <h1>Embedding a Web Component</h1>
+      <my-component title={title}></my-counter>
+    </div>
+  );
+}
+
+export default App;
+```
+
+But there are a few caveats that they mention in the release notes. For **server-side rendering**, React will only pass “**primitive**” attributes (like `string`, `number`, and `boolean`) — but for more **complex** attributes like `object` or `array` they only work **client-side**. This does limit server-rendering to “simple” components, making it difficult to do things like a “list” component where you might want to pass an array of objects as “list items” that the component would render.
+
+But this doesn’t really give us server-rendering. If you were to build the React app at this point with the web component inside, it’s pass it all the properties correctly — but in the HTML you’d only see the web component, not the shadow DOM that renders inside. Like I mentioned before, this is bad for SEO, since the browser now lacks extra context about the page until it fully renders the page and it’s client-side scripts.
+
+So how do we get the shadow DOM server-side rendered too? Web Components haven’t figured that out just yet. There’s something called [Declarative Shadow DOM](https://web.dev/articles/declarative-shadow-dom) that Chrome implemented, but it’s not widely available and honestly the DX is bad. For any server rendered content they require you to make a `<template>` with a `shadowrootmode` attribute on it, wrap your content in it, then put it inside your web component when it’s rendered.
+
+```tsx
+<menu-toggle>
+  <template shadowrootmode="open">
+    <button>
+      <slot></slot>
+    </button>
+  </template>
+  Open Menu
+</menu-toggle>
+```
+
+This works because the browser will detect the `<template>` inside the component and swap the shadow DOM with the contents of the `<template>`. Which kinda gives us what we wanted. We get some actual DOM rendered in the initial HTML, then it can get hydrated later. But notice it’s not exactly the DOM we want. This is a “template”. If an SEO bot saw this it wouldn’t know what was going on. The text that goes inside the button lives outside it. This also requires us to write our template code twice, because we still need a shadow DOM fallback inside our component in case the browser doesn’t support this feature. And if you think about it, this template has to be rendered with each component, meaning whenever you use the component you need to include this boilerplate template code too.
+
+Then how do we render the HTML of our component more accurately? This is where [Lit’s SSR library](https://github.com/lit/lit/tree/main/packages/labs/ssr#readme) comes into play. It runs the Lit component on the server to generate initial HTML, that gets added to the DOM, then the component can hydrate and activate it’s shadow DOM as needed once the client-side loads.
+
+```tsx
+import { render } from "@lit-labs/ssr";
+// Import the component
+import "../components/simple-greeter.js";
+
+// Render it to HTML
+const componentHTML = render(
+  html`<simple-greeter name=${name}></simple-greeter>`
+);
+```
+
+> ℹ️ You can find a nice [working example](https://stackblitz.com/edit/lit-ssr-global?file=src%2Fpages%2Findex.js) with a Koa server that streams HTML, including the web component. It works there because they break up the code to explicitly handle the web component (meaning every time you use one, it needs a special `render()` wrapper).
+
+This works ok when we’re in vanilla JS, but about React? In React, we often have React components that get rendered to HTML using React DOM’s special function `renderToString`. This takes our top-level component and walks through the entire tree, converting it all to HTML. The problem? When it gets to our Lit component it’s just going to render what it sees. It doesn’t know we need to run the Lit SSR `render` function on it.
+
+Then how do we wrap our Lit in that function to ensure it gets rendered server-side? Well we could analyze the HTML that React generates, find our web components, then run our `render` function on them. Using regex you can find components, or preferably, you could parse the HTML into an walkable tree (or “AST”) using a library like JSDOM then find any web components using that.
+
+```tsx
+import { JSDOM } from "jsdom";
+import { render as litRender } from "@lit-labs/ssr";
+import { html as litHtml } from "lit";
+import { unsafeStatic } from "lit/static-html.js";
+
+console.log("rendering...");
+
+injectLitShadowDOM(`<!DOCTYPE html><p>Hello world</p>
+<h1>Hello JavaScript!</h1>
+<my-counter></my-counter>
+`);
+
+export async function injectLitShadowDOM(html) {
+  const dom = new JSDOM(html);
+  const doc = dom.window.document;
+
+  console.log("doc", doc.querySelector("my-counter"));
+
+  // Grabs all elements in page that have a `-` in their
+  const customEls = [...doc.querySelectorAll("*")].filter((el) =>
+    el.tagName.includes("-")
+  );
+
+  for (const el of customEls) {
+    const tag = el.tagName.toLowerCase();
+    const attrs = Object.fromEntries(
+      [...el.attributes].map((a) => [a.name, a.value])
+    );
+
+    // Render the web component
+    console.log("rendering component", tag, attrs);
+
+    const tagName = unsafeStatic(tag);
+    // We use a spread syntax here as pseudo code - it won't work
+    const litIter = litRender(litHtml`<${tagName} ...=${attrs}></${tagName}>`);
+    let litHTML = "";
+    for await (const chunk of litIter) litHTML += chunk;
+    el.outerHTML = litHTML;
+  }
+
+  return dom.serialize();
+}
+```
+
+This doesn’t quite work though, because Lit’s `html` function doesn’t allow for dynamic tags. We have to leverage [unsafeStatic](https://lit.dev/docs/api/static-html/#unsafeStatic) to create our HTML. We also can’t use spread props with Lit, so we’d have to set each attribute manually. Then it gets even weirder — because `unsafeStatic` doesn’t work in SSR if your component isn’t self closing (e.g. `<my-component />`). Meaning for server-side you can only use self-contained components (nothing with nested elements inside) — limiting the rendering quite a bit.
+
+I could probably dig deep enough to solve these kind of problems, but as you can see, it’s fighting against a few layers of Lit and the way React renders. If you want to server render Web Components and also use React…**just don’t**. You’re better off just making the entire app Web Components based - ideally a framework like Lit.
+
+# The Alternatives
+
+Since my first approach failed, let’s explore some other popular frameworks and see how they handle web components. No more MDX madness here, we’ll just be going in directly and testing if it can handle building a static website with a pre-rendered web component (not client-side).
+
+## GatsbyJS
+
+My first thought was to use GatsbyJS, because I remember they had a great plugin ecosystem, and I remember using the Preact plugin. I hoped maybe using that, I might be able to get around some SSR issues.
+
+I immediately realized that [Gatsby is no longer supported as of 2024](https://github.com/gatsbyjs/gatsby/discussions/39062) — only maintained by OSS community. That’s an instant no-start for me, but I’ll continue just to experiment.
+
+I created a new Gatsby project and [added the Preact plugin.](https://www.gatsbyjs.com/plugins/gatsby-plugin-preact/)
+
+When I built the website, it still included React in the build, so I had both - making the bundle size unnecessarily larger. I tried removing React from project, got errors that Reach Router required it.
+
+Started to kinda tap out here, because it’s clear that this avenue wasn’t fully thought out (and clearly no longer supported).
+
+## Astro
+
+Astro was one of the official integrations listed by the Lit website, so it seemed like the most promising option. I’ve enjoyed Astro in the past (despite minor DX issues).
+
+Apparently [Astro doesn’t support Lit components for SSR anymore](https://docs.astro.build/en/guides/integrations-guide/lit/) — they require someone to pick up the module maintenance. You have to use Lit components client-side only.
+
+You could use Astro v4, but if I’m building a site I don’t want something that starts version locked out of the gate (you just inherit all v4 bugs with no fixes ever…).
+
+## NextJS
+
+Similar to Gatsby, NextJS has a Preact plugin. Though dissimilar, it actually worked really well. The only issue I had was using more complex React libraries like `motion`.
+
+Created a fresh NextJS project. Installed `preact preact-render-to-string`.
+
+Swapped React deps with relative links to Preact, this cool technique was [in the Preact docs](https://preactjs.com/guide/v10/getting-started/#aliasing-in-node)
+
+```
+
+    "react": "npm:@preact/compat",
+    "react-dom": "npm:@preact/compat",
+```
+
+But ultimately still no Web Component support, since neither Preact’s `preact-render-to-string` or NextJS backend handle custom elements (aka web components).
+
+# The future?
+
+So where is the future development for web components happening in the community?
+
+## Brisa
+
+[Brisa](https://brisa.build/) is a framework for making server rendered apps using Web Components.
+
+It has a specific architecture that separates server and client-side components. Server components resemble React components without any interactivity - they just take props, maybe `map` over some data, and return DOM elements. Then the client-side components are web components - which also resemble React components and use Brisa’s custom framework for things like state management (similar to Lit).
+
+```tsx
+// Server component
+export default function HelloWorld() {
+  return <div>Hello World</div>;
+}
+
+// Web Component
+import { WebContext } from "brisa";
+
+export default function SomeWebComponent({}, { onMount, cleanup }: WebContext) {
+  onMount(() => {
+    // Register things after mounting the component
+    document.addEventListener("scroll", onScroll);
+  });
+  cleanup(() => {
+    // Unregister when the component unmounts
+    document.removeEventListener("scroll", onScroll);
+  });
+
+  function onScroll(event) {
+    // some implementation of the scroll event
+  }
+
+  return <div>{/* some content */}</div>;
+}
+```
+
+If you’re building a website with only web components (and no React, Vue, etc) — this is a great option. It even [supports MDX](https://brisa.build/building-your-application/integrations/mdx). But it’s very opinionated, and locks you into their API - which is very early in development, so might be better for smaller projects that won’t need maintaining.
+
+## Enhance
+
+There’s also [Enhance](https://enhance.dev/), an “HTML-first” framework for creating apps using web components.
+
+But like Brisa, Enhance doesn’t use web components directly. Instead, they have the concept of [Elements](https://enhance.dev/docs/elements/) which are basically web components that feel like if React and Vue decided to merge.
+
+```tsx
+export default function MyButton({ html, state }) {
+  const { attrs } = state;
+  const { label } = attrs;
+
+  return html` <button>${label}</button> `;
+}
+```
+
+I will say, this is another framework that is very early in development. I probably wouldn’t use it for anything serious or at scale. Though this one is doing things differently by integrating WASM into their process. If you want to run your site on any platform (C#, Ruby, Rust, etc) you can do it with their WASM build. Seems like a great way to do cross-platform without having to explicitly write code in each language.
+
+> ℹ️ Noticing a pattern around these frameworks? They create some large abstractions over web components to provide better DX (similar to React, Vue, and other JS frameworks). This can also be limiting, since it requires their bespoke build systems, meaning you can’t use a Brisa or Enhance component in a React project — at least not easily. This lack of interopability with other JS frameworks goes against the original vision of web components (write once, use anywhere).
+
+# Should you use web components in 2025?
+
+As anything in software development: it depends.
+
+Are you **building a site** that needs to be **server-rendered or statically generated**? **No**, I wouldn’t recommend web components. There are frameworks, but as you can see, their support wanes by the day. And building your own isn’t really worth it, when ultimately you just support web components. It’s a lot of work to build out a template that rivals things like NextJS…when you could just use React and that and probably be move faster and be happier.
+
+Are you building a **client-side component** that **_never_** needs to be server-rendered? **Yes**, I’d consider web components if you need to also support multiple frameworks (like vanilla JS, React, and Vue — suddenly worth investing time into a web component). A great example is the recent `<model-viewer>` web component that lets you load 3D models and display them to the user. You’d never server-render that, you’d probably even need to put in a little loading bar to delay it’s loading.
+
+Are you building a **cross-platform app** that needs to render on **web _and_ native** devices? No, I’d just use React Native or another platform (like Swift or Kotlin). Rendering web components on any native platform will require a web view, which can be immensely costly for performance - and often doesn’t look as “native” as other solutions (like RN).
+
+I’m not sure what Shopify is using to actually build their websites and how they got SSR/SSG support (most likely just Lit SSR), but if they did, I bet it’s ultimately a bespoke system. Stuff like that if often brittle in any company. The second the subject matter experts leave the maintenance of the framework/template is shunned, and all the projects down the pipeline suffer. I could also see them using the components only client-side, since most of the ones they advertise are “Admin UI” type components (that wouldn’t ever be statically generated).
+
+As much as people may hate on using popular frameworks like Astro, it creates a better life for your product when you know it’s maintained and updated, and that you can onboard people who understand it easily. And until those frameworks can easily support web components, and particularly server rendering them — web components don’t have a chance.
+
+# Say no to web components
+
+I foresee a web components still evolving a bit before we see firm support from frameworks. There are still some major problems with their implementation, and we’re still seeing APIs change to adapt to realistic demands (like SSR). For all the effort it takes to migrate to web components from another framework, you lose to much from the process.
+
+> ℹ️ [Ryan Carniato did a great write up](https://dev.to/ryansolid/web-components-are-not-the-future-48bh) breaking down the shortcomings of the Web Component implementation and compares it to other modern UI frameworks.
+
+I still find it hard to justify their use because even their support in frameworks is limited because of their implementation (like not being able to pass object as web component props easily in React). And to use them for design system primitives (like a button) is more asinine, considering the button would always need to be client-side loaded before it can even be seen (unless as we’ve seen, we have a wild custom framework for supporting it).
+
+But yeah, I could complain for days about web components. The more time I spend with them, the more I’m reminded why I don’t like them. Don’t let me dissuade you completely though, please dive into a few projects and you too might start to see the grungy edges.
+
+Stay curious,
+Ryo
